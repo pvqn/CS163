@@ -22,9 +22,9 @@ public:
     TreeNode* left;
     TreeNode* right;
     TreeNode* parent;
-    TreeNode() : color(0), pWord(nullptr), pDef(nullptr), left(nullptr), right(nullptr), parent(nullptr) {};
-    TreeNode(bool color_x, string key, T def) : color(color_x), pWord(new string(key)), pDef(new T(def)), left(nullptr), right(nullptr), parent(nullptr) {};
-    TreeNode(bool color_x, string key, T def, TreeNode* par) : color(color_x), pWord(new string(key)), pDef(new T(def)), left(nullptr), right(nullptr), parent(par) {};
+    TreeNode<T>() : color(0), pWord(nullptr), pDef(nullptr), left(nullptr), right(nullptr), parent(nullptr) {};
+    TreeNode<T>(bool color_x, string key, T def) : color(color_x), pWord(new string(key)), pDef(new T(def)), left(nullptr), right(nullptr), parent(nullptr) {};
+    TreeNode<T>(bool color_x, string key, T def, TreeNode* par) : color(color_x), pWord(new string(key)), pDef(new T(def)), left(nullptr), right(nullptr), parent(par) {};
 };
 
 template<typename T>
@@ -107,10 +107,10 @@ public:
     
     void insert(string key, T def) {
         if (!root) {
-            root = new TreeNode(0, key, def);
+            root = new TreeNode<T>(0, key, def);
             return;
         }
-        TreeNode<T>* newNode = new TreeNode(1, key, def);
+        TreeNode<T>* newNode = new TreeNode<T>(1, key, def);
         TreeNode<T>* cur = root;
         while (true) {
             if (key.compare(*(cur->pWord)) >= 0) {
