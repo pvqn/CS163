@@ -1,10 +1,3 @@
-//
-//  structure.hpp
-//  PRJXVI
-//
-//  Created by Hoang The Anh on 06/06/2022.
-//
-
 #ifndef structure_hpp
 #define structure_hpp
 
@@ -36,6 +29,7 @@ private:
     void rotateLine(TreeNode<T>*& child, TreeNode<T>*& parent, TreeNode<T>*& grandparent) {
         if (child == parent->left) {
             parent->parent = grandparent->parent;
+            if (parent->right) parent->right->parent = grandparent;
             grandparent->left = parent->right;
             parent->right = grandparent;
             if (grandparent == root) root = parent;
@@ -47,6 +41,7 @@ private:
         }
         else {
             parent->parent = grandparent->parent;
+            if (parent->left) parent->left->parent = grandparent;
             grandparent->right = parent->left;
             parent->left = grandparent;
             if (grandparent == root) root = parent;
@@ -62,6 +57,7 @@ private:
         if (child == parent->left) {
             child->parent = grandparent;
             grandparent->right = child;
+            if (child->right) child->right->parent = parent;
             parent->left = child->right;
             parent->parent = child;
             child->right = parent;
@@ -69,6 +65,7 @@ private:
         else {
             child->parent = grandparent;
             grandparent->left = child;
+            if (child->left) child->left->parent = parent;
             parent->right = child->left;
             parent->parent = child;
             child->left = parent;
