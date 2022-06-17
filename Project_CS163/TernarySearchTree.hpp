@@ -46,6 +46,40 @@ private:
         
         return root;
     }
+    int deleteNode(TreeNode* &root, int index, string s)
+    {
+        if (!root)
+            return 0;
+        if (s[index + 1] == "\0")
+        {
+            //if the string is in the tst
+            if (!root->def.empty())
+            {
+                return (root->left || root->right || root->mid);
+            }
+            else return 0;
+        }
+        else
+        {
+            if (s[level] < root->data)
+                return deleteNode(root->left, index, s);
+            else
+                if (s[level] < root->data)
+                    return deleteNode(root->right, index, s);
+                else 
+                    if (s[level] == root->data)
+                    {
+                        if (deleteNode(root->mid, index + 1, s))
+                        {
+                            delete root->mid;
+                            root->mid = nullptr;
+                            // delete root if root dont have children
+                            return root->def.empty() && (root->left || root->mid || root->right);
+                        }
+                    }
+        }
+        return 0;
+    }
     
 public:
     TernarySearchTree() : root(nullptr) {};
@@ -54,11 +88,11 @@ public:
         root = insert(root, 0, key, def);
     }
     
-    /*void erase(string key) {
-     
+    void erase(string key) {
+        deleteNode(root, 0, key);
      }
      
-     TreeNode* search(string key) {
+     /*TreeNode* search(string key) {
          
      }
      
