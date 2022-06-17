@@ -50,7 +50,7 @@ private:
     {
         if (!root)
             return 0;
-        if (s[index + 1] == "\0")
+        if (s[index + 1] == '\0')
         {
             //if the string is in the tst
             if (!root->def.empty())
@@ -61,13 +61,13 @@ private:
         }
         else
         {
-            if (s[level] < root->data)
+            if (s[index] < root->data)
                 return deleteNode(root->left, index, s);
             else
-                if (s[level] < root->data)
+                if (s[index] < root->data)
                     return deleteNode(root->right, index, s);
                 else 
-                    if (s[level] == root->data)
+                    if (s[index] == root->data)
                     {
                         if (deleteNode(root->mid, index + 1, s))
                         {
