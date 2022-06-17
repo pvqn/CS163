@@ -29,23 +29,24 @@ class TernarySearchTree {
 private:
     TreeNode* root;
 
-    TreeNode* insert(TreeNode* root, int index, std::string& s, std::string& def) {
-        if (index == s.length()) return nullptr;
-
+    TreeNode* insert(TreeNode* root, char* s, std::string& def) {
+        if ( *s == '\0') return nullptr;
+        
         if (!root) {
-            root = new TreeNode(s[index], ((index == s.length() - 1) ? def : ""));
-            root->mid = insert(root->mid, index + 1, s, def);
+            root = new TreeNode(*s, ((*(s+1) == '\0') ? def : ""));
+            root->mid = insert(root->mid, s+1, def);
             return root;
         }
-
-        if (root->data == s[index]) root->mid = insert(root->mid, index + 1, s, def);
-
-        if (root->data > s[index]) root->left = insert(root->left, index, s, def);
-
-        if (root->data < s[index]) root->right = insert(root->right, index, s, def);
-
+        
+        if (root->data == *s) root->mid = insert(root->mid, s+1, def);
+        
+        if (root->data > *s) root->left = insert(root->left, s, def);
+        
+        if (root->data < *s) root->right = insert(root->right, s, def);
+        
         return root;
     }
+    
     int deleteNode(TreeNode*& root, int index, std::string s)
     {
         if (!root)
@@ -85,7 +86,7 @@ public:
     TernarySearchTree() : root(nullptr) {};
 
     void insert(std::string key, std::string def) {
-        root = insert(root, 0, key, def);
+        root = insert(root, &key[0], def);
     }
 
     void erase(std::string key) {
