@@ -1,12 +1,8 @@
-﻿// Project_CS163.cpp : Defines the entry point for the application.
-//
-
-#include "Project_CS163.h"
-
-using namespace std;
+﻿#include <iostream>
+#include "TernarySearchTree.hpp"
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	std::cout << "Hello World\n";
 	return 0;
 }

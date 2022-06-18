@@ -4,6 +4,6 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Add source to this project's executable.
-add_executable (Project_CS163 "Project_CS163.cpp" "Project_CS163.h")
+add_executable (Project_CS163 "Project_CS163.cpp")
 
 # TODO: Add tests and install targets if needed.
