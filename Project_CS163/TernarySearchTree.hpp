@@ -53,6 +53,15 @@ private:
         return root;
     }
 
+    TreeNode* searchNode(TreeNode* pRoot, std::string key, int index)
+    {
+        if (!pRoot) return pRoot;
+        if (key[index + 1] == '\0') return pRoot;
+        if (key[index] < pRoot->data) return searchNode(pRoot->left, key, index);
+        if (key[index] == pRoot->data) return searchNode(pRoot->mid, key, index + 1);
+        if (key[index] > pRoot->data) return searchNode(pRoot->right, key, index);
+    }
+
     int deleteNode(TreeNode *&root, int index, std::string s)
     {
         if (!root)
@@ -149,10 +158,12 @@ public:
         deleteNode(root, 0, key);
     }
 
-    /*TreeNode* search(string key) {
-
+    TreeNode* search(std::string key)
+    {
+        return searchNode(root, key, 0);
     }
-
+   
+    /*
     void update(string key, string def) {
 
     }**/
