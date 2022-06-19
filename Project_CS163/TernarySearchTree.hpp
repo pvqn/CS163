@@ -56,7 +56,8 @@ private:
     TreeNode* searchNode(TreeNode* pRoot, std::string key, int index)
     {
         if (!pRoot) return pRoot;
-        if (key[index + 1] == '\0') return pRoot;
+        TreeNode* result = nullptr;
+        if (key[index + 1] == '\0') if (!pRoot->def.empty()) return pRoot; else return result;
         if (key[index] < pRoot->data) return searchNode(pRoot->left, key, index);
         if (key[index] == pRoot->data) return searchNode(pRoot->mid, key, index + 1);
         if (key[index] > pRoot->data) return searchNode(pRoot->right, key, index);
