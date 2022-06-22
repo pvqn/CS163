@@ -53,7 +53,7 @@ private:
         return root;
     }
 
-    TreeNode* searchNode(TreeNode* pRoot, std::string key, int index)
+    TreeNode* searchNode(TreeNode* pRoot, std::string key, size_t index)
     {
         if (!pRoot) return pRoot;
         TreeNode* result = nullptr;
@@ -63,7 +63,7 @@ private:
         if (key[index] > pRoot->data) return searchNode(pRoot->right, key, index);
     }
 
-    int deleteNode(TreeNode *&root, int index, std::string s)
+    int deleteNode(TreeNode *&root, size_t index, std::string s)
     {
         if (!root)
             return 0;
