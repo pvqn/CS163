@@ -2,7 +2,9 @@
 #define STRING_UTIL_HPP_
 #include <string>
 #include <vector>
-
+#include <cctype>
+#include <fstream>
+#include "TernarySearchTree.hpp"
 namespace util
 {
 	/**
@@ -12,6 +14,7 @@ namespace util
 	 * @return Vector of words 
 	 */
 	std::vector<std::string> split(std::string str);
+	void insertStopWord(TernarySearchTree& stopword);
 
 };
 
