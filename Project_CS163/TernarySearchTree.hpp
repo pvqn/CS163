@@ -9,10 +9,12 @@
 #include <queue>
 #include <string>
 #include <utility>
+#include <algorithm>
 
 struct TreeNode
 {
     char data = {};
+    int high = 1; // length from this node to leaf node ( except for middle way )
     std::string def = {};
 
     TreeNode *left = nullptr;
@@ -49,7 +51,8 @@ private:
 
         if (root->data < *s)
             root->right = insert(root->right, s, def);
-
+        root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
+        balance(root);
         return root;
     }
 
@@ -90,12 +93,57 @@ private:
                     delete root->mid;
                     root->mid = nullptr;
                     // delete root if root doesnt have children
-                    return root->def.empty() &&
-                           (!root->left && !root->mid && !root->right);
+                    return root->def.empty() && (!root->left && !root->mid && !root->right);
                 }
             }
         }
         return 0;
+    }
+
+    int getHigh(TreeNode* pRoot)
+    {
+        if (!pRoot) return 0; else return pRoot->high;
+    }
+
+    void rotation(TreeNode*& pRoot, int direct) // 0 left || 1 right
+    {
+        if ( direct == 0 ) // rotate to the left
+        {
+            TreeNode* new_root = pRoot->right;
+            pRoot->right = new_root->left;
+            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+            new_root->left = pRoot;
+            pRoot = new_root;
+            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+            return;
+        }
+        if (direct == 1) // rotate to the right
+        {
+            TreeNode* new_root = pRoot->left;
+            pRoot->left = new_root->right;
+            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+            new_root->right = pRoot;
+            pRoot = new_root;
+            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+            return;
+        }
+    }
+
+    void balance(TreeNode*& pRoot)
+    {
+        if( abs(getHigh(pRoot->left) - getHigh(pRoot->right)) <= 1 ) return;
+        if (getHigh(pRoot->left) > getHigh(pRoot->right))
+        {
+            if (getHigh(pRoot->left->right) > getHigh(pRoot->left->left)) rotation(pRoot->left, 0);
+            rotation(pRoot, 1);
+            return;
+        }
+        if (getHigh(pRoot->left) < getHigh(pRoot->right))
+        {
+            if (getHigh(pRoot->right->left) > getHigh(pRoot->right->right)) rotation(pRoot->right, 1);
+            rotation(pRoot, 0);
+            return;
+        }
     }
 
     TreeNode *clone(TreeNode *current)
