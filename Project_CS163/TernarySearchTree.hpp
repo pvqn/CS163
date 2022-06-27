@@ -66,34 +66,29 @@ private:
         if (key[index] > pRoot->data) return searchNode(pRoot->right, key, index);
     }
 
-    int deleteNode(TreeNode *&root, size_t index, std::string s)
+    int deleteNode( TreeNode *&root, size_t index, std::string s )
     {
-        if (!root)
-            return 0;
-        if (s[index + 1] == '\0')
+        if (!root) return 0;
+        if (s[index + 1] == '\0') // at the end of the string
         {
             // if the string is in the tst
-            if (!root->def.empty())
-            {
-                return (!root->left && !root->right && !root->mid);
-            }
-            else
-                return 0;
+            if (!root->def.empty()) return (!root->left && !root->right && !root->mid);
+            return 0;
         }
-        else
+        if( s[index + 1] != '\0' ) // still in the string
         {
-            if (s[index] < root->data)
-                return deleteNode(root->left, index, s);
-            else if (s[index] < root->data)
-                return deleteNode(root->right, index, s);
-            else if (s[index] == root->data)
+            if (s[index] < root->data) return deleteNode(root->left, index, s);
+
+            if (s[index] < root->data) return deleteNode(root->right, index, s);
+
+            if (s[index] == root->data)
             {
-                if (deleteNode(root->mid, index + 1, s))
+                if( deleteNode(root->mid, index + 1, s) ) // this string is not the prefix of any others
                 {
                     delete root->mid;
                     root->mid = nullptr;
                     // delete root if root doesnt have children
-                    return root->def.empty() && (!root->left && !root->mid && !root->right);
+                    return root->def.empty() && (!root->left && !root->mid && !root->right); // this position is the end of any others or not
                 }
             }
         }
