@@ -1,25 +1,16 @@
-#include "string_util.hpp"
+#include "util.hpp"
 #include "TernarySearchTree.hpp"
-void util::insertStopWord(TernarySearchTree& stopword)
-{
-	std::ifstream fin;
-	fin.open("stop_word.txt");
-	std::string temp;
-	while (!fin.eof())
-	{
-		fin >> temp;
-		stopword.insert(temp, "1");
-	}
-	fin.close();
-}
-std::vector<std::string> util::split(std::string str)
+
+std::vector<std::string> util::str::split(std::string str)
 {
 	std::vector<std::string> result;
 	//lowercase
 	for (int i = 0; i < str.size(); ++i) str[i] = tolower(str[i]);
+	int i = 0;
+
 	TernarySearchTree stopword;
 	insertStopWord(stopword);
-	int i = 0;
+
 	while (true)
 	{
 		std::string temp;

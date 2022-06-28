@@ -6,10 +6,11 @@
 #ifndef TERNARY_SEARCH_TREE_HPP_
 #define TERNARY_SEARCH_TREE_HPP_
 
-#include <queue>
 #include <string>
 #include <utility>
 #include <algorithm>
+
+#include "util.hpp"
 
 struct TreeNode
 {
@@ -17,54 +18,82 @@ struct TreeNode
     int high = 1; // length from this node to leaf node ( except for middle way )
     std::string def = {};
 
-    TreeNode *left = nullptr;
-    TreeNode *mid = nullptr;
-    TreeNode *right = nullptr;
+	TreeNode* left = nullptr;
+	TreeNode* mid = nullptr;
+	TreeNode* right = nullptr;
+	TreeNode* parent = nullptr;
 
-    TreeNode() = default;
+	TreeNode() = default;
 
-    TreeNode(const char &_data, std::string _def) : data(_data), def(_def){};
+	TreeNode(const char& _data, std::string _def) : data(_data), def(_def) {};
 };
 
 class TernarySearchTree
 {
 private:
-    TreeNode *root = nullptr;
+	TreeNode* root = nullptr;
 
-    TreeNode *insert(TreeNode *root, char *s, std::string &def)
-    {
-        if (*s == '\0')
-            return nullptr;
+	TreeNode* insert(TreeNode* root, char* s, std::string& def)
+	{
+		if (*s == '\0')
+			return nullptr;
 
-        if (!root)
-        {
-            root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
-            root->mid = insert(root->mid, s + 1, def);
-            return root;
-        }
+		if (!root)
+		{
+			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
+			root->mid = insert(root->mid, s + 1, def);
+			return root;
+		}
 
-        if (root->data == *s)
-            root->mid = insert(root->mid, s + 1, def);
+		if (root->data == *s)
+		{
+			root->mid = insert(root->mid, s + 1, def);
+			if (root->mid)
+				root->mid->parent = root;
+		}
 
-        if (root->data > *s)
-            root->left = insert(root->left, s, def);
+		if (root->data > *s)
+		{
+			root->left = insert(root->left, s, def);
+			if (root->left)
+			{
+				root->left->parent = root;
+			}
+		}
 
         if (root->data < *s)
-            root->right = insert(root->right, s, def);
+		{
+			root->right = insert(root->right, s, def);
+			if (root->right)
+			{
+				root->right->parent = root;
+			}
+		}
+
+
         root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
         balance(root);
         return root;
     }
 
-    TreeNode* searchNode(TreeNode* pRoot, std::string key, size_t index)
-    {
-        if (!pRoot) return pRoot;
-        TreeNode* result = nullptr;
-        if (key[index + 1] == '\0') if (!pRoot->def.empty()) return pRoot; else return result;
-        if (key[index] < pRoot->data) return searchNode(pRoot->left, key, index);
-        if (key[index] == pRoot->data) return searchNode(pRoot->mid, key, index + 1);
-        if (key[index] > pRoot->data) return searchNode(pRoot->right, key, index);
-    }
+	TreeNode* searchNode(TreeNode* pRoot, std::string key, size_t index)
+	{
+		if (!pRoot)
+			return pRoot;
+		TreeNode* result = nullptr;
+		if (key[index + 1] == '\0')
+			if (!pRoot->def.empty())
+				return pRoot;
+			else
+				return result;
+		if (key[index] < pRoot->data)
+			return searchNode(pRoot->left, key, index);
+		if (key[index] == pRoot->data)
+			return searchNode(pRoot->mid, key, index + 1);
+		if (key[index] > pRoot->data)
+			return searchNode(pRoot->right, key, index);
+		return nullptr;
+	}
 
     int deleteNode( TreeNode *&root, size_t index, std::string s )
     {
@@ -88,153 +117,155 @@ private:
                     delete root->mid;
                     root->mid = nullptr;
                     // delete root if root doesnt have children
-                    return root->def.empty() && (!root->left && !root->mid && !root->right); // this position is the end of any others or not
+                    return root->def.empty() && (!root->left && !root->mid && !root->right);
                 }
             }
         }
         return 0;
     }
 
-    int getHigh(TreeNode* pRoot)
-    {
-        if (!pRoot) return 0; else return pRoot->high;
-    }
+	int getHigh(TreeNode* pRoot)
+	{
+		if (!pRoot) return 0; else return pRoot->high;
+	}
 
-    void rotation(TreeNode*& pRoot, int direct) // 0 left || 1 right
-    {
-        if ( direct == 0 ) // rotate to the left
-        {
-            TreeNode* new_root = pRoot->right;
-            pRoot->right = new_root->left;
-            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
-            new_root->left = pRoot;
-            pRoot = new_root;
-            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
-            return;
-        }
-        if (direct == 1) // rotate to the right
-        {
-            TreeNode* new_root = pRoot->left;
-            pRoot->left = new_root->right;
-            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
-            new_root->right = pRoot;
-            pRoot = new_root;
-            pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
-            return;
-        }
-    }
+	void rotation(TreeNode*& pRoot, int direct) // 0 left || 1 right
+	{
+		if (direct == 0) // rotate to the left
+		{
+			TreeNode* new_root = pRoot->right;
+			pRoot->right = new_root->left;
+			pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+			new_root->left = pRoot;
+			pRoot = new_root;
+			pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+			return;
+		}
+		if (direct == 1) // rotate to the right
+		{
+			TreeNode* new_root = pRoot->left;
+			pRoot->left = new_root->right;
+			pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+			new_root->right = pRoot;
+			pRoot = new_root;
+			pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
+			return;
+		}
+	}
 
-    void balance(TreeNode*& pRoot)
-    {
-        if( abs(getHigh(pRoot->left) - getHigh(pRoot->right)) <= 1 ) return;
-        if (getHigh(pRoot->left) > getHigh(pRoot->right))
-        {
-            if (getHigh(pRoot->left->right) > getHigh(pRoot->left->left)) rotation(pRoot->left, 0);
-            rotation(pRoot, 1);
-            return;
-        }
-        if (getHigh(pRoot->left) < getHigh(pRoot->right))
-        {
-            if (getHigh(pRoot->right->left) > getHigh(pRoot->right->right)) rotation(pRoot->right, 1);
-            rotation(pRoot, 0);
-            return;
-        }
-    }
+	void balance(TreeNode*& pRoot)
+	{
+		if (abs(getHigh(pRoot->left) - getHigh(pRoot->right)) <= 1) return;
+		if (getHigh(pRoot->left) > getHigh(pRoot->right))
+		{
+			if (getHigh(pRoot->left->right) > getHigh(pRoot->left->left)) rotation(pRoot->left, 0);
+			rotation(pRoot, 1);
+			return;
+		}
+		if (getHigh(pRoot->left) < getHigh(pRoot->right))
+		{
+			if (getHigh(pRoot->right->left) > getHigh(pRoot->right->right)) rotation(pRoot->right, 1);
+			rotation(pRoot, 0);
+			return;
+		}
+	}
 
     TreeNode *clone(TreeNode *current)
     {
         if (current == nullptr)
             return nullptr;
 
-        TreeNode *new_node = new TreeNode;
-        new_node->data = current->data;
-        new_node->def = current->def;
+		TreeNode* new_node = new TreeNode;
+		new_node->data = current->data;
+		new_node->def = current->def;
 
-        new_node->left = clone(current->left);
-        new_node->mid = clone(current->mid);
-        new_node->right = clone(current->right);
+		new_node->left = clone(current->left);
+		new_node->mid = clone(current->mid);
+		new_node->right = clone(current->right);
 
-        return new_node;
-    }
+		return new_node;
+	}
+
+	TreeNode* destroy(TreeNode* current)
+	{
+		if (current)
+		{
+			current->left = destroy(current->left);
+			current->mid = destroy(current->mid);
+			current->right = destroy(current->right);
+
+			delete current;
+		}
+
+		return nullptr;
+	}
 
 public:
-    TernarySearchTree() = default;
+	TernarySearchTree() = default;
 
-    TernarySearchTree(const TernarySearchTree &other) noexcept
-    {
-        root = clone(other.root);
-    }
+	TernarySearchTree(const TernarySearchTree& other) noexcept
+	{
+		root = clone(other.root);
+	}
 
-    TernarySearchTree(TernarySearchTree &&other) noexcept : root(other.root)
-    {
-        other.root = nullptr;
-    }
+	TernarySearchTree(TernarySearchTree&& other) noexcept : root(other.root)
+	{
+		other.root = nullptr;
+	}
 
-    TernarySearchTree &operator=(const TernarySearchTree &other) noexcept
-    {
-        if (this != &other)
-        {
-            TernarySearchTree copy = other;
-            std::swap(copy.root, this->root);
-        }
+	TernarySearchTree& operator=(const TernarySearchTree& other) noexcept
+	{
+		if (this != &other)
+		{
+			TernarySearchTree copy = other;
+			std::swap(copy.root, this->root);
+		}
 
-        return *this;
-    }
+		return *this;
+	}
 
-    TernarySearchTree &operator=(TernarySearchTree &&other) noexcept
-    {
-        if (this != &other)
-        {
-            TernarySearchTree move = std::move(other);
-            std::swap(move.root, this->root);
-        }
+	TernarySearchTree& operator=(TernarySearchTree&& other) noexcept
+	{
+		if (this != &other)
+		{
+			TernarySearchTree move = std::move(other);
+			std::swap(move.root, this->root);
+		}
 
-        return *this;
-    }
+		return *this;
+	}
 
-    void insert(std::string key, std::string def)
-    {
-        root = insert(root, &key[0], def);
-    }
+	void insert(std::string key, std::string def)
+	{
+		root = insert(root, &key[0], def);
+	}
 
-    void erase(std::string key)
-    {
-        deleteNode(root, 0, key);
-    }
+	void erase(std::string key)
+	{
+		deleteNode(root, 0, key);
+	}
 
-    TreeNode* search(std::string key)
-    {
-        return searchNode(root, key, 0);
-    }
-   
-    /*
-    void update(string key, string def) {
+	TreeNode* search(std::string key)
+	{
+		return searchNode(root, key, 0);
+	}
 
-    }**/
+	void update(std::string key, std::string def)
+	{
+		TreeNode* search = searchNode(root, key, 0);
 
-    ~TernarySearchTree()
-    {
-        if (root)
-        {
-            std::queue<TreeNode *> q;
-            q.push(root);
+		if (search)
+		{
+			search->def = def;
+		}
+	}
 
-            while (!q.empty())
-            {
-                TreeNode *t = q.front();
-                q.pop();
-                if (t->left)
-                    q.push(t->left);
-                if (t->mid)
-                    q.push(t->mid);
-                if (t->right)
-                    q.push(t->right);
-                delete t;
-            }
-
-            root = nullptr;
-        }
-    }
+	~TernarySearchTree()
+	{
+		root = destroy(root);
+	}
 };
+
+void insertStopWord(TernarySearchTree& stopword);
 
 #endif /* TERNARY_SEARCH_TREE_HPP_ */
