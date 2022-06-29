@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include "TernarySearchTree.hpp"
+#include "hash_table.hpp"
 #include <fstream>
 
 class Dictionary {
@@ -10,6 +11,7 @@ private:
     int size;
     
     TernarySearchTree data;
+    Hash_Table table;
     
     std::string pathCurrentDataset;
     
@@ -36,6 +38,19 @@ public:
         data.~TernarySearchTree();
         size = 0;
         load("ORG_" + pathCurrentDataset);
+    }
+
+    void remove(std::string word)
+    {
+        std::vector<std::string> keyword;
+        TreeNode* eow = nullptr;
+
+        data.erase(word, keyword, eow);
+
+        for (std::string& str : keyword)
+        {
+            table.remove(str, eow);
+        }
     }
 };
 

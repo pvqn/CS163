@@ -20,7 +20,7 @@ std::vector<std::string> util::str::split(std::string str)
 			++i;
 		}
 		++i;
-		if (!stopword.search(temp)) result.push_back(temp);
+		// if (!stopword.search(temp)) result.push_back(temp);
 		if (i >= str.size()) break;
 	}
 	return result;

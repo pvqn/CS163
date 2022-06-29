@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include "TernarySearchTree.hpp"
+#include "hash_table.hpp"
 
 int main()
 {

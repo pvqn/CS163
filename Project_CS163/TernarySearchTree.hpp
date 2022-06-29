@@ -7,11 +7,11 @@
 #define TERNARY_SEARCH_TREE_HPP_
 
 #include <string>
+#include <fstream>
 #include <utility>
 #include <algorithm>
-
 #include "util.hpp"
-#include "hash_table.hpp"
+
 struct TreeNode
 {
     char data = {};
@@ -26,6 +26,25 @@ struct TreeNode
 	TreeNode() = default;
 
 	TreeNode(const char& _data, std::string _def) : data(_data), def(_def) {};
+
+	friend std::string get_word(TreeNode* node)
+	{
+		if (!node) return {};
+
+		std::string ans;
+		ans += node->data;
+		
+		TreeNode* temp = node;
+		
+		while (temp)
+		{
+			if (temp->parent && temp->parent->mid == temp)
+				ans += temp->data;
+			temp = temp->parent;
+		}
+
+		return std::string(ans.rbegin(), ans.rend());
+	}
 };
 
 class TernarySearchTree
@@ -90,8 +109,9 @@ private:
 			return searchNode(pRoot->right, key, index);
 		return nullptr;
 	}
+
 	/*quynh nhu*/
-    int deleteNode( TreeNode *&root, size_t index, std::string s, Hash_Table &keyword )
+    int deleteNode( TreeNode *&root, size_t index, std::string s, std::vector<std::string> &keyword, TreeNode *& eow )
     {
         if (!root) return 0;
         if (s[index + 1] == '\0') // at the end of the string
@@ -99,20 +119,22 @@ private:
             // if the string is in the tst
 			if (!root->def.empty()) 
 			{ 
-				keyword.erase_keyword(util::str::split(root->def), root);
+				keyword.clear();
+				keyword = std::move(util::str::split(root->def));
+				eow = root;
 				return (!root->left && !root->right && !root->mid); 
 			}
             return 0;
         }
         if( s[index + 1] != '\0' ) // still in the string
         {
-            if (s[index] < root->data) return deleteNode(root->left, index, s,keyword);
+            if (s[index] < root->data) return deleteNode(root->left, index, s, keyword, eow);
 
-            if (s[index] < root->data) return deleteNode(root->right, index, s,keyword);
+            if (s[index] < root->data) return deleteNode(root->right, index, s, keyword, eow);
 
             if (s[index] == root->data)
             {
-                if( deleteNode(root->mid, index + 1, s,keyword) ) // this string is not the prefix of any others
+                if( deleteNode(root->mid, index + 1, s,keyword, eow) ) // this string is not the prefix of any others
                 {
                     delete root->mid;
                     root->mid = nullptr;
@@ -248,9 +270,16 @@ public:
 		root = insert(root, &key[0], def);
 	}
 
-	void erase(std::string key, Hash_Table &keyword)
+	void erase(std::string key, std::vector<std::string> &keywords, TreeNode * eow)
 	{
-		deleteNode(root, 0, key,keyword);
+		 deleteNode(root, 0, key, keywords, eow);
+	}
+
+	void erase(std::string key)
+	{
+		std::vector<std::string> trash_vector;
+		TreeNode* trash_node;
+		deleteNode(root, 0, key, trash_vector, trash_node);
 	}
 	
 	TreeNode* search(std::string key,std::vector<TreeNode*>&history)
