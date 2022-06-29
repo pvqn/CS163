@@ -56,18 +56,14 @@ private:
 		{
 			root->left = insert(root->left, s, def);
 			if (root->left)
-			{
 				root->left->parent = root;
-			}
 		}
 
-        if (root->data < *s)
+        	if (root->data < *s)
 		{
 			root->right = insert(root->right, s, def);
 			if (root->right)
-			{
 				root->right->parent = root;
-			}
 		}
 
 
