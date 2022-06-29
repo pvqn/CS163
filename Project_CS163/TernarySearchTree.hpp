@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "util.hpp"
-
+#include "hash_table.hpp"
 struct TreeNode
 {
     char data = {};
@@ -94,25 +94,29 @@ private:
 			return searchNode(pRoot->right, key, index);
 		return nullptr;
 	}
-
-    int deleteNode( TreeNode *&root, size_t index, std::string s )
+	/*quynh nhu*/
+    int deleteNode( TreeNode *&root, size_t index, std::string s, Hash_Table &keyword )
     {
         if (!root) return 0;
         if (s[index + 1] == '\0') // at the end of the string
         {
             // if the string is in the tst
-            if (!root->def.empty()) return (!root->left && !root->right && !root->mid);
+			if (!root->def.empty()) 
+			{ 
+				keyword.erase_keyword(util::str::split(root->def), root);
+				return (!root->left && !root->right && !root->mid); 
+			}
             return 0;
         }
         if( s[index + 1] != '\0' ) // still in the string
         {
-            if (s[index] < root->data) return deleteNode(root->left, index, s);
+            if (s[index] < root->data) return deleteNode(root->left, index, s,keyword);
 
-            if (s[index] < root->data) return deleteNode(root->right, index, s);
+            if (s[index] < root->data) return deleteNode(root->right, index, s,keyword);
 
             if (s[index] == root->data)
             {
-                if( deleteNode(root->mid, index + 1, s) ) // this string is not the prefix of any others
+                if( deleteNode(root->mid, index + 1, s,keyword) ) // this string is not the prefix of any others
                 {
                     delete root->mid;
                     root->mid = nullptr;
@@ -199,6 +203,14 @@ private:
 
 		return nullptr;
 	}
+	/*quynh nhu*/
+	void addHistorytoFile(std::string keyword)
+	{
+		std::ofstream fout;
+		fout.open("history.txt", std::ios::app);
+		fout << keyword << "\n";
+		fout.close();
+	}
 
 public:
 	TernarySearchTree() = default;
@@ -240,14 +252,20 @@ public:
 		root = insert(root, &key[0], def);
 	}
 
-	void erase(std::string key)
+	void erase(std::string key, Hash_Table &keyword)
 	{
-		deleteNode(root, 0, key);
+		deleteNode(root, 0, key,keyword);
 	}
-
-	TreeNode* search(std::string key)
+	
+	TreeNode* search(std::string key,std::vector<TreeNode*>&history)
 	{
-		return searchNode(root, key, 0);
+		TreeNode* temp = searchNode(root, key, 0);
+		/*quynh nhu*/
+		addHistorytoFile(key);
+		history.push_back(temp); 
+		// add search word to vector history in the case user want to
+		// see all history and access to one of these words
+		return temp;
 	}
 
 	void update(std::string key, std::string def)

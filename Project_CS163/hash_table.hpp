@@ -69,7 +69,7 @@ public:
     {
         int index = hashing_1(keyword);
         table[index].push_back(Bucket(keyword, hashing_2(keyword), keyword.size(), address));
-        sort(table[index].begin(), table[index].end(), compare);
+        std::sort(table[index].begin(), table[index].end(), compare);
     }
 
     void remove( std::string keyword, TreeNode *address )
@@ -79,7 +79,14 @@ public:
         if (index_erase == -1) return; // this key word is not exist in hash table
         table[index].erase(table[index].begin() + index_erase);
     }
-
+    /*quynh nhu*/
+    void erase_keyword(std::vector<std::string> def, TreeNode* address)
+    {
+        for (int i = 0; i < def.size(); ++i)
+        {
+            remove(def[i], address);
+        }
+    }
     ~Hash_Table() = default;
 };
 

@@ -1,7 +1,7 @@
 #ifndef dictionary_hpp
 #define dictionary_hpp
 
-#include <stdio.h>
+#include <cstdio>
 #include "TernarySearchTree.hpp"
 #include <fstream>
 
@@ -39,6 +39,7 @@ public:
     }
 };
 
-void actionOnFavList(string a, bool status);
-
+void actionOnFavList(std::string a, bool status);
+void printOutHistory();
+void randomWord4Def(Hash_Table def);
 #endif /* dictionary_hpp */
