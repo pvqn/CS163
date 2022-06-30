@@ -5,7 +5,9 @@ std::vector<std::string> util::str::split(std::string str)
 {
 	std::vector<std::string> result;
 	//lowercase
-	for (int i = 0; i < str.size(); ++i) str[i] = tolower(str[i]);
+	for (int i = 0; i < str.size(); ++i) 
+		if (isalpha(str[i]))
+			str[i] = tolower(str[i]);
 	int i = 0; 
 	
 	TernarySearchTree stopword;

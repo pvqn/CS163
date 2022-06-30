@@ -20,6 +20,7 @@ std::string getWord(TreeNode* eow)
 		if (eow->parent->mid == eow) word.push_back(eow->data);
 		eow = eow->parent;
 	}
+	std::reverse(word.begin(), word.end());
 	return word;
 }
 void randomWord4Def(std::vector<std::string> words)
