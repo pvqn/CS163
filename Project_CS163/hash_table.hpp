@@ -5,8 +5,6 @@
  * 
  */
 
-const int size_hash = 1009;
-const int hash_num = 1000000097;
 #ifndef HASH_TABLE_HPP_
 #define HASH_TABLE_HPP_
 #include <cstddef>
@@ -14,6 +12,9 @@ const int hash_num = 1000000097;
 #include <vector>
 #include <algorithm>
 #include "TernarySearchTree.hpp"
+
+const int size_hash = 1009;
+const int hash_num = 1000000097;
 
 class Hash_Table
 {
@@ -35,17 +36,15 @@ private:
                 && (word == other.word);
         }
 
-        bool operator<(const Bucket& other) const
+        auto operator<=>(const Bucket& other) const
         {
             if (key_hash_2 != other.key_hash_2)
-                return key_hash_2 < other.key_hash_2;
-            else if (key_len != other.key_len)
-                return key_len < other.key_hash_2;
-            std::string word = get_word(location);
-            std::string other_word = get_word(other.location);
-            if (word != other_word)
-                return word < other_word;
-            return word < other.word;
+                return key_hash_2 <=> other.key_hash_2;
+            if (key_len != other.key_len)
+                return key_len <=> other.key_hash_2;
+            if (word != other.word)
+                return word <=> other.word;
+            return (get_word(location) <=> get_word(other.location));
         }
     };
     std::vector<std::vector<Bucket>> table = std::vector<std::vector<Bucket>> (size_hash);
@@ -71,15 +70,25 @@ private:
 
     int binary_search( std::vector<Bucket> v, std::string cmp, TreeNode *address )
     {
-        Bucket consider = Bucket(cmp, hashing_2(cmp), (int)cmp.size(), address);
-        size_t L = std::lower_bound(v.begin(), v.end(), consider) - v.begin();
-        size_t R = std::upper_bound(v.begin(), v.end(), consider) - v.begin();
-        for (size_t i = L; i < R; ++i) if (v[i].location == address) return (int)i;
+        Bucket b = Bucket(cmp, hashing_2(cmp), (int)cmp.size(), address);
+
+        size_t left = 0, right = v.size();
+
+        while (right > left)
+        {
+            size_t mid = left + (right - left) / 2;
+
+            if (b == v[mid]) return mid;
+            else if (b < v[mid])
+                right = mid - 1;
+            else
+                left = mid + 1;
+        }
+
         return -1;
     }
 
 public:
-    
     
     Hash_Table() = default;
 
@@ -89,7 +98,8 @@ public:
         if (binary_search(table[index], keyword, address) != -1)
         {
             table[index].push_back(Bucket(keyword, hashing_2(keyword), keyword.size(), address));
-            std::sort(table[index].begin(), table[index].end());
+            
+            util::algo::full_vector_sort(table[index]);
         }
     }
 
@@ -115,7 +125,7 @@ public:
         srand(time(0));
         while (result.size() != 4)
         {
-            int index1 = rand() % size_hash;;
+            int index1 = rand() % size_hash;
             if (!table[index1].empty())
             {
                 int index2 = rand() % table[index1].size();
@@ -130,6 +140,15 @@ public:
             }
         }
         return result;
+    }
+
+    TreeNode* randomize()
+    {
+        srand(time(0));
+
+        size_t index = rand() % size_hash;
+
+        return table[index].at(rand() % table[index].size()).location;
     }
 };
 

@@ -18,6 +18,9 @@ private:
     std::string pathCurrentDataset;
     
 public:
+
+    friend class Dictionaries;
+
     Dictionary() {
         size = 0;
         pathCurrentDataset = "slang.txt"; //might change later
@@ -31,6 +34,11 @@ public:
         while (getline(fin, line)) {
             unsigned long delim = line.find('`');
             data.insert(line.substr(0, delim), line.substr(delim+1, line.length()-delim-1));
+            for (const std::string& str : util::str::split(line.substr(delim + 1, line.length() - delim - 1)))
+            {
+                table.add(str, nullptr);
+            }
+
             ++size;
         }
         fin.close();
@@ -40,6 +48,16 @@ public:
         data.~TernarySearchTree();
         size = 0;
         load("ORG_" + pathCurrentDataset);
+    }
+
+    void cache()
+    {
+        std::ofstream out(pathCurrentDataset);
+
+        if (out.is_open())
+        {
+            data.print_tree('`', out);
+        }
     }
 
     void remove(std::string word)

@@ -230,6 +230,22 @@ private:
 		fout.close();
 	}
 
+	void recursive_output(TreeNode* node, std::ostream& out, const char delim, std::string str = {})
+	{
+		if (node)
+		{
+			recursive_output(node->left, out, delim, str);
+
+			if (!node->def.empty())
+			{
+				out << str + node->data << delim << node->def << '\n';
+			}
+
+			recursive_output(node->mid, out, delim, str + node->data);
+			recursive_output(node->right, out, delim, str);
+		}
+	}
+
 public:
 	TernarySearchTree() = default;
 
@@ -301,6 +317,11 @@ public:
 		{
 			search->def = def;
 		}
+	}
+
+	void print_tree(const char delim, std::ostream &out)
+	{
+		recursive_output(root, out, delim);
 	}
 
 	~TernarySearchTree()
