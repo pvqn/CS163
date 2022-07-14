@@ -23,11 +23,14 @@ public:
 			delete data;
 	}
 
-	void switch_dataset(std::string new_dir)
+	void switch_dataset(std::string new_dir, char delim)
 	{
-		if (rebuild_mode && new_dir != data->pathCurrentDataset)
+		if (rebuild_mode)
 		{
-			delete data;
+			if (data && new_dir != data->pathCurrentDataset)
+				delete data;
+			
+			// TODO: add a new constructor contains: new_dir for pathname and delimiter for parsing
 			data = new Dictionary();
 		}
 		else if (!rebuild_mode)
