@@ -78,14 +78,14 @@ private:
         {
             size_t mid = left + (right - left) / 2;
 
-            if (b == v[mid]) return mid;
+            if (b == v[mid]) return (int)mid;
             else if (b < v[mid])
                 right = mid - 1;
             else
                 left = mid + 1;
         }
 
-        return -1;
+        return (int) - 1;
     }
 
 public:

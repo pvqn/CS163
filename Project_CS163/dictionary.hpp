@@ -15,7 +15,7 @@ private:
     TernarySearchTree data;
     Hash_Table table;
     std::vector< TreeNode* > favorite_list;              // contain pointer to the end of word on the tree
-    
+    std::vector< TreeNode* > history;
     std::string pathCurrentDataset;
     
 public:
@@ -24,16 +24,17 @@ public:
 
     Dictionary() {
         size = 0;
-        pathCurrentDataset = "slang.txt"; //might change later
+        pathCurrentDataset = "ORG_slang.txt"; //might change later
         load(pathCurrentDataset);
     }
     
     void load(std::string path) {
         pathCurrentDataset = ((path.substr(0,4) == "ORG_") ? path.substr(4, path.length()-3) : path);
-        std::ifstream fin(path);
+        std::ifstream fin(path); if (fin) std::cout << "OK" << '\n'; else std::cout << "NOPE" << '\n';
         std::string line;
         while (getline(fin, line)) {
             unsigned long delim = line.find('`');
+            std::cout << line << '\n';
             data.insert(line.substr(0, delim), line.substr(delim+1, line.length()-delim-1));
             for (const std::string& str : util::str::split(line.substr(delim + 1, line.length() - delim - 1)))
             {
@@ -42,6 +43,7 @@ public:
 
             ++size;
         }
+        std::cout << "size: " << size << " hoktro " << std::endl;
         fin.close();
     }
     

@@ -7,5 +7,9 @@
 int main()
 {
 	Dictionary dDic;
+	dDic.remove("apple");
+	dDic.remove("baby");
+	dDic.reset();
+	dDic.cache();
 	return 0;
 }
