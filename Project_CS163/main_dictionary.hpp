@@ -30,8 +30,7 @@ public:
 			if (data && new_dir != data->pathCurrentDataset)
 				delete data;
 			
-			// TODO: add a new constructor contains: new_dir for pathname and delimiter for parsing
-			data = new Dictionary();
+			data = new Dictionary(new_dir, delim);
 		}
 		else if (!rebuild_mode)
 		{
