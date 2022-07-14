@@ -6,6 +6,7 @@
 #ifndef TERNARY_SEARCH_TREE_HPP_
 #define TERNARY_SEARCH_TREE_HPP_
 
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <utility>
@@ -95,12 +96,15 @@ private:
 	{
 		if (!pRoot)
 			return pRoot;
-		TreeNode* result = nullptr;
+		//std::cout << pRoot->data << '\n';
 		if (key[index + 1] == '\0')
-			if (!pRoot->def.empty())
-				return pRoot;
-			else
-				return result;
+		{
+			if (pRoot->data == key[index])
+			{
+				if (!pRoot->def.empty()) return pRoot;
+				else return nullptr;
+			}
+		}
 		if (key[index] < pRoot->data)
 			return searchNode(pRoot->left, key, index);
 		if (key[index] == pRoot->data)
@@ -128,9 +132,10 @@ private:
         }
         if( s[index + 1] != '\0' ) // still in the string
         {
-            if (s[index] < root->data) return deleteNode(root->left, index, s, keyword, eow);
+			int result = 0;
+            if (s[index] < root->data) result = deleteNode(root->left, index, s, keyword, eow);
 
-            if (s[index] < root->data) return deleteNode(root->right, index, s, keyword, eow);
+            if (s[index] < root->data) result = deleteNode(root->right, index, s, keyword, eow);
 
             if (s[index] == root->data)
             {
@@ -139,9 +144,11 @@ private:
                     delete root->mid;
                     root->mid = nullptr;
                     // delete root if root doesnt have children
-                    return root->def.empty() && (!root->left && !root->mid && !root->right);
+                    result = root->def.empty() && (!root->left && !root->mid && !root->right);
                 }
             }
+			balance(root);
+			return result;
         }
         return 0;
     }

@@ -34,11 +34,11 @@ public:
     
     void load(std::string path, char delim_char) {
         pathCurrentDataset = ((path.substr(0,4) == "ORG_") ? path.substr(4, path.length()-3) : path);
-        std::ifstream fin(path); if (fin) std::cout << "OK" << '\n'; else std::cout << "NOPE" << '\n';
+        std::ifstream fin(path); //if (fin) std::cout << "OK" << '\n'; else std::cout << "NOPE" << '\n';
         std::string line;
         while (getline(fin, line)) {
             unsigned long delim = line.find(delim_char);
-            std::cout << line << '\n';
+            //std::cout << line << '\n';
             data.insert(line.substr(0, delim), line.substr(delim+1, line.length()-delim-1));
             for (const std::string& str : util::str::split(line.substr(delim + 1, line.length() - delim - 1)))
             {
@@ -47,7 +47,7 @@ public:
 
             ++size;
         }
-        std::cout << "size: " << size << " hoktro " << std::endl;
+        //std::cout << "size: " << size << " hoktro " << std::endl;
         fin.close();
     }
     
@@ -78,6 +78,38 @@ public:
         {
             table.remove(str, eow);
         }
+    }
+
+    void insert(std::string key, std::string def)
+    {
+        data.insert(key, def);
+    }
+
+    void erase(std::string key, std::vector<std::string>& keywords, TreeNode* eow)
+    {
+        data.erase(key, keywords, eow);
+    }
+
+    void erase(std::string key)
+    {
+        data.erase(key);
+    }
+
+    TreeNode* search(std::string key)
+    {
+        return data.search(key, history);
+    }
+
+    void update(std::string key, std::string def)
+    {
+        data.update(key, def);
+    }
+
+    void print_dic()
+    {
+        std::ofstream iff("test.txt");
+        data.print_tree( '`', iff);
+        iff.close();
     }
 
     void view_favorite_list()
