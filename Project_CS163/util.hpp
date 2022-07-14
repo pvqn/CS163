@@ -30,16 +30,16 @@ namespace util
 
 			while (true)
 			{
-				while (left <= right && arr[left] < pivot) ++left;
-				while (left <= right && arr[right] > pivot) --right;
+				while (left <= right && v[left] < pivot) ++left;
+				while (left <= right && v[right] > pivot) --right;
 
 				if (right <= left) break;
 
-				swap(arr[left], arr[right]);
+				swap(v[left], v[right]);
 				++left; ++right;
 			}
 
-			swap(arr[left], arr[end]);
+			swap(v[left], v[end]);
 			return left;
 		}
 

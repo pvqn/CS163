@@ -2,6 +2,7 @@
 #define dictionary_hpp
 
 #include <cstdio>
+#include <iostream>
 #include "TernarySearchTree.hpp"
 #include "hash_table.hpp"
 #include <fstream>
@@ -13,7 +14,7 @@ private:
     
     TernarySearchTree data;
     Hash_Table table;
-    vector< TreeNode* > favorite_list;              // contain pointer to the end of word on the tree
+    std::vector< TreeNode* > favorite_list;              // contain pointer to the end of word on the tree
     
     std::string pathCurrentDataset;
     
@@ -75,9 +76,9 @@ public:
 
     void view_favorite_list()
     {
-        cout << "Favorite list: " << '\n';
+        std::cout << "Favorite list: " << '\n';
         int cnt = 0;
-        for (TreeNode& address : favorite_list) cout << ++cnt << ' ' << get_word(address) << '\n';
+        for( TreeNode* address : favorite_list ) std::cout << ++cnt << ' ' << get_word(address) << '\n';
     }
 };
 
