@@ -99,7 +99,7 @@ public:
         {
             table[index].push_back(Bucket(keyword, hashing_2(keyword), keyword.size(), address));
             
-            util::algo::full_vector_sort(table[index]);
+            util::algo::sort(table[index]);
         }
     }
 
