@@ -27,7 +27,7 @@ public:
 
     Dictionary(std::string file_name, char delim)
     {
-        pathCurrentDataset = "ORG_" + file_name + ".txt";
+        pathCurrentDataset = file_name + ".txt";
         def_delim = delim;
         load("ORG_" + file_name + ".txt", delim);
     }
