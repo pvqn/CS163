@@ -1,29 +1,49 @@
 #include "util.hpp"
 #include "TernarySearchTree.hpp"
 
-std::vector<std::string> util::str::split(std::string str)
+std::string util::str::to_upper(std::string input)
 {
-	std::vector<std::string> result;
-	//lowercase
-	for (int i = 0; i < str.size(); ++i) 
-		if (isalpha(str[i]))
-			str[i] = tolower(str[i]);
-	int i = 0; 
-	
-	TernarySearchTree stopword;
-	insertStopWord(stopword);
+	for (char& c : input)
+		c = toupper(c);
+	return input;
+}
 
-	while (true)
+std::vector<std::string> util::str::split(std::string definition)
+{
+	std::vector<std::string> words;
+
+	std::vector<char> stop = { ':', '\t', '\'', ' ',
+								',', '.', '?', '!',
+								'@', '#', '(', ')',
+								'|' , ';', '"', '`', '\'',
+								'!', '$', '%', '^', '&', '*',
+								'-', '_', '+', '=', '{', '}',
+								'\\', '<', '>' };
+
+	std::string temp;
+
+	for (size_t i = 0; i < definition.size(); i++)
 	{
-		std::string temp;
-		while (i < str.size() && str[i]!=' ' && str[i]!=',' && str[i]!='.')
+		bool check = true;
+
+		for (int j = 0; j < stop.size() && check; j++)
+			check = (definition[i] != stop[j]);
+
+		if (check)
 		{
-			temp.push_back(str[i]);
-			++i;
+			temp.push_back(definition[i]);
 		}
-		++i;
-		// if (!stopword.search(temp)) result.push_back(temp);
-		if (i >= str.size()) break;
+		else
+		{
+			if (!temp.empty())
+				words.push_back(util::str::to_upper(temp));
+			temp.clear();
+		}
+
 	}
-	return result;
+
+	if (!temp.empty())
+		words.push_back(util::str::to_upper(temp));
+
+	return words;
 }

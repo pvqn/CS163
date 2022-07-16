@@ -10,7 +10,6 @@
 #include <cstddef>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include "TernarySearchTree.hpp"
 
 const int size_hash = 1009;
@@ -60,10 +59,11 @@ private:
     };
 
 
-    std::vector<std::vector<Bucket>> table = std::vector<std::vector<Bucket>> (size_hash);
-    int hashing_1(std::string s)
+    std::vector<std::vector<Bucket>> table;
+
+    size_t hashing_1(std::string s)
     {
-        int t = 1;
+        size_t t = 1;
 
         for (char &ch: s)
             t = (t * 31 + (int)(ch - 'a') + 1) % size_hash;
@@ -81,39 +81,66 @@ private:
         return (int)t;
     }
 
-    int binary_search( std::vector<Bucket> v, std::string cmp, TreeNode *address )
+    bool binary_search(std::vector<Bucket>& v, std::string cmp, TreeNode* address)
     {
+        if (v.size() == 0) return false;
+
         Bucket b = Bucket(cmp, hashing_2(cmp), (int)cmp.size(), address);
 
-        size_t left = 0, right = v.size();
+        auto left = v.begin(), right = v.end();
 
-        while (right > left)
+        while (right <= left)
         {
-            size_t mid = left + (right - left) / 2;
+            auto mid = left + (((right - left) + 1) / 2);
 
-            if (b == v[mid]) return (int)mid;
-            else if (b < v[mid])
-                right = mid - 1;
+            if (b == *mid)
+                return true;
+
+            if (b < *mid)
+                left = mid - 1;
             else
-                left = mid + 1;
+                right = mid + 1;
         }
 
-        return (int) - 1;
+        return false;
     }
 
 public:
     
-    Hash_Table() = default;
+    Hash_Table() { table.resize(size_hash); }
 
     void add( std::string keyword, TreeNode *address )
     {
         int index = hashing_1(keyword);
-        if (binary_search(table[index], keyword, address) != -1)
+
+        if (!binary_search(table[index], keyword, address))
         {
             table[index].push_back(Bucket(keyword, hashing_2(keyword), keyword.size(), address));
             
-            util::algo::sort(table[index]);
+            if (table.size() == 2)
+            {
+                Bucket key = table[index].back();
+
+                size_t j = table.size() - 2;
+                bool neg = false;
+
+                while (!neg && j >= 0 && table[index][j] > key)
+                {
+                    table[index][j + 1] = table[index][j];
+
+                    if (j == 0) neg = true;
+                    else --j;
+                }
+
+                table[index][neg ? 0 : j + 1] = key;
+            }
         }
+    }
+
+    void shrink_to_fit()
+    {
+        for (size_t i = 0; i < table.size(); i++)
+            table[i].shrink_to_fit();
     }
 
     void remove( std::string keyword, TreeNode *address )

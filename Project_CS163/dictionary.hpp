@@ -27,9 +27,9 @@ public:
 
     Dictionary(std::string file_name, char delim)
     {
-        pathCurrentDataset = "ORG_" + file_name + ".txt";
+        pathCurrentDataset = file_name + ".txt";
         def_delim = delim;
-        load("ORG_" + file_name + ".txt", delim);
+        load(file_name + ".txt", delim);
     }
     
     void load(std::string path, char delim_char) {
@@ -37,29 +37,37 @@ public:
         std::ifstream fin(path); //if (fin) std::cout << "OK" << '\n'; else std::cout << "NOPE" << '\n';
         std::string line;
         while (getline(fin, line)) {
-            unsigned long delim = line.find(delim_char);
-            //std::cout << line << '\n';
-            data.insert(line.substr(0, delim), line.substr(delim+1, line.length()-delim-1));
-            for (const std::string& str : util::str::split(line.substr(delim + 1, line.length() - delim - 1)))
+            size_t delim = line.find(delim_char);
+
+            std::string word = line.substr(0, delim);
+            std::string def = line.substr(delim + 1, line.length() - delim - 1);
+
+            data.insert(word, def);
+
+            for (std::string& str : util::str::split(def))
             {
                 table.add(str, nullptr);
             }
 
+            std::cout << '\n';
+
             ++size;
         }
-        //std::cout << "size: " << size << " hoktro " << std::endl;
+        
+        table.shrink_to_fit();
+
         fin.close();
     }
     
     void reset() {
         data.~TernarySearchTree();
         size = 0;
-        load("ORG_" + pathCurrentDataset, def_delim);
+        load(pathCurrentDataset, def_delim);
     }
 
     void cache()
     {
-        std::ofstream out(pathCurrentDataset);
+        std::ofstream out("cache_" + pathCurrentDataset);
 
         if (out.is_open())
         {
