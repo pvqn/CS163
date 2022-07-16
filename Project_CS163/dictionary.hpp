@@ -49,8 +49,6 @@ public:
                 table.add(str, nullptr);
             }
 
-            std::cout << '\n';
-
             ++size;
         }
         
