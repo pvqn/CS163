@@ -1,5 +1,6 @@
 #ifndef UTIL_HPP_
 #define UTIL_HPP_
+#include <cmath>
 #include <string>
 #include <vector>
 

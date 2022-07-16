@@ -36,17 +36,30 @@ private:
                 && (word == other.word);
         }
 
-        auto operator<=>(const Bucket& other) const
+        bool operator<(const Bucket& other) const
         {
             if (key_hash_2 != other.key_hash_2)
-                return key_hash_2 <=> other.key_hash_2;
+                return key_hash_2 < other.key_hash_2;
             if (key_len != other.key_len)
-                return key_len <=> other.key_hash_2;
+                return key_len < other.key_hash_2;
             if (word != other.word)
-                return word <=> other.word;
-            return (get_word(location) <=> get_word(other.location));
+                return word < other.word;
+            return (get_word(location) < get_word(other.location));
+        }
+
+        bool operator>(const Bucket& other) const
+        {
+            if (key_hash_2 != other.key_hash_2)
+                return key_hash_2 > other.key_hash_2;
+            if (key_len != other.key_len)
+                return key_len > other.key_hash_2;
+            if (word != other.word)
+                return word > other.word;
+            return (get_word(location) > get_word(other.location));
         }
     };
+
+
     std::vector<std::vector<Bucket>> table = std::vector<std::vector<Bucket>> (size_hash);
     int hashing_1(std::string s)
     {

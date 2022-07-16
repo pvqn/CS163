@@ -124,7 +124,7 @@ private:
 			if (!root->def.empty()) 
 			{ 
 				keyword.clear();
-				keyword = std::move(util::str::split(root->def));
+				keyword = util::str::split(root->def);
 				eow = root;
 				return (!root->left && !root->right && !root->mid); 
 			}
