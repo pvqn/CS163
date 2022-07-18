@@ -118,7 +118,7 @@ public:
     void print_dic()
     {
         std::ofstream iff("test.txt");
-        data.print_tree( '`', iff);
+        data.print_tree( def_delim, iff);
         iff.close();
     }
 
