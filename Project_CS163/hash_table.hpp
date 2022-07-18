@@ -111,11 +111,11 @@ public:
 
     void add( std::string keyword, TreeNode *address )
     {
-        int index = hashing_1(keyword);
+        size_t index = hashing_1(keyword);
 
         if (!binary_search(table[index], keyword, address))
         {
-            table[index].push_back(Bucket(keyword, hashing_2(keyword), keyword.size(), address));
+            table[index].push_back(Bucket(keyword, hashing_2(keyword), (int)keyword.size(), address));
             
             if (table.size() == 2)
             {
@@ -137,15 +137,9 @@ public:
         }
     }
 
-    void shrink_to_fit()
-    {
-        for (size_t i = 0; i < table.size(); i++)
-            table[i].shrink_to_fit();
-    }
-
     void remove( std::string keyword, TreeNode *address )
     {
-        int index = hashing_1(keyword);
+        size_t index = hashing_1(keyword);
         int index_erase = binary_search(table[index], keyword, address);
         if (index_erase == -1) return; // this key word is not exist in hash table
         table[index].erase(table[index].begin() + index_erase);
@@ -162,7 +156,7 @@ public:
     std::vector<TreeNode*> random4Word()
     {
         std::vector<TreeNode*> result;
-        srand(time(0));
+        srand((unsigned int)time(0));
         while (result.size() != 4)
         {
             int index1 = rand() % size_hash;
@@ -184,7 +178,7 @@ public:
 
     TreeNode* randomize()
     {
-        srand(time(0));
+        srand((unsigned int)time(0));
 
         size_t index = rand() % size_hash;
 

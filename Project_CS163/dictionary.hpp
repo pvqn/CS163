@@ -1,8 +1,8 @@
 #ifndef dictionary_hpp
 #define dictionary_hpp
 
+#include <filesystem>
 #include <cstdio>
-#include <iostream>
 #include "TernarySearchTree.hpp"
 #include "hash_table.hpp"
 #include <fstream>
@@ -20,52 +20,56 @@ private:
     char def_delim;
     
 public:
-
     friend class Dictionaries;
-
-    Dictionary() : Dictionary("slang", '`') {}
 
     Dictionary(std::string file_name, char delim)
     {
         pathCurrentDataset = file_name + ".txt";
+
+        if (!std::filesystem::exists(pathCurrentDataset))
+            std::filesystem::copy_file("ORG_" + pathCurrentDataset, pathCurrentDataset);
+
         def_delim = delim;
-        load(file_name + ".txt", delim);
+        load(pathCurrentDataset, delim);
     }
     
     void load(std::string path, char delim_char) {
-        pathCurrentDataset = ((path.substr(0,4) == "ORG_") ? path.substr(4, path.length()-3) : path);
         std::ifstream fin(path); //if (fin) std::cout << "OK" << '\n'; else std::cout << "NOPE" << '\n';
-        std::string line;
-        while (getline(fin, line)) {
-            size_t delim = line.find(delim_char);
-
-            std::string word = line.substr(0, delim);
-            std::string def = line.substr(delim + 1, line.length() - delim - 1);
-
-            data.insert(word, def);
-
-            for (std::string& str : util::str::split(def))
-            {
-                table.add(str, nullptr);
-            }
-
-            ++size;
-        }
         
-        table.shrink_to_fit();
+        if (fin)
+        {
+            std::string line;
+            while (getline(fin, line)) {
+                size_t delim = line.find(delim_char);
 
-        fin.close();
+                std::string word = line.substr(0, delim);
+                std::string def = line.substr(delim + 1, line.length() - delim - 1);
+
+                data.insert(word, def);
+
+                for (std::string& str : util::str::split(def))
+                {
+                    table.add(str, nullptr);
+                }
+
+                ++size;
+            }
+        }
     }
     
     void reset() {
         data.~TernarySearchTree();
         size = 0;
+
+        std::filesystem::remove(pathCurrentDataset);
+        std::filesystem::copy_file("ORG_" + pathCurrentDataset, pathCurrentDataset);
+
         load(pathCurrentDataset, def_delim);
     }
 
     void cache()
     {
-        std::ofstream out("cache_" + pathCurrentDataset);
+        std::ofstream out(pathCurrentDataset);
 
         if (out.is_open())
         {

@@ -40,7 +40,7 @@ public:
 					return;
 			}
 
-			arr.push_back(new Dictionary());
+			arr.push_back(new Dictionary(new_dir, delim));
 		}
 	}
 };
