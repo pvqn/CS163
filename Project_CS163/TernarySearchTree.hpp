@@ -23,7 +23,7 @@ struct TreeNode
 	TreeNode* mid = nullptr;
 	TreeNode* right = nullptr;
 	TreeNode* parent = nullptr;
-
+	
 	TreeNode() = default;
 
 	TreeNode(const char& _data, std::string _def) : data(_data), def(_def) {};
@@ -52,8 +52,8 @@ class TernarySearchTree
 {
 private:
 	TreeNode* root = nullptr;
-
-	TreeNode* insert(TreeNode* root, char* s, std::string& def)
+	std::vector<TreeNode*>words;
+	TreeNode* insert(TreeNode *&root, char* s, std::string& def)
 	{
 		if (*s == '\0')
 			return nullptr;
@@ -61,6 +61,7 @@ private:
 		if (!root)
 		{
 			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
+			if (*(s + 1) == '\0') words.push_back(root);
 			root->mid = insert(root->mid, s + 1, def);
 			return root;
 		}
@@ -69,7 +70,10 @@ private:
 		{
 			root->mid = insert(root->mid, s + 1, def);
 			if (root->mid)
+			{
+				std::cout << "OK " << def << ' ' << *s;
 				root->mid->parent = root;
+			}
 		}
 
 		if (root->data > *s)
@@ -237,7 +241,7 @@ private:
 		fout.close();
 	}
 
-	void recursive_output(TreeNode* node, std::ostream& out, const char delim, std::string str = {})
+	void recursive_output(TreeNode* node, std::ofstream& out, const char delim, std::string str = {})
 	{
 		if (node)
 		{
@@ -326,11 +330,14 @@ public:
 		}
 	}
 
-	void print_tree(const char delim, std::ostream &out)
+	void print_tree(const char delim, std::ofstream &out)
 	{
 		recursive_output(root, out, delim);
 	}
-
+	std::vector<TreeNode*> getListOfeow()
+	{
+		return words;
+	}
 	~TernarySearchTree()
 	{
 		root = destroy(root);

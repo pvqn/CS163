@@ -153,28 +153,7 @@ public:
         }
     }
     ~Hash_Table() = default;
-    std::vector<TreeNode*> random4Word()
-    {
-        std::vector<TreeNode*> result;
-        srand((unsigned int)time(0));
-        while (result.size() != 4)
-        {
-            int index1 = rand() % size_hash;
-            if (!table[index1].empty())
-            {
-                int index2 = rand() % table[index1].size();
-                bool check = false;
-                for (int i = 0; i < result.size(); ++i)
-                    if (table[index1][index2].location == result[i])
-                    {
-                        check = true;
-                        break;
-                    }
-                if (!check) result.push_back(table[index1][index2].location);
-            }
-        }
-        return result;
-    }
+    
 
     TreeNode* randomize()
     {

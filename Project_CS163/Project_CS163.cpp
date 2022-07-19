@@ -3,12 +3,11 @@
 
 int main()
 {
-	Dictionaries* database = new Dictionaries;
+	Dictionary test("text", '`');
+	//test.random4Word();
+	//std::vector<TreeNode*> temp = test.get();
+	
 
-	database->switch_dataset("people", '`');
-
-	std::cin.get();
-
-	delete database;
+	
 	return 0;
 }
