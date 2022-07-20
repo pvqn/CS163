@@ -162,16 +162,16 @@ public:
         std::vector<TreeNode*> temp = data.getListOfeow();
         for (int i = 0; i < 4; ++i)
             result.push_back(temp[index[i]]);
-        /*for (int i = 0; i < result.size(); ++i)
+        for (int i = 0; i < result.size(); ++i)
         {
             std::cout << get_word(result[i]) << "\n";
-        }*/
+        }
         return result;
     }
     std::vector<TreeNode*> get()
     {
        
-        //return random4Word();
+        return random4Word();
         
        
     }

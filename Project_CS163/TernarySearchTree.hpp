@@ -40,7 +40,7 @@ struct TreeNode
 		while (temp)
 		{
 			if (temp->parent && temp->parent->mid == temp)
-				ans += temp->data;
+				ans += temp->parent->data;
 			temp = temp->parent;
 		}
 
@@ -63,7 +63,7 @@ private:
 			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
 			if (*(s + 1) == '\0') words.push_back(root);
 			root->mid = insert(root->mid, s + 1, def);
-			root->mid->parent = root;
+			if (root->mid) root->mid->parent = root;
 			return root;
 		}
 
@@ -72,7 +72,7 @@ private:
 			root->mid = insert(root->mid, s + 1, def);
 			if (root->mid)
 			{
-				std::cout << "OK " << def << ' ' << *s;
+				////std::cout << "OK " << def << ' ' << *s;
 				root->mid->parent = root;
 			}
 		}

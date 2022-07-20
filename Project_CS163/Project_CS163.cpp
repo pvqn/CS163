@@ -4,8 +4,9 @@
 int main()
 {
 	Dictionary test("text", '`');
-	//test.random4Word();
-	//std::vector<TreeNode*> temp = test.get();
+	test.print_dic();
+	test.random4Word();
+	
 	
 
 	
