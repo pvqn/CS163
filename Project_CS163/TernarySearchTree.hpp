@@ -15,15 +15,15 @@
 
 struct TreeNode
 {
-    char data = {};
-    int high = 1; // length from this node to leaf node ( except for middle way )
-    std::string def = {};
+	char data = {};
+	int high = 1; // length from this node to leaf node ( except for middle way )
+	std::string def = {};
 
 	TreeNode* left = nullptr;
 	TreeNode* mid = nullptr;
 	TreeNode* right = nullptr;
 	TreeNode* parent = nullptr;
-	
+
 	TreeNode() = default;
 
 	TreeNode(const char& _data, std::string _def) : data(_data), def(_def) {};
@@ -34,9 +34,9 @@ struct TreeNode
 
 		std::string ans;
 		ans += node->data;
-		
+
 		TreeNode* temp = node;
-		
+
 		while (temp)
 		{
 			if (temp->parent && temp->parent->mid == temp)
@@ -53,7 +53,7 @@ class TernarySearchTree
 private:
 	TreeNode* root = nullptr;
 	std::vector<TreeNode*>words;
-	TreeNode* insert(TreeNode *&root, char* s, std::string& def)
+	TreeNode* insert(TreeNode*& root, char* s, std::string& def)
 	{
 		if (*s == '\0')
 			return nullptr;
@@ -63,6 +63,7 @@ private:
 			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
 			if (*(s + 1) == '\0') words.push_back(root);
 			root->mid = insert(root->mid, s + 1, def);
+			root->mid->parent = root;
 			return root;
 		}
 
@@ -83,7 +84,7 @@ private:
 				root->left->parent = root;
 		}
 
-        	if (root->data < *s)
+		if (root->data < *s)
 		{
 			root->right = insert(root->right, s, def);
 			if (root->right)
@@ -91,10 +92,10 @@ private:
 		}
 
 
-        root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
-        balance(root);
-        return root;
-    }
+		root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
+		balance(root);
+		return root;
+	}
 
 	TreeNode* searchNode(TreeNode* pRoot, std::string key, size_t index)
 	{
@@ -119,43 +120,43 @@ private:
 	}
 
 	/*quynh nhu*/
-    int deleteNode( TreeNode *&root, size_t index, std::string s, std::vector<std::string> &keyword, TreeNode *& eow )
-    {
-        if (!root) return 0;
-        if (s[index + 1] == '\0') // at the end of the string
-        {
-            // if the string is in the tst
-			if (!root->def.empty()) 
-			{ 
+	int deleteNode(TreeNode*& root, size_t index, std::string s, std::vector<std::string>& keyword, TreeNode*& eow)
+	{
+		if (!root) return 0;
+		if (s[index + 1] == '\0') // at the end of the string
+		{
+			// if the string is in the tst
+			if (!root->def.empty())
+			{
 				keyword.clear();
 				keyword = util::str::split(root->def);
 				eow = root;
-				return (!root->left && !root->right && !root->mid); 
+				return (!root->left && !root->right && !root->mid);
 			}
-            return 0;
-        }
-        if( s[index + 1] != '\0' ) // still in the string
-        {
+			return 0;
+		}
+		if (s[index + 1] != '\0') // still in the string
+		{
 			int result = 0;
-            if (s[index] < root->data) result = deleteNode(root->left, index, s, keyword, eow);
+			if (s[index] < root->data) result = deleteNode(root->left, index, s, keyword, eow);
 
-            if (s[index] < root->data) result = deleteNode(root->right, index, s, keyword, eow);
+			if (s[index] < root->data) result = deleteNode(root->right, index, s, keyword, eow);
 
-            if (s[index] == root->data)
-            {
-                if( deleteNode(root->mid, index + 1, s,keyword, eow) ) // this string is not the prefix of any others
-                {
-                    delete root->mid;
-                    root->mid = nullptr;
-                    // delete root if root doesnt have children
-                    result = root->def.empty() && (!root->left && !root->mid && !root->right);
-                }
-            }
+			if (s[index] == root->data)
+			{
+				if (deleteNode(root->mid, index + 1, s, keyword, eow)) // this string is not the prefix of any others
+				{
+					delete root->mid;
+					root->mid = nullptr;
+					// delete root if root doesnt have children
+					result = root->def.empty() && (!root->left && !root->mid && !root->right);
+				}
+			}
 			balance(root);
 			return result;
-        }
-        return 0;
-    }
+		}
+		return 0;
+	}
 
 	int getHigh(TreeNode* pRoot)
 	{
@@ -203,10 +204,10 @@ private:
 		}
 	}
 
-    TreeNode *clone(TreeNode *current)
-    {
-        if (current == nullptr)
-            return nullptr;
+	TreeNode* clone(TreeNode* current)
+	{
+		if (current == nullptr)
+			return nullptr;
 
 		TreeNode* new_node = new TreeNode;
 		new_node->data = current->data;
@@ -297,9 +298,9 @@ public:
 		root = insert(root, &key[0], def);
 	}
 
-	void erase(std::string key, std::vector<std::string> &keywords, TreeNode * eow)
+	void erase(std::string key, std::vector<std::string>& keywords, TreeNode* eow)
 	{
-		 deleteNode(root, 0, key, keywords, eow);
+		deleteNode(root, 0, key, keywords, eow);
 	}
 
 	void erase(std::string key)
@@ -308,13 +309,13 @@ public:
 		TreeNode* trash_node;
 		deleteNode(root, 0, key, trash_vector, trash_node);
 	}
-	
-	TreeNode* search(std::string key,std::vector<TreeNode*>&history)
+
+	TreeNode* search(std::string key, std::vector<TreeNode*>& history)
 	{
 		TreeNode* temp = searchNode(root, key, 0);
 		/*quynh nhu*/
 		addHistorytoFile(key);
-		history.push_back(temp); 
+		history.push_back(temp);
 		// add search word to vector history in the case user want to
 		// see all history and access to one of these words
 		return temp;
@@ -330,7 +331,7 @@ public:
 		}
 	}
 
-	void print_tree(const char delim, std::ofstream &out)
+	void print_tree(const char delim, std::ofstream& out)
 	{
 		recursive_output(root, out, delim);
 	}
