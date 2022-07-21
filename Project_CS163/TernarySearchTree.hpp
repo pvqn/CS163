@@ -54,47 +54,40 @@ class TernarySearchTree
 private:
 	TreeNode* root = nullptr;
 	std::vector<TreeNode*>words;
-	TreeNode* insert(TreeNode*& root, char* s, std::string& def)
+
+	TreeNode* insert(TreeNode*& root, char* s, std::string& def, TreeNode* parent = nullptr)
 	{
 		if (*s == '\0')
 			return nullptr;
-
-		if (!root)
+		else if (!root)
 		{
 			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
+
+			root->parent = parent;
+
 			if (*(s + 1) == '\0') words.push_back(root);
 
-			root->mid = insert(root->mid, s + 1, def);
+			root->mid = insert(root->mid, s + 1, def, root);
 
-			if (root->mid) root->mid->parent = root;
 			set_weight(root);
 			return root;
 		}
-
-		if (root->data == *s)
+		else if (root->data == *s)
 		{
-			root->mid = insert(root->mid, s + 1, def);
-			if (root->mid) root->mid->parent = root;
+			root->mid = insert(root->mid, s + 1, def, root);
 			set_weight(root);
 		}
-
-		if (root->data > *s)
+		else if (root->data > *s)
 		{
-			root->left = insert(root->left, s, def);
-			if (root->left) root->left->parent = root;
+			root->left = insert(root->left, s, def, root);
 			if (root->left->weight > root->weight) root = rotate_right(root);
 		}
-
-		if (root->data < *s)
+		else if (root->data < *s)
 		{
-			root->right = insert(root->right, s, def);
-			if (root->right) root->right->parent = root;
+			root->right = insert(root->right, s, def, root);
 			if (root->right->weight > root->weight) root = rotate_left(root);
 		}
 
-
-		//root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
-		//balance(root);
 		set_weight(root);
 		return root;
 	}
@@ -403,6 +396,7 @@ public:
 	{
 		recursive_output(root, out, delim);
 	}
+
 	std::vector<TreeNode*> getListOfeow()
 	{
 		return words;
