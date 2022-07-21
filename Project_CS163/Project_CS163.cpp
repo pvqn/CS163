@@ -3,12 +3,8 @@
 
 int main()
 {
-	Dictionary test("text", '`');
+	Dictionary test("Viet-Anh", '`');
 	test.print_dic();
 	test.random4Word();
-	
-	
-
-	
 	return 0;
 }
