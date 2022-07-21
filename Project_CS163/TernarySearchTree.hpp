@@ -55,59 +55,40 @@ private:
 	TreeNode* root = nullptr;
 	std::vector<TreeNode*>words;
 
-	TreeNode* insert(TreeNode*& root, char* s, std::string& def)
+	TreeNode* insert(TreeNode*& root, char* s, std::string& def, TreeNode* parent = nullptr)
 	{
 		if (*s == '\0')
 			return nullptr;
-
-		if (!root)
+		else if (!root)
 		{
-			root = new TreeNode(*s, (*(s + 1) == '\0' ? def : ""));
+			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
+
+			root->parent = parent;
 
 			if (*(s + 1) == '\0') words.push_back(root);
 
-			root->mid = insert(root->mid, s + 1, def);
+			root->mid = insert(root->mid, s + 1, def, root);
 
-			if (root->mid) root->mid->parent = root;
+			set_weight(root);
+			return root;
 		}
-		else
+		else if (root->data == *s)
 		{
-			if (root->data == *s)
-			{
-				if (*(s + 1) == '\0')
-				{
-					if (root->def.empty())
-					{
-						++root->weight;
-						root->def = def;
-						words.push_back(root);
-					}
-				}
-				else
-				{
-					root->mid = insert(root->mid, s + 1, def);
-				}
-			}
-			else if (root->data < *s)
-			{
-				root->right = insert(root->right, s, def);
-				if (root->right)
-				{
-					root->right->parent = root;
-					if (root->right->weight > root->weight) root = rotate_left(root);
-				}
-			}
-			else
-			{
-				root->left = insert(root->left, s, def);
-				if (root->left)
-				{
-					root->left->parent = root;
-					if (root->left->weight > root->weight) root = rotate_right(root);
-				}
-			}
+			root->mid = insert(root->mid, s + 1, def, root);
+			set_weight(root);
+		}
+		else if (root->data > *s)
+		{
+			root->left = insert(root->left, s, def, root);
+			if (root->left->weight > root->weight) root = rotate_right(root);
+		}
+		else if (root->data < *s)
+		{
+			root->right = insert(root->right, s, def, root);
+			if (root->right->weight > root->weight) root = rotate_left(root);
 		}
 
+		set_weight(root);
 		return root;
 	}
 
@@ -322,7 +303,7 @@ private:
 		fout.close();
 	}
 
-	void recursive_output(TreeNode* node, std::ostream& out, const char delim, std::string str = {})
+	void recursive_output(TreeNode* node, std::ofstream& out, const char delim, std::string str = {})
 	{
 		if (node)
 		{
@@ -356,7 +337,7 @@ public:
 		if (this != &other)
 		{
 			TernarySearchTree copy = other;
-			util::algo::swap(copy.root, this->root);
+			std::swap(copy.root, this->root);
 		}
 
 		return *this;
@@ -367,7 +348,7 @@ public:
 		if (this != &other)
 		{
 			TernarySearchTree move = std::move(other);
-			util::algo::swap(move.root, this->root);
+			std::swap(move.root, this->root);
 		}
 
 		return *this;
@@ -411,7 +392,7 @@ public:
 		}
 	}
 
-	void print_tree(const char delim, std::ostream& out)
+	void print_tree(const char delim, std::ofstream& out)
 	{
 		recursive_output(root, out, delim);
 	}
@@ -420,7 +401,6 @@ public:
 	{
 		return words;
 	}
-
 	~TernarySearchTree()
 	{
 		root = destroy(root);
