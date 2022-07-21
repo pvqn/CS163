@@ -17,6 +17,7 @@ struct TreeNode
 {
 	char data = {};
 	int high = 1; // length from this node to leaf node ( except for middle way )
+	int weight = 1; 
 	std::string def = {};
 
 	TreeNode* left = nullptr;
@@ -62,38 +63,39 @@ private:
 		{
 			root = new TreeNode(*s, ((*(s + 1) == '\0') ? def : ""));
 			if (*(s + 1) == '\0') words.push_back(root);
+
 			root->mid = insert(root->mid, s + 1, def);
+
 			if (root->mid) root->mid->parent = root;
+			set_weight(root);
 			return root;
 		}
 
 		if (root->data == *s)
 		{
 			root->mid = insert(root->mid, s + 1, def);
-			if (root->mid)
-			{
-				////std::cout << "OK " << def << ' ' << *s;
-				root->mid->parent = root;
-			}
+			if (root->mid) root->mid->parent = root;
+			set_weight(root);
 		}
 
 		if (root->data > *s)
 		{
 			root->left = insert(root->left, s, def);
-			if (root->left)
-				root->left->parent = root;
+			if (root->left) root->left->parent = root;
+			if (root->left->weight > root->weight) root = rotate_right(root);
 		}
 
 		if (root->data < *s)
 		{
 			root->right = insert(root->right, s, def);
-			if (root->right)
-				root->right->parent = root;
+			if (root->right) root->right->parent = root;
+			if (root->right->weight > root->weight) root = rotate_left(root);
 		}
 
 
-		root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
-		balance(root);
+		//root->high = std::max(getHigh(root->left), getHigh(root->right)) + 1;
+		//balance(root);
+		set_weight(root);
 		return root;
 	}
 
@@ -152,7 +154,7 @@ private:
 					result = root->def.empty() && (!root->left && !root->mid && !root->right);
 				}
 			}
-			balance(root);
+			//balance(root);
 			return result;
 		}
 		return 0;
@@ -163,7 +165,7 @@ private:
 		if (!pRoot) return 0; else return pRoot->high;
 	}
 
-	void rotation(TreeNode*& pRoot, int direct) // 0 left || 1 right
+	/*void rotation(TreeNode*& pRoot, int direct) // 0 left || 1 right
 	{
 		if (direct == 0) // rotate to the left
 		{
@@ -185,9 +187,9 @@ private:
 			pRoot->high = std::max(getHigh(pRoot->left), getHigh(pRoot->right)) + 1;
 			return;
 		}
-	}
+	}*/
 
-	void balance(TreeNode*& pRoot)
+	/*void balance(TreeNode*& pRoot)
 	{
 		if (abs(getHigh(pRoot->left) - getHigh(pRoot->right)) <= 1) return;
 		if (getHigh(pRoot->left) > getHigh(pRoot->right))
@@ -202,7 +204,73 @@ private:
 			rotation(pRoot, 0);
 			return;
 		}
+	}*/
+
+
+	int get_weight(TreeNode*& pRoot)
+	{
+		return ( pRoot != nullptr ) ? pRoot->weight : 0;
 	}
+
+	void set_weight(TreeNode*& pRoot)
+	{
+		if (!pRoot) return;
+		pRoot->weight = get_weight(pRoot->mid); // + get_weight(pRoot->left) + get_weight(pRoot->right);
+	}
+
+	TreeNode* rotate_left(TreeNode* node)
+	{
+		TreeNode* ancient = node->parent;
+		TreeNode* child = node->right;
+
+		node->right = child->left;
+
+		if (node->right) node->right->parent = node;
+
+		child->left = node;
+		node->parent = child;
+
+		child->parent = ancient;
+
+		if (ancient)
+		{
+			if (ancient->left == node) ancient->left = child;
+			if (ancient->right == node) ancient->right = child;
+			if (ancient->mid == node ) ancient->mid = child;
+		}
+
+		//set_weight(node); set_weight(child); set_weight(ancient);
+
+		return child;
+	}
+
+	TreeNode* rotate_right(TreeNode* node)
+	{
+		TreeNode* ancient = node->parent;
+		TreeNode* child = node->left;
+
+		node->left = child->right;
+
+		if (node->left) node->left->parent = node;
+
+		child->right = node;
+		node->parent = child;
+
+		child->parent = ancient;
+
+		if (ancient)
+		{
+			if (ancient->left == node) ancient->left = child;
+			if (ancient->right == node) ancient->right = child;
+			if (ancient->mid == node) ancient->mid = child;
+		}
+
+		//set_weight(node); set_weight(child); set_weight(ancient);
+
+		return child;
+	}
+
+
 
 	TreeNode* clone(TreeNode* current)
 	{
