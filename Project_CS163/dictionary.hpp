@@ -175,6 +175,11 @@ public:
         
        
     }
+
+    std::vector<std::string> prediction(std::string prefix)
+    {
+        return data.prediction(prefix);
+    }
 };
 
 void actionOnFavList(std::string a, bool status);

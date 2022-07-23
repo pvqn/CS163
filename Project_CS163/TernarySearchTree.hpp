@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <utility>
 #include <algorithm>
@@ -319,6 +320,28 @@ private:
 		}
 	}
 
+	TreeNode* address( TreeNode* pRoot, std::string& prefix, int index)
+	{
+		if (!pRoot) return nullptr;
+		if ( index == prefix.size() - 1 && prefix[index] == pRoot->data) return pRoot;
+		if (pRoot->data == prefix[index]) return address(pRoot->mid, prefix, index + 1);
+		if (pRoot->data < prefix[index]) return address(pRoot->right, prefix, index);
+		if (pRoot->data > prefix[index]) return address(pRoot->left, prefix, index);
+	}
+
+	void to_leaf(TreeNode* root, std::vector<std::string> &result, int &count )
+	{
+		if ( root == nullptr || count == 0 ) return;
+		if (!root->def.empty())
+		{
+			result.push_back(get_word(root));
+			--count;
+		}
+		to_leaf(root->left, result, count);
+		to_leaf(root->mid, result, count);
+		to_leaf(root->right, result, count);
+	}
+
 public:
 	TernarySearchTree() = default;
 
@@ -401,6 +424,15 @@ public:
 	{
 		return words;
 	}
+
+	std::vector<std::string> prediction(std::string& prefix)
+	{
+		std::vector<std::string> result; int count_max = 15;
+		TreeNode* current = address(root, prefix, 0);
+		to_leaf(current, result, count_max);
+		return result;
+	}
+
 	~TernarySearchTree()
 	{
 		root = destroy(root);
