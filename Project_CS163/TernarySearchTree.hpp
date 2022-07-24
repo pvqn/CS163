@@ -429,7 +429,12 @@ public:
 	{
 		std::vector<std::string> result; int count_max = 15;
 		TreeNode* current = address(root, prefix, 0);
-		to_leaf(current, result, count_max);
+		if (!current->def.empty())
+		{
+			result.push_back(get_word(current));
+			--count_max;
+		}
+		to_leaf(current->mid, result, count_max);
 		return result;
 	}
 
