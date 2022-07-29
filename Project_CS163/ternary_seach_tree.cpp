@@ -257,6 +257,23 @@ void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_val
 		words_cache.push_back(Word(search_helper(root, word, 0)));
 
 	// TODO: sort the word_cache vector
+	if (words_cache.size() > 1 && words_cache[words_cache.size() - 1] < words_cache[words_cache.size() - 2])
+	{
+			int low = 0; int high = words_cache.size() - 2;
+			while (low <= high) 
+			{
+				int mid = low + (high - low) / 2;
+				if (word > words_cache[mid].get_word())
+					low = mid + 1;
+				else
+					high = mid - 1;
+			}
+			Word temp = words_cache[words_cache.size() - 1];
+			for (int i = low+1; i < words_cache.size(); ++i)
+				words_cache[i] = words_cache[i - 1];
+			words_cache[low] = temp;
+	}
+
 }
 
 Word Ternary_Search_Tree::search(std::string word) // DONE
