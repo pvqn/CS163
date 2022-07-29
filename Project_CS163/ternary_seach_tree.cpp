@@ -150,8 +150,46 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 	return nullptr;
 }
 
-bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index) // NOT YET
+bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index) // DONE
 {
+	if (!root) return 0;
+	if (word[index + 1] == '\0') // at the end of the string
+	{
+		// if the string is in the tst
+		if (root->data != word[index])
+		{
+			while (root->data != word[index])
+			{
+				if (root->data > word[index]) root = root->left;
+				else root = root->right;
+			}
+		}
+		if (!root->def.empty())
+		{
+			
+			
+			root->def = "";
+			return !(root->left || root->right || root->mid);
+		}
+		return 0;
+	}
+	if (word[index + 1] != '\0') // still in the string
+	{
+		if (word[index] < root->data)	remove_helper(root->left, word,index);
+		else
+			if (word[index] > root->data)  remove_helper(root->right,word,index);
+			else
+				if (word[index] == root->data)
+				{
+					if (remove_helper(root->mid, word,index+1)) // this string is not the prefix of any others
+					{
+						delete root->mid;
+						root->mid = nullptr;
+						// delete root if root doesnt have children
+						return root->def.empty() && !(root->left || root->right || root->mid);
+					}
+				}
+	}
 	return false;
 }
 
