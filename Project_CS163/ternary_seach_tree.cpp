@@ -11,12 +11,27 @@ Word& Word::operator=(const Word& word) // I DON'T KNOW
 
 std::string Word::get_definition() const // NOT YET
 {
-	return {};
+
+	if (!eow) return {};
+
+	std::string ans="";
+	ans += eow->data;
+
+	TST_Node* temp = eow;
+
+	while (temp)
+	{
+		if (temp->parent && temp->parent->mid == temp)
+			ans += temp->parent->data;
+		temp = temp->parent;
+	}
+	return std::string(ans.rbegin(), ans.rend());
 }
 
 // Get the word from the know Word struct
 std::string Word::get_word() const // NOT YET
 {
+
 	return {};
 }
 
