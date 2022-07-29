@@ -91,7 +91,7 @@ Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree & 
 	return *this;
 }
 
-TST_Node* Ternary_Search_Tree::insert_helper( TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid)
+TST_Node* Ternary_Search_Tree::insert_helper( TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid) // NOT YET
 {
 	if ( word[index] == '\0') return nullptr;
 	
@@ -129,7 +129,7 @@ TST_Node* Ternary_Search_Tree::insert_helper( TST_Node* root, const std::string&
 	return root;
 }
 
-TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& word, size_t index)
+TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& word, size_t index) // DONE
 {
 	if (!root) return root;
 	//std::cout << pRoot->data << '\n';
@@ -150,21 +150,37 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 	return nullptr;
 }
 
-bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
-	size_t index)
+bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index) // NOT YET
 {
 	return false;
 }
 
-void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::string>& result,
-	size_t& count) {}
-
-void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator,
-	std::ostream& os) {}
-
-void Ternary_Search_Tree::insert(std::string word, std::string def)
+TST_Node* Ternary_Search_Tree::get_address(TST_Node* root, std::string &prefix, size_t index) // DONE
 {
-	bool is_valid = true;
+	if (!root) return nullptr;
+	if (index == prefix.size() - 1 && prefix[index] == root->data) return root;
+	if (root->data == prefix[index]) return get_address(root->mid, prefix, index + 1);
+	if (root->data < prefix[index]) return get_address(root->right, prefix, index);
+	if (root->data > prefix[index]) return get_address(root->left, prefix, index);
+}
+
+void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::string>& result, size_t& count)  // DONE
+{
+	if (root == nullptr || count == 0) return;
+	if (!root->def.empty())
+	{
+		result.push_back(Word(root).get_word());
+		--count;
+	}
+	get_leaf_helper(root->left, result, count);
+	get_leaf_helper(root->mid, result, count);
+	get_leaf_helper(root->right, result, count);
+}
+
+void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) {}
+
+void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_valid )
+{
 	root = insert_helper(root, word, def, 0, nullptr, is_valid );
 
 	if (is_valid)
@@ -191,7 +207,15 @@ std::vector<Word> Ternary_Search_Tree::get_words_list()
 	return words_cache;
 }
 
-std::vector<std::string> Ternary_Search_Tree::get_prediction(std::string prefix)
+std::vector<std::string> Ternary_Search_Tree::get_prediction(std::string prefix) // DONE
 {
-	return {};
+	std::vector<std::string> result; size_t count_max = 15;
+	TST_Node* current = get_address(root, prefix, 0);
+	if (!current->def.empty())
+	{
+		result.push_back(Word(current).get_word());
+		--count_max;
+	}
+	get_leaf_helper(current->mid, result, count_max);
+	return result;
 }
