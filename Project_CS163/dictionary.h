@@ -16,6 +16,9 @@ private:
 	Hash_Table keyword_table;
 	Ternary_Search_Tree word_tree;
 
+	std::vector<Word> randomWords;
+	int randomIndex;
+
 public:
 	Dictionary(std::string dataset, char deli);
 
@@ -63,9 +66,11 @@ public:
 	std::vector<Word> get_history_list();
 
 	// Random n words in the tree
-	std::vector<Word> random_words(size_t n);
+	void random_words(size_t n);
 
-	std::vector<std::string> get_prediction(std::string prefix);
+	std::vector<std::string> get_prediction(std::string prefix); 
+	std::vector<Word> get_random_list();
+	int get_random_index();
 };
 
 #endif

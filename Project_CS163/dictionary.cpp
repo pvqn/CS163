@@ -144,6 +144,44 @@ std::vector<Word> Dictionary::get_history_list()
 	return {};
 }
 
-std::vector<Word> Dictionary::random_words(size_t n) { return {}; }
+void Dictionary::random_words(size_t n) 
+{ 
+	randomWords.clear();
+	srand((unsigned int)time(0));
+	std::vector<int> index;
 
+	//random 4 number
+	while (index.size() < 4)
+	{
+		int t = rand() % n;
+		bool check = false;
+		for (int i = 0; i < index.size(); ++i)
+			if (t == index[i])
+			{
+				check = true;
+				break;
+			}
+		if (!check) index.push_back(t);
+	}
+
+	//sort 4 number
+	for (int i = 0; i < index.size(); ++i)
+		for (int j = i; j < index.size(); ++j)
+			if (index[i] > index[j])
+			{
+				int temp = index[i];
+				index[i] = index[j];
+				index[j] = temp;
+			}
+
+	std::vector<Word> temp = word_tree.get_words_list();
+	for (int i = 0; i < 4; ++i)
+		randomWords.push_back(temp[index[i]]);
+	randomIndex = rand() % 4;
+}
+std::vector<Word> Dictionary::get_random_list()
+{
+
+}
+int Dictionary::get_random_index(){}
 std::vector<std::string> Dictionary::get_prediction(std::string prefix) { return {}; }
