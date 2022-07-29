@@ -122,6 +122,7 @@ void Dictionary::remove(std::string word)
 		for (std::string keyword : util::str::split(def))
 			keyword_table.remove_from_table(keyword, w);
 	}
+
 }
 
 Word Dictionary::search_for_definition(std::string word)
@@ -144,9 +145,9 @@ std::vector<Word> Dictionary::get_history_list()
 	return {};
 }
 
-void Dictionary::random_words(size_t n) 
+std::vector<Word> Dictionary::random_words(size_t n) 
 { 
-	randomWords.clear();
+	std::vector<Word> randomWords;
 	srand((unsigned int)time(0));
 	std::vector<int> index;
 
@@ -177,14 +178,7 @@ void Dictionary::random_words(size_t n)
 	std::vector<Word> temp = word_tree.get_words_list();
 	for (int i = 0; i < 4; ++i)
 		randomWords.push_back(temp[index[i]]);
-	randomIndex = rand() % 4;
-}
-std::vector<Word> Dictionary::get_random_list()
-{
 	return randomWords;
 }
-int Dictionary::get_random_index()
-{
-	return randomIndex;
-}
+
 std::vector<std::string> Dictionary::get_prediction(std::string prefix) { return {}; }
