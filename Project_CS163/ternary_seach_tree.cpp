@@ -196,22 +196,6 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 		if (!root->def.empty())
 		{
 			root->def = "";
-			//binary search
-			int left = 0; int right = words_cache.size()-1;
-			int mid = 0;
-			while (left <= right)
-			{
-				mid = left + (right - left) / 2;
-				std::string temp = words_cache[mid].get_word();
-				if (word == temp )
-					break;
-				if (word < temp)
-					left = mid + 1;
-				else right = mid - 1;
-			}
-			// if word's in words_cache then erase 
-			if (left <= right) words_cache.erase(words_cache.begin() + mid);
-
 			return !(root->left || root->right || root->mid);
 		}
 		return 0;
@@ -270,19 +254,6 @@ void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_val
 
 	if (is_valid)
 	{
-		// TODO: sort the word_cache vector
-		//binary search to get position
-		int low = 0; int high = words_cache.size() - 1;
-		while (low <= high)
-		{
-			int mid = low + (high - low) / 2;
-			if (word > words_cache[mid].get_word())
-				low = mid + 1;
-			else
-				high = mid - 1;
-		}
-		//insert
-		words_cache.insert(words_cache.begin()+low, Word(search_helper(root, word, 0)));
 		
 	}
 }
