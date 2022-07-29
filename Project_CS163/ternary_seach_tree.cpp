@@ -2,45 +2,45 @@
 
 #include "util.h"
 
-Word& Word::operator=(const Word& word)
+Word& Word::operator=(const Word& word) // I DON'T KNOW
 {
 	eow = word.eow;
 	return *this;
 }
 
 
-std::string Word::get_definition() const
+std::string Word::get_definition() const // NOT YET
 {
 	return {};
 }
 
 // Get the word from the know Word struct
-std::string Word::get_word() const
+std::string Word::get_word() const // NOT YET
 {
 	return {};
 }
 
-bool Word::operator==(const Word& other)
+bool Word::operator==(const Word& other) // DONE
 {
 	return get_word() == other.get_word();
 }
 
-bool Word::operator!=(const Word& other)
+bool Word::operator!=(const Word& other) // DONE
 {
 	return get_word() != other.get_word();
 }
 
-bool Word::operator<(const Word& other)
+bool Word::operator<(const Word& other) // DONE
 {
 	return get_word() < other.get_word();
 }
 
-bool Word::operator>(const Word& other)
+bool Word::operator>(const Word& other) // DONE
 {
 	return get_word() > other.get_word();
 }
 
-TST_Node* Ternary_Search_Tree::clone(TST_Node* other)
+TST_Node* Ternary_Search_Tree::clone(TST_Node* other) // DONE
 {
 	if (!other)
 		return nullptr;
@@ -58,7 +58,7 @@ TST_Node* Ternary_Search_Tree::clone(TST_Node* other)
 	return new_node;
 }
 
-void Ternary_Search_Tree::destroy(TST_Node*& current)
+void Ternary_Search_Tree::destroy(TST_Node*& current) // DONE
 {
 	if (current)
 	{
@@ -71,17 +71,17 @@ void Ternary_Search_Tree::destroy(TST_Node*& current)
 	}
 }
 
-Ternary_Search_Tree::~Ternary_Search_Tree()
+Ternary_Search_Tree::~Ternary_Search_Tree() // DONE
 {
 	destroy(root);
 }
 
-Ternary_Search_Tree::Ternary_Search_Tree(const Ternary_Search_Tree & other)
+Ternary_Search_Tree::Ternary_Search_Tree(const Ternary_Search_Tree & other)	// DONE
 {
 	root = clone(other.root);
 }
 
-Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree & other)
+Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree & other) // DONE
 {
 	if (this != &other)
 	{
@@ -177,9 +177,9 @@ void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::strin
 	get_leaf_helper(root->right, result, count);
 }
 
-void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) {}
+void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) {} // NOT YET
 
-void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_valid )
+void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_valid ) // NOT YET
 {
 	root = insert_helper(root, word, def, 0, nullptr, is_valid );
 
@@ -187,22 +187,22 @@ void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_val
 		words_cache.push_back(Word(search_helper(root, word, 0)));
 }
 
-Word Ternary_Search_Tree::search(std::string word)
+Word Ternary_Search_Tree::search(std::string word) // DONE
 {
 	return Word(search_helper(root, word, 0));
 }
 
-bool Ternary_Search_Tree::remove(std::string word)
+bool Ternary_Search_Tree::remove(std::string word) // DONE
 {
 	return remove_helper(root, word, 0);
 }
 
-void Ternary_Search_Tree::print(char separator, std::ostream& os)
+void Ternary_Search_Tree::print(char separator, std::ostream& os) // DONE
 {
 	print_helper(root, separator, os);
 }
 
-std::vector<Word> Ternary_Search_Tree::get_words_list()
+std::vector<Word> Ternary_Search_Tree::get_words_list() // DONE
 {
 	return words_cache;
 }
