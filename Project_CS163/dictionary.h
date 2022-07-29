@@ -66,11 +66,10 @@ public:
 	std::vector<Word> get_history_list();
 
 	// Random n words in the tree
-	void random_words(size_t n);
+	std::vector<Word> random_words(size_t n);
 
 	std::vector<std::string> get_prediction(std::string prefix); 
-	std::vector<Word> get_random_list();
-	int get_random_index();
+	
 };
 
 #endif
