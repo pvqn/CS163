@@ -10,7 +10,7 @@ Word& Word::operator=(const Word& word) // DONE
 
 std::string Word::get_definition() const // NOT YET
 {
-	return {};
+	return eow->def;
 }
 
 // Get the word from the know Word struct
@@ -168,7 +168,7 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 	return nullptr;
 }
 
-bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index) // DONE
+bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index, std::vector<std::string>& keywords, Word& cur) // DONE
 {
 	// TODO: Remove the word from the words_cache vector
 
@@ -189,7 +189,8 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 		}
 		if (!root->def.empty())
 		{
-
+			keywords = util::str::split(root->def);
+			cur=Word(root);
 			root->def = "";
 			return !(root->left || root->right || root->mid);
 		}
@@ -198,12 +199,12 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 	if (word[index + 1] != '\0') // still in the string
 	{
 		if (word[index] < root->data)
-			remove_helper(root->left, word, index);
+			remove_helper(root->left, word, index, keywords,cur);
 		else if (word[index] > root->data)
-			remove_helper(root->right, word, index);
+			remove_helper(root->right, word, index,keywords,cur);
 		else if (word[index] == root->data)
 		{
-			if (remove_helper(root->mid, word, index + 1)) // this string is not the prefix of any others
+			if (remove_helper(root->mid, word, index + 1,keywords,cur)) // this string is not the prefix of any others
 			{
 				delete root->mid;
 				root->mid = nullptr;
@@ -258,9 +259,9 @@ Word Ternary_Search_Tree::search(std::string word) // DONE
 	return Word(search_helper(root, word, 0));
 }
 
-bool Ternary_Search_Tree::remove(std::string word) // DONE
+bool Ternary_Search_Tree::remove(std::string word, std::vector<std::string>& keywords, Word& cur) // DONE
 {
-	return remove_helper(root, word, 0);
+	return remove_helper(root, word, 0, keywords, cur);
 }
 
 void Ternary_Search_Tree::print(char separator, std::ostream& os) // DONE
