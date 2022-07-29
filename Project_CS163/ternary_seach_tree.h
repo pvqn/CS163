@@ -108,9 +108,7 @@ private:
 	  * Checking the '\0' status by using the index of the word
 	  **/
 	TST_Node* insert_helper(TST_Node* root, const std::string& word,
-		const std::string& def, size_t index,
-		TST_Node* parent,
-		bool& valid);
+		const std::string& def, size_t index, TST_Node* parent, bool& valid );
 
 	// Searching a word backend
 	TST_Node* search_helper(TST_Node* root, const std::string& word,
