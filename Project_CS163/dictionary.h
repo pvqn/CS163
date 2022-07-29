@@ -1,7 +1,6 @@
 #ifndef DICTIONARY_H_
 #define DICTIONARY_H_
 #include <string>
-#include <filesystem>
 
 #include "hash_table.h"
 #include "ternary_seach_tree.h"

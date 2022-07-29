@@ -50,7 +50,7 @@ size_t Hash_Table::hashing_1(std::string s)
 	size_t t = 1;
 
 	for (char& ch : s)
-		t = (t * 31 + (int)(ch - 'a') + 1) % h1_val;
+		t = (t * 31 + ((size_t)ch - (size_t)'a') + 1) % h1_val;
 
 	return t;
 }
@@ -112,7 +112,7 @@ void Hash_Table::add_to_table(std::string keyword, Word word)
 	size_t index = 0;
 
 	if (!binary_search(table[h1], keyword, word, index))
-		table[h1].insert(table[h1].begin() + index, 
+		table[h1].insert(table[h1].begin() + index,
 			Hash_Table_Bucket(keyword, hashing_2(keyword), word));
 }
 
@@ -155,19 +155,23 @@ std::vector<Word> Hash_Table::find_by_keyword(std::string keyword)
 
 		for (size_t i = mid_index + 1; i < table[h1].size(); i++)
 		{
-			if (table[h1][i].keyword != keyword) break;
+			if (table[h1][i].keyword != keyword)
+				break;
 
 			words.push_back(table[h1][i].word);
 		}
 
 		while (true)
 		{
-			if (table[h1][mid_index].keyword != keyword) break;
+			if (table[h1][mid_index].keyword != keyword)
+				break;
 
 			words.insert(words.begin(), table[h1][mid_index].word);
 
-			if (mid_index == 0) break;
-			else mid_index--;
+			if (mid_index == 0)
+				break;
+			else
+				mid_index--;
 		}
 	}
 

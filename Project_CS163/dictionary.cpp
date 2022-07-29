@@ -1,6 +1,7 @@
 #include "dictionary.h"
 
 #include <fstream>
+#include <filesystem>
 
 #include "util.h"
 
@@ -16,10 +17,10 @@ Dictionary::Dictionary(const Dictionary& other)
 
 Dictionary::~Dictionary() { cache(); }
 
-void Dictionary::load() 
+void Dictionary::load()
 {
 	if (!std::filesystem::exists(main_folder + dataset_name + ".txt"))
-		std::filesystem::copy_file(main_folder + "ORG_" + dataset_name + ".txt", 
+		std::filesystem::copy_file(main_folder + "ORG_" + dataset_name + ".txt",
 			main_folder + dataset_name + ".txt");
 
 	std::ifstream in;
@@ -39,7 +40,8 @@ void Dictionary::load()
 			while (i < line.size() && line[i] != delim)
 				word.push_back(line[i]);
 
-			if (i >= line.size()) continue;
+			if (i >= line.size())
+				continue;
 
 			def = line.substr(i + 1);
 
@@ -51,7 +53,7 @@ void Dictionary::load()
 			{
 				Word w = word_tree.search(word);
 
-				for (const std::string& keyword : util::str::split(def))
+				for (std::string keyword : util::str::split(def))
 				{
 					keyword_table.add_to_table(keyword, w);
 				}
@@ -66,7 +68,7 @@ void Dictionary::reset()
 
 	keyword_table.~Hash_Table();
 
-	std::filesystem::copy_file(main_folder + "ORG_" + dataset_name + ".txt", 
+	std::filesystem::copy_file(main_folder + "ORG_" + dataset_name + ".txt",
 		main_folder + dataset_name + ".txt");
 
 	load();
@@ -78,7 +80,8 @@ void Dictionary::cache()
 
 	out.open(main_folder + dataset_name + ".txt");
 
-	if (out) word_tree.print(delim, out);
+	if (out)
+		word_tree.print(delim, out);
 }
 
 bool Dictionary::dataset_is_equal(std::string name, char delim)
@@ -116,7 +119,7 @@ void Dictionary::remove(std::string word)
 
 		word_tree.remove(word);
 
-		for (const std::string& keyword : util::str::split(def))
+		for (std::string keyword : util::str::split(def))
 			keyword_table.remove_from_table(keyword, w);
 	}
 }
@@ -126,19 +129,19 @@ Word Dictionary::search_for_definition(std::string word)
 	return word_tree.search(word);
 }
 
-std::vector<Word> Dictionary::get_favorite_list() 
+std::vector<Word> Dictionary::get_favorite_list()
 {
 	std::ifstream in;
 	in.open(main_folder + "FAV_" + dataset_name + ".txt");
-	return {}; 
+	return {};
 }
 
-std::vector<Word> Dictionary::get_history_list() 
-{ 
+std::vector<Word> Dictionary::get_history_list()
+{
 	std::ifstream in;
 	in.open(main_folder + "HIS_" + dataset_name + ".txt");
 
-	return {}; 
+	return {};
 }
 
 std::vector<Word> Dictionary::random_words(size_t n) { return {}; }

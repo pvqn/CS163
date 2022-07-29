@@ -108,9 +108,7 @@ private:
 	  * Checking the '\0' status by using the index of the word
 	  **/
 	TST_Node* insert_helper(TST_Node* root, const std::string& word,
-		const std::string& def, size_t index,
-		TST_Node* parent,
-		bool& valid);
+		const std::string& def, size_t index, TST_Node* parent, bool& valid);
 
 	// Searching a word backend
 	TST_Node* search_helper(TST_Node* root, const std::string& word,
@@ -124,6 +122,8 @@ private:
 	bool remove_helper(TST_Node* root, const std::string& word,
 		size_t index);
 
+	TST_Node* search_helper(TST_Node* root, std::string& prefix, size_t index);
+
 	// Helper function for get the word prediction
 	void get_leaf_helper(TST_Node* root, std::vector<std::string>& result,
 		size_t& count);
@@ -133,7 +133,7 @@ private:
 		std::ostream& os);
 
 public:
-	void insert(std::string word, std::string def, bool& valid);
+	void insert(std::string word, std::string def, bool& is_valid);
 
 	Word search(std::string word);
 
