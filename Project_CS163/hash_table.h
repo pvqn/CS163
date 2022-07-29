@@ -58,6 +58,7 @@ public:
 	void remove_from_table(std::string keyword, Word word);
 
 	// TODO: add functions to find by keywords
+	std::vector<Word> find_by_keyword(std::string keyword);
 };
 
 #endif
