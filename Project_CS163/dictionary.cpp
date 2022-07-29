@@ -181,7 +181,10 @@ void Dictionary::random_words(size_t n)
 }
 std::vector<Word> Dictionary::get_random_list()
 {
-
+	return randomWords;
 }
-int Dictionary::get_random_index(){}
+int Dictionary::get_random_index()
+{
+	return randomIndex;
+}
 std::vector<std::string> Dictionary::get_prediction(std::string prefix) { return {}; }
