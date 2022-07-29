@@ -101,6 +101,10 @@ private:
 	 * TODO (optional): add rotation, set_weight and get_weight fuctions
 	 * if there is time to balance the tree
 	 **/
+	TST_Node* rotate_left(TST_Node* root);
+	TST_Node* rotate_right(TST_Node* root);
+	unsigned int get_weight(TST_Node* root);
+	void set_weight(TST_Node* root);
 
 	 /**
 	  * Backend function for adding a new word

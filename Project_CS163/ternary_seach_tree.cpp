@@ -105,48 +105,102 @@ Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree& o
 	return *this;
 }
 
-TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid) // DONE
+TST_Node* Ternary_Search_Tree::rotate_left(TST_Node* root)
+{
+	TST_Node* parent = root->parent, * child = root->right;
+
+	root->right = child->left;
+	if (root->right) root->right->parent = root;
+
+	child->left = root;
+	root->parent = child;
+	child->parent = parent;
+
+	if (parent)
+	{
+		if (parent->left == root) parent->left = root;
+		if (parent->mid == root) parent->mid = root;
+		if (parent->right == root) parent->right = root;
+	}
+
+	return child;
+}
+
+TST_Node* Ternary_Search_Tree::rotate_right(TST_Node* root)
+{
+	TST_Node* parent = root->parent, * child = root->left;
+
+	root->left = child->right;
+	if (root->left) root->left->parent = root;
+
+	child->right = root;
+	root->parent = child;
+	child->parent = parent;
+
+	if (parent)
+	{
+		if (parent->left == root) parent->left = root;
+		if (parent->mid == root) parent->mid = root;
+		if (parent->right == root) parent->right = root;
+	}
+
+	return child;
+}
+
+unsigned int Ternary_Search_Tree::get_weight(TST_Node* root)
+{
+	return root ? root->weight : 0;
+}
+
+void Ternary_Search_Tree::set_weight(TST_Node* root)
+{
+	if (root)
+		root->weight = get_weight(root->mid) + !root->def.empty();
+}
+
+TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid) // NOT YET
 {
 	if (word[index] == '\0')
 		return nullptr;
 
 	if (!root)
 	{
-		root = new TST_Node(word[index], (word[index + 1] == '\0') ? def : "");
+		valid = true;
+
+		root = new TST_Node(word[index], (index == word.size() - 1) ? def : "");
 
 		root->parent = parent;
 
 		root->mid = insert_helper(root->mid, word, def, index + 1, root, valid);
-
-		// set_weight(root);
-		return root;
-	}
-
-	if (word[index + 1] == '\0' && root->data == word[index])
-	{
-		valid = false;
 		return root;
 	}
 
 	if (root->data == word[index])
 	{
-		root->mid = insert_helper(root->mid, word, def, index + 1, root, valid);
-		// set_weight(root);
-	}
+		if (index == word.size() - 1)
+		{
+			valid = root->def.empty();
+			if (valid) root->def = def;
+		}
+		else
+		{
+			root->mid = insert_helper(root->mid, word, def, index + 1, root, valid);
+		}
 
-	if (root->data > word[index])
+		set_weight(root);
+	}
+	else if (root->data > word[index])
 	{
 		root->left = insert_helper(root->left, word, def, index, root, valid);
-		// if (root->left->weight > root->weight) root = rotate_right(root);
+		if (root->left->weight > root->weight) root = rotate_right(root);
 	}
-
-	if (root->data < word[index])
+	else if (root->data < word[index])
 	{
 		root->right = insert_helper(root->right, word, def, index, root, valid);
-		// if (root->right->weight > root->weight) root = rotate_left(root);
+		if (root->right->weight > root->weight) root = rotate_left(root);
 	}
 
-	// set_weight(root);
+
 	return root;
 }
 
@@ -154,8 +208,8 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 {
 	if (!root)
 		return root;
-	// std::cout << pRoot->data << '\n';
-	if (word[index + 1] == '\0')
+
+	if (index == word.size() - 1)
 	{
 		if (root->data == word[index])
 		{
@@ -165,13 +219,12 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 				return nullptr;
 		}
 	}
+
 	if (word[index] < root->data)
 		return search_helper(root->left, word, index);
 	if (word[index] == root->data)
 		return search_helper(root->mid, word, index + 1);
-	if (word[index] > root->data)
-		return search_helper(root->right, word, index);
-	return nullptr;
+	return search_helper(root->right, word, index);
 }
 
 bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index) // DONE
@@ -180,7 +233,7 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 
 	if (!root)
 		return 0;
-	if (word[index + 1] == '\0') // at the end of the string
+	if (index == word.size() - 1) // at the end of the string
 	{
 		// if the string is in the tst
 		if (root->data != word[index])
@@ -195,12 +248,19 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 		}
 		if (!root->def.empty())
 		{
-			root->def = "";
+			Word w = Word(root);
+			size_t index;
+			util::algo::binary_search(words_cache, w, index);
+			words_cache.erase(words_cache.begin() + index);
+
+			root->def.clear();
+			--root->weight;
+
 			return !(root->left || root->right || root->mid);
 		}
 		return 0;
 	}
-	if (word[index + 1] != '\0') // still in the string
+	else // still in the string
 	{
 		if (word[index] < root->data)
 			remove_helper(root->left, word, index);
@@ -214,6 +274,35 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 				root->mid = nullptr;
 				// delete root if root doesnt have children
 				return root->def.empty() && !(root->left || root->right || root->mid);
+			}
+			else
+			{
+				set_weight(root);
+
+				bool left = get_weight(root->left) > get_weight(root);
+				bool right = get_weight(root->right) > get_weight(root);
+
+				if (left && right)
+				{
+					if (get_weight(root->left) >= get_weight(root->right))
+					{
+						root = rotate_right(root);
+						root->right = rotate_left(root->right);
+					}
+					else
+					{
+						root = rotate_left(root);
+						root->left = rotate_right(root->left);
+					}
+				}
+				else if (left)
+				{
+					root = rotate_right(root);
+				}
+				else if (right)
+				{
+					root = rotate_left(root);
+				}
 			}
 		}
 	}
@@ -254,7 +343,10 @@ void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_val
 
 	if (is_valid)
 	{
-		
+		size_t index;
+		Word w = Word(search_helper(root, word, 0));
+		util::algo::binary_search(words_cache, w, index);
+		words_cache.insert(words_cache.begin() + index, w);
 	}
 }
 

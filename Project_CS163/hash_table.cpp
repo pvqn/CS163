@@ -1,5 +1,7 @@
 #include "hash_table.h"
 
+#include "util.h"
+
 Hash_Table_Bucket::Hash_Table_Bucket(std::string keyword_, size_t hash_, Word word_)
 	: keyword(std::move(keyword_)), hash(hash_), word(word_) {}
 
@@ -67,34 +69,6 @@ long long Hash_Table::hashing_2(std::string s)
 	return t;
 }
 
-bool Hash_Table::binary_search(std::vector<Hash_Table_Bucket>& v, std::string cmp,
-	Word word, size_t& index)
-{
-	Hash_Table_Bucket bucket = Hash_Table_Bucket(cmp, hashing_2(cmp), word);
-
-	auto left = v.begin(), right = v.end() - 1;
-
-	auto mid = left + (right - left) / 2;
-
-	while (left != right)
-	{
-		if (bucket == *mid)
-		{
-			index = mid - v.begin();
-			return true;
-		}
-		else if (bucket < *mid)
-			right = mid - 1;
-		else
-			left = mid + 1;
-
-		mid = left + (right - left) / 2;
-	}
-
-	index = left + (bucket > *left ? 1 : 0) - v.begin();
-	return false;
-}
-
 Hash_Table::Hash_Table() { table.resize(h1_val); }
 
 Hash_Table::Hash_Table(const Hash_Table& other) : table(other.table) {}
@@ -111,9 +85,10 @@ void Hash_Table::add_to_table(std::string keyword, Word word)
 	size_t h1 = hashing_1(keyword);
 	size_t index = 0;
 
-	if (!binary_search(table[h1], keyword, word, index))
-		table[h1].insert(table[h1].begin() + index,
-			Hash_Table_Bucket(keyword, hashing_2(keyword), word));
+	Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), word);
+
+	if (!util::algo::binary_search(table[h1], b, index))
+		table[h1].insert(table[h1].begin() + index, b);
 }
 
 void Hash_Table::remove_from_table(std::string keyword, Word word)
@@ -121,7 +96,8 @@ void Hash_Table::remove_from_table(std::string keyword, Word word)
 	size_t h1 = hashing_1(keyword);
 	size_t index = 0;
 
-	if (binary_search(table[h1], keyword, word, index))
+	if (util::algo::binary_search(table[h1],
+		Hash_Table_Bucket(keyword, hashing_2(keyword), word), index))
 		table[h1].erase(table[h1].begin() + index);
 }
 
@@ -131,48 +107,15 @@ std::vector<Word> Hash_Table::find_by_keyword(std::string keyword)
 
 	size_t h1 = hashing_1(keyword);
 
-	auto begin = table[h1].begin(), end = table[h1].end();
+	size_t index = 0;
 
-	auto mid = begin + (end - begin) / 2;
+	util::algo::binary_search(table[h1],
+		Hash_Table_Bucket(keyword, hashing_2(keyword), Word(nullptr)), index);
 
-	while (begin != end)
+	while (index < table[h1].size() && table[h1][index].keyword == keyword)
 	{
-		size_t mid_index = mid - table[h1].begin();
-
-		if (keyword == mid->keyword)
-			break;
-		else if (keyword < mid->keyword)
-			end = mid;
-		else
-			begin = mid;
-
-		mid = begin + (end - begin) / 2;
-	}
-
-	if (mid->keyword == keyword)
-	{
-		size_t mid_index = mid - table[h1].begin();
-
-		for (size_t i = mid_index + 1; i < table[h1].size(); i++)
-		{
-			if (table[h1][i].keyword != keyword)
-				break;
-
-			words.push_back(table[h1][i].word);
-		}
-
-		while (true)
-		{
-			if (table[h1][mid_index].keyword != keyword)
-				break;
-
-			words.insert(words.begin(), table[h1][mid_index].word);
-
-			if (mid_index == 0)
-				break;
-			else
-				mid_index--;
-		}
+		words.push_back(table[h1][index].word);
+		index++;
 	}
 
 	return words;

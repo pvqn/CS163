@@ -39,9 +39,6 @@ private:
 
 	long long hashing_2(std::string s);
 
-	bool binary_search(std::vector<Hash_Table_Bucket>& v, std::string cmp,
-		Word word, size_t& index);
-
 public:
 	Hash_Table();
 
