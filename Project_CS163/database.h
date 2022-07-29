@@ -21,11 +21,14 @@ class Database
 {
 private:
 	std::vector<Dictionary*> list{ nullptr };
-	Dictionary* single = nullptr;
+	Dictionary* current = nullptr;
 
 	// cache_mode: safe old tree in RAM until the program is teminated
 	bool cache_mode = false;
 public:
+	Database() = default;
+	~Database();
+
 	void set_cache_mode(bool to_cache);
 
 	void change_dataset(std::string file_name, char delim);

@@ -133,7 +133,7 @@ private:
 		std::ostream& os);
 
 public:
-	void insert(std::string word, std::string def);
+	void insert(std::string word, std::string def, bool& valid);
 
 	Word search(std::string word);
 

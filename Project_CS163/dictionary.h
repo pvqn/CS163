@@ -22,7 +22,7 @@ public:
 
 	Dictionary(const Dictionary& other);
 
-	~Dictionary() = default;
+	~Dictionary();
 
 private:
 	/**
@@ -41,6 +41,13 @@ private:
 	// Cache the tree into file_name.txt file
 	void cache();
 
+public:
+	// Check if the Dictionary is occupied
+	bool dataset_is_equal(std::string name, char delim);
+
+	// Get the size of the dictionary
+	size_t get_dictionary_size();
+
 	// Insert a word to both TST and Hash Table
 	void insert(std::string word, std::string def);
 
@@ -57,7 +64,7 @@ private:
 	std::vector<Word> get_history_list();
 
 	// Random n words in the tree
-	std::vector<Word> random_n_words(size_t n);
+	std::vector<Word> random_words(size_t n);
 
 	std::vector<std::string> get_prediction(std::string prefix);
 };
