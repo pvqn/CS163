@@ -105,7 +105,7 @@ Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree& o
 	return *this;
 }
 
-TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid) // NOT YET
+TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word, const std::string& def, size_t index, TST_Node* parent, bool& valid) // DONE
 {
 	if (word[index] == '\0')
 		return nullptr;
@@ -119,6 +119,12 @@ TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& 
 		root->mid = insert_helper(root->mid, word, def, index + 1, root, valid);
 
 		// set_weight(root);
+		return root;
+	}
+
+	if (word[index + 1] == '\0' && root->data == word[index])
+	{
+		valid = false;
 		return root;
 	}
 
