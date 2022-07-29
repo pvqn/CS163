@@ -269,29 +269,22 @@ void Ternary_Search_Tree::insert(std::string word, std::string def, bool& is_val
 	root = insert_helper(root, word, def, 0, nullptr, is_valid);
 
 	if (is_valid)
-		words_cache.push_back(Word(search_helper(root, word, 0)));
-
-	// TODO: sort the word_cache vector
-	// if the last element is smaller than the size-2 element -> sort
-	if (words_cache.size() > 1 && words_cache[words_cache.size() - 1] < words_cache[words_cache.size() - 2])
 	{
-			//binary search to get position
-			int low = 0; int high = words_cache.size() - 2;
-			while (low <= high) 
-			{
-				int mid = low + (high - low) / 2;
-				if (word > words_cache[mid].get_word())
-					low = mid + 1;
-				else
-					high = mid - 1;
-			}
-			//insert
-			Word temp = words_cache[words_cache.size() - 1];
-			for (int i = low+1; i < words_cache.size(); ++i)
-				words_cache[i] = words_cache[i - 1];
-			words_cache[low] = temp;
+		// TODO: sort the word_cache vector
+		//binary search to get position
+		int low = 0; int high = words_cache.size() - 1;
+		while (low <= high)
+		{
+			int mid = low + (high - low) / 2;
+			if (word > words_cache[mid].get_word())
+				low = mid + 1;
+			else
+				high = mid - 1;
+		}
+		//insert
+		words_cache.insert(words_cache.begin()+low, Word(search_helper(root, word, 0)));
+		
 	}
-
 }
 
 Word Ternary_Search_Tree::search(std::string word) // DONE
