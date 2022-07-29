@@ -127,6 +127,9 @@ void Dictionary::remove(std::string word)
 
 Word Dictionary::search_for_definition(std::string word)
 {
+	std::ofstream out;
+	out.open(main_folder + "HIS_" + dataset_name + ".txt", std::ios::app);
+	out << word <<"\n"; 
 	return word_tree.search(word);
 }
 
@@ -137,12 +140,17 @@ std::vector<Word> Dictionary::get_favorite_list()
 	return {};
 }
 
-std::vector<Word> Dictionary::get_history_list()
+std::vector<std::string> Dictionary::get_history_list()
 {
 	std::ifstream in;
 	in.open(main_folder + "HIS_" + dataset_name + ".txt");
-
-	return {};
+	std::string t;
+	std::vector <std::string> history;
+	while (std::getline(in, t))
+	{
+		history.insert(history.begin(), t);
+	}
+	return history;
 }
 
 std::vector<Word> Dictionary::random_words(size_t n) 
