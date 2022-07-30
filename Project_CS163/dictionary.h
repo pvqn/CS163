@@ -42,10 +42,10 @@ private:
 	void cache();
 
 	// TODO: implement function for add and remove favorite list
-	void action_on_favorite_file(std::string word, bool status);
+	void action_on_favorite_file(std::string word, bool status); // DONE
 
 	// TODO: adding a word to HIS_ file along with date
-	void pushing_into_history_file(std::string word);
+	void pushing_into_history_file(std::string word); //NOT YET
 public:
 	// Check if the Dictionary is occupied
 	bool dataset_is_equal(std::string name, char delim); //DONE

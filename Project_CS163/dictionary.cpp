@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <filesystem>
-
+#include <ctime>
 #include "util.h"
 
 Dictionary::Dictionary(std::string dataset, char deli)
@@ -130,9 +130,11 @@ void Dictionary::remove(std::string word)
 
 Word Dictionary::search_for_definition(std::string word)
 {
+	std::time_t t = std::time(0);   // get time now
+	std::tm* now = std::localtime(&t);
 	std::ofstream out;
 	out.open(main_folder + "HIS_" + dataset_name + ".txt", std::ios::app);
-	out << word <<"\n"; 
+	out << now->tm_year + 1900 <<"~" << now->tm_mon + 1<< "~" << now->tm_mday <<"~" << word << "\n";
 	return word_tree.search(word);
 }
 
