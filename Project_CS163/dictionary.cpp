@@ -140,7 +140,13 @@ std::vector<Word> Dictionary::get_favorite_list()
 {
 	std::ifstream in;
 	in.open(main_folder + "FAV_" + dataset_name + ".txt");
-	return {};
+	std::string t;
+	std::vector<Word> fav_list;
+	while (std::getline(in, t))
+	{
+		Word temp = Word(word_tree.search(t));
+		if (!temp.get_word().empty()) fav_list.push_back(temp);
+	}
 }
 
 std::vector<std::string> Dictionary::get_history_list()
