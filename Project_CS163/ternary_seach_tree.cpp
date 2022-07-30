@@ -313,7 +313,7 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 			}
 		}
 	}
-	return 1;
+	return false;
 }
 
 TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, std::string& prefix, size_t index) // DONE
