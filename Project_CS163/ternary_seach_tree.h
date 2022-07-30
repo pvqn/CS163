@@ -112,7 +112,7 @@ private:
 	  * Checking the '\0' status by using the index of the word
 	  **/
 	TST_Node* insert_helper(TST_Node* root, const std::string& word,
-		const std::string& def, size_t index, TST_Node* parent, bool& valid);
+		const std::string& def, size_t index, TST_Node* parent, bool& valid, Word& eow);
 
 	// Searching a word backend
 	TST_Node* search_helper(TST_Node* root, const std::string& word,
@@ -124,7 +124,7 @@ private:
 	 * Return bool for deleting process status
 	 **/
 	bool remove_helper(TST_Node* root, const std::string& word,
-		size_t index);
+		size_t index, Word &w);
 
 	TST_Node* search_helper(TST_Node* root, std::string& prefix, size_t index);
 
@@ -137,11 +137,11 @@ private:
 		std::ostream& os);
 
 public:
-	void insert(std::string word, std::string def, bool& is_valid);
+	void insert(std::string word, std::string def, bool& is_valid, Word& eow);
 
 	Word search(std::string word);
 
-	bool remove(std::string word);
+	bool remove(std::string word, Word& w);
 
 	void print(char separator, std::ostream& os);
 

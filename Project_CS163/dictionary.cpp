@@ -6,7 +6,10 @@
 #include "util.h"
 
 Dictionary::Dictionary(std::string dataset, char deli)
-	: dataset_name(dataset), delim(deli) {}
+	: dataset_name(dataset), delim(deli) 
+{
+	load();
+}
 
 Dictionary::Dictionary(const Dictionary& other)
 	: dataset_name(other.dataset_name), delim(other.delim)
@@ -38,7 +41,7 @@ void Dictionary::load()
 			size_t i = 0;
 
 			while (i < line.size() && line[i] != delim)
-				word.push_back(line[i]);
+				word.push_back(line[i++]);
 
 			if (i >= line.size())
 				continue;
@@ -47,12 +50,12 @@ void Dictionary::load()
 
 			bool is_valid;
 
-			word_tree.insert(word, def, is_valid);
+			Word w;
+
+			word_tree.insert(word, def, is_valid, w);
 
 			if (is_valid)
 			{
-				Word w = word_tree.search(word);
-
 				for (std::string keyword : util::str::split(def))
 				{
 					keyword_table.add_to_table(keyword, w);
@@ -98,12 +101,12 @@ void Dictionary::insert(std::string word, std::string def)
 {
 	bool is_valid;
 
-	word_tree.insert(word, def, is_valid);
+	Word w;
+
+	word_tree.insert(word, def, is_valid, w);
 
 	if (is_valid)
 	{
-		Word w = word_tree.search(word);
-
 		for (const std::string& keyword : util::str::split(def))
 			keyword_table.add_to_table(keyword, w);
 	}
@@ -111,13 +114,13 @@ void Dictionary::insert(std::string word, std::string def)
 
 void Dictionary::remove(std::string word)
 {
-	Word w = word_tree.search(word);
+	Word w = Word();
+
+	word_tree.remove(word, w);
 
 	if (!w.get_word().empty())
 	{
 		std::string def = w.get_definition();
-
-		word_tree.remove(word);
 
 		for (std::string keyword : util::str::split(def))
 			keyword_table.remove_from_table(keyword, w);

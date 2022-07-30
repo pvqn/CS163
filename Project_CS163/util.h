@@ -2,7 +2,6 @@
 #define UTIL_H_
 #include <string>
 #include <vector>
-#include <random>
 
 namespace util
 {
@@ -19,26 +18,24 @@ namespace util
 		template <class T>
 		bool binary_search(std::vector<T>& v, T cmp, size_t& index)
 		{
-			auto left = v.begin(), right = v.end() - 1;
-
-			auto mid = left + (right - left) / 2;
+			size_t left = 0, right = v.size() ? v.size() - 1 : 0;
 
 			while (left != right)
 			{
-				if (cmp == *mid)
+				auto mid = left + (right - left) / 2;
+
+				if (cmp == v[mid])
 				{
-					index = mid - v.begin();
+					index = mid;
 					return true;
 				}
-				else if (cmp < *mid)
-					right = mid - 1;
+				else if (cmp < v[mid])
+					right = mid;
 				else
 					left = mid + 1;
-
-				mid = left + (right - left) / 2;
 			}
 
-			index = left + (cmp > *left ? 1 : 0) - v.begin();
+			index = left;
 			return false;
 		}
 	}

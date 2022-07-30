@@ -88,7 +88,12 @@ void Hash_Table::add_to_table(std::string keyword, Word word)
 	Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), word);
 
 	if (!util::algo::binary_search(table[h1], b, index))
-		table[h1].insert(table[h1].begin() + index, b);
+	{
+		if (table[h1].size())
+			table[h1].insert(table[h1].begin() + index + (table[h1][index] < b), b);
+		else
+			table[h1].push_back(b);
+	}
 }
 
 void Hash_Table::remove_from_table(std::string keyword, Word word)
