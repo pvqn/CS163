@@ -12,9 +12,17 @@
  *     and delimeter
  *   + Dataset-related files (file_name): there are 4 files in total
  *       ~ ORG_file_name.txt: original file
- * 		 ~ file_name.txt: main file contains all the words
- * 		 ~ FAV_file_name.txt: favorite list
- * 		 ~ HIS_file_name.txt: history of each dataset
+ *       ~ file_name.txt: main file contains all the words
+ *       ~ FAV_file_name.txt: favorite list
+ *       ~ HIS_file_name.txt: history of each dataset
+ * 
+ * Format of the HIS_ file: word!dd!mm!yyyy (! be de delimiter of each file)
+ * ex: emotional.txt use "\t" as delimiter, so the format is: CS163\t30\t07\t2022
+ *     slang.txt use "`" as delimiter, so the format is: CS163`30`07`2022
+ *     english.txt use "," as delimiter, so the format is: CS163,30,07,2002
+ * 
+ * (OPTIONAL): convert all files to binary (except ORG_file_name.txt)
+ *             -> is this case, use std::string.c_str() to have '\0'
  **/
 
 class Database

@@ -41,6 +41,11 @@ private:
 	// Cache the tree into file_name.txt file
 	void cache();
 
+	// TODO: implement function for add and remove favorite list
+	void action_on_favorite_file(std::string word, bool status);
+
+	// TODO: adding a word to HIS_ file along with date
+	void pushing_into_history_file(std::string word);
 public:
 	// Check if the Dictionary is occupied
 	bool dataset_is_equal(std::string name, char delim); //DONE
@@ -63,11 +68,13 @@ public:
 	// From HIS_file_name.txt
 	std::vector<std::string> get_history_list(); //DONE
 
+	// Clear the whole history
+	void clear_history();
+
 	// Random n words in the tree
 	std::vector<Word> random_words(size_t n); // DONE
 
 	std::vector<std::string> get_prediction(std::string prefix);  //NOT YET
-	
 };
 
 #endif
