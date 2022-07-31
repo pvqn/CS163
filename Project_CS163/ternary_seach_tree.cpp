@@ -229,6 +229,11 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 		return search_helper(root->mid, word, index + 1);
 	return search_helper(root->right, word, index);
 }
+void Ternary_Search_Tree::update_def_helper(TST_Node* root, std::string new_def)
+{
+	root->def = new_def;
+}
+
 
 bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 	size_t index, std::string& def)

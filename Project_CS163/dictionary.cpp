@@ -122,7 +122,7 @@ void Dictionary::action_on_favorite_file(std::string word, bool status)
 			}
 		}
 
-		if (!status && !duplicate) temp << str << '\n';
+		if (status && !duplicate) temp << str << '\n';
 
 		original.close();
 		temp.close();
@@ -207,9 +207,33 @@ void Dictionary::remove(std::string word)
 	}
 }
 
-Word Dictionary::search_for_definition(std::string word)
+void Dictionary::edit_definition(std::string word, std::string def)
 {
+	TST_Node *node = word_tree.search_helper(word_tree.root, word, 0);
+
+	Word w = Word(node);
+
+	if (w.get_word().empty() || w.get_definition() == def) return;
+
+	for (const std::string& keyword_old : util::str::split(w.get_definition()))
+		keyword_table.remove_from_table_helper(keyword_old, w);
+
+	for (const std::string& keyword_new : util::str::split(def))
+		keyword_table.remove_from_table_helper(keyword_new, w);
+
+	word_tree.update_def_helper(node, def);
+}
+
+Word Dictionary::search_for_definition(std::string word, bool add_to_history)
+{
+	if (add_to_history) pushing_into_history_file(word);
+
 	return Word(word_tree.search_helper(word_tree.root, word, 0));
+}
+
+std::vector<Word> Dictionary::search_for_definition(std::string keyword)
+{
+	return keyword_table.find_by_keyword(keyword);
 }
 
 std::vector<Word> Dictionary::get_favorite_list()
@@ -248,6 +272,8 @@ void Dictionary::clear_history()
 std::vector<Word> Dictionary::random_words(size_t n)
 {
 	std::vector<Word> words = word_tree.words_cache;
+
+	if (words.size() < n) return {};
 
 	std::vector<bool> existed;
 

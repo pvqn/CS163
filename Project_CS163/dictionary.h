@@ -41,10 +41,7 @@ private:
 	// Cache the tree into file_name.txt file
 	void cache();
 
-	// TODO: implement function for add and remove favorite list
-	void action_on_favorite_file(std::string word, bool status);
-
-	// TODO: adding a word to HIS_ file along with date
+	// Adding a word to HIS_ file along with date
 	void pushing_into_history_file(std::string word);
 public:
 	// Check if the Dictionary is occupied
@@ -59,8 +56,16 @@ public:
 	// Delete word with definition
 	void remove(std::string word);
 
+	// Delete the definition of a word
+	void edit_definition(std::string word, std::string def);
+
 	// Search a word by definition
-	Word search_for_definition(std::string word);
+	Word search_for_definition(std::string word, bool add_to_history);
+
+	std::vector<Word> search_for_definition(std::string keyword);
+
+	// Add or remove a word in the favorite list (0 to remove, 1 to add)
+	void action_on_favorite_file(std::string word, bool status);
 
 	// From FAV_file_name.txt
 	std::vector<Word> get_favorite_list();

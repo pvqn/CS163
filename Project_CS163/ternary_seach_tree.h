@@ -128,6 +128,8 @@ private:
 
 	TST_Node* search_helper(TST_Node* root, std::string& prefix, size_t index);
 
+	void update_def_helper(TST_Node* root, std::string new_def);
+
 	// Helper function for get the word prediction
 	void get_leaf_helper(TST_Node* root, std::vector<std::string>& result,
 		size_t& count);
