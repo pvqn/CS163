@@ -10,7 +10,7 @@ std::vector<std::string> util::str::split(std::string definition)
 
 	for (char ch : definition)
 	{
-		std::string valid = "`-=[]\;',./~!@#$%^&*()_+{}|:\"<>?";
+		std::string valid = "`-=[]\\;\',./~!@#$%^&*()_+{}|:\"<>?";
 
 		if (valid.find(ch) == std::string::npos)
 			temp.push_back(toupper(ch));

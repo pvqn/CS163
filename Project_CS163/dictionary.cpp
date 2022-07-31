@@ -279,4 +279,7 @@ std::vector<Word> Dictionary::random_words(size_t n)
 	return randomWords;
 }
 
-std::vector<std::string> Dictionary::get_prediction(std::string prefix) { return {}; }
+std::vector<std::string> Dictionary::get_prediction(std::string prefix) 
+{
+	return word_tree.get_prediction_helper(prefix);
+}
