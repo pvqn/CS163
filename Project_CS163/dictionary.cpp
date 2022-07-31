@@ -172,7 +172,7 @@ void Dictionary::insert(std::string word, std::string def)
 
 	if (is_valid)
 	{
-		size_t index;
+		/*size_t index;
 
 		util::algo::binary_search(word_tree.words_cache, w, index);
 
@@ -180,9 +180,11 @@ void Dictionary::insert(std::string word, std::string def)
 			word_tree.words_cache.push_back(w);
 		else
 			word_tree.words_cache.insert(word_tree.words_cache.begin() + index + 
-				(word_tree.words_cache[index] < w), w);
+				(word_tree.words_cache[index] < w), w);*/
 
-
+		//insert to wordscache
+		word_tree.words_cache.push_back(w);
+		
 		for (const std::string& keyword : util::str::split(def))
 			keyword_table.add_to_table_helper(keyword, w);
 	}
@@ -197,6 +199,22 @@ void Dictionary::remove(std::string word)
 		Ternary_Search_Tree temp;
 		Word w;
 		bool dummy;
+
+		// remove in wordscache
+
+		bool check = false;
+		for (int i = 0; i < word_tree.words_cache.size()-1; ++i)
+		{
+			if (word_tree.words_cache[i].get_word() == word)
+			{
+				check = true;
+			}
+			if (check)
+			{
+				word_tree.words_cache[i] = word_tree.words_cache[i + 1];
+			}
+		}
+		word_tree.words_cache.pop_back();
 
 		temp.root = temp.insert_helper(temp.root, word, def, 0, nullptr, dummy, w);
 
