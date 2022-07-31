@@ -80,7 +80,7 @@ Hash_Table& Hash_Table::operator=(const Hash_Table& other)
 	return *this;
 }
 
-void Hash_Table::add_to_table(std::string keyword, Word word)
+void Hash_Table::add_to_table_helper(std::string keyword, Word word)
 {
 	size_t h1 = hashing_1(keyword);
 	size_t index = 0;
@@ -96,7 +96,7 @@ void Hash_Table::add_to_table(std::string keyword, Word word)
 	}
 }
 
-void Hash_Table::remove_from_table(std::string keyword, Word word)
+void Hash_Table::remove_from_table_helper(std::string keyword, Word word)
 {
 	size_t h1 = hashing_1(keyword);
 	size_t index = 0;

@@ -1,3 +1,5 @@
+#include <cctype>
+
 #include "util.h"
 
 std::vector<std::string> util::str::split(std::string definition)
@@ -8,9 +10,9 @@ std::vector<std::string> util::str::split(std::string definition)
 
 	for (char ch : definition)
 	{
-		bool check = (65 <= ch && ch <= 90) || (97 <= ch && ch <= 122);
+		std::string valid = "`-=[]\;',./~!@#$%^&*()_+{}|:\"<>?";
 
-		if (check)
+		if (valid.find(ch) == std::string::npos)
 			temp.push_back(toupper(ch));
 		else
 		{

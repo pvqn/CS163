@@ -39,6 +39,15 @@ private:
 
 	long long hashing_2(std::string s);
 
+	Hash_Table& operator=(const Hash_Table& other);
+
+	// Add a word to the hash_table
+	void add_to_table_helper(std::string keyword, Word word);
+
+	// Remove a word from the hash_table
+	void remove_from_table_helper(std::string keyword, Word word);
+
+	std::vector<Word> find_by_keyword(std::string keyword);
 public:
 	Hash_Table();
 
@@ -46,16 +55,7 @@ public:
 
 	~Hash_Table() = default;
 
-	Hash_Table& operator=(const Hash_Table& other);
-
-	// Add a word to the hash_table
-	void add_to_table(std::string keyword, Word word);
-
-	// Remove a word from the hash_table
-	void remove_from_table(std::string keyword, Word word);
-
-	// TODO: add functions to find by keywords
-	std::vector<Word> find_by_keyword(std::string keyword);
+	friend class Dictionary;
 };
 
 #endif

@@ -27,27 +27,27 @@ void Database::set_cache_mode(bool to_cache)
 	}
 }
 
-void Database::change_dataset(std::string file_name, char delim)
+void Database::change_dataset(std::string file_name)
 {
 	if (cache_mode)
 	{
 		for (Dictionary* dictionary : list)
 		{
-			if (dictionary->dataset_is_equal(file_name, delim))
+			if (dictionary->dataset_is_equal(file_name))
 			{
 				current = dictionary;
 				return;
 			}
 		}
 
-		list.push_back(new Dictionary(file_name, delim));
+		list.push_back(new Dictionary(file_name));
 		current = list.back();
 	}
 	else
 	{
 		delete current;
 		list.resize(1);
-		current = list[0] = new Dictionary(file_name, delim);
+		current = list[0] = new Dictionary(file_name);
 	}
 }
 

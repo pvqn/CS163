@@ -124,7 +124,7 @@ private:
 	 * Return bool for deleting process status
 	 **/
 	bool remove_helper(TST_Node* root, const std::string& word,
-		size_t index, Word &w);
+		size_t index, std::string& def);
 
 	TST_Node* search_helper(TST_Node* root, std::string& prefix, size_t index);
 
@@ -136,18 +136,9 @@ private:
 	void print_helper(TST_Node* current, const char& separator,
 		std::ostream& os);
 
+	std::vector<std::string> get_prediction_helper(std::string prefix);
 public:
-	void insert(std::string word, std::string def, bool& is_valid, Word& eow);
-
-	Word search(std::string word);
-
-	bool remove(std::string word, Word& w);
-
-	void print(char separator, std::ostream& os);
-
-	std::vector<Word> get_words_list();
-
-	std::vector<std::string> get_prediction(std::string prefix);
+	friend class Dictionary;
 };
 
 #endif

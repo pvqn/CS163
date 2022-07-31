@@ -39,7 +39,7 @@ public:
 
 	void set_cache_mode(bool to_cache);
 
-	void change_dataset(std::string file_name, char delim);
+	void change_dataset(std::string file_name);
 
 	Dictionary& get();
 };

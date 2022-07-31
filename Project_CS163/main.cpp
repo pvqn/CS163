@@ -1,14 +1,20 @@
 #include <iostream>
+#include <vector>
+#include <chrono>
 #include "database.h"
-#include "util.h"
 
 int main()
 {
 	Database base;
 
-	base.change_dataset("people", ',');
+	auto begin = std::chrono::system_clock::now();
 
-	std::cin.get();
+	base.change_dataset("emotional");
+
+	auto end = std::chrono::system_clock::now();
+	auto d = std::chrono::duration_cast<std::chrono::seconds>(end - begin);
+
+	std::cout << "DONE! " << d.count() << " seconds\n";
 
 	return 0;
 }

@@ -2,11 +2,14 @@
 
 #include <fstream>
 #include <filesystem>
+#include <random>
 #include <ctime>
+#include <iostream>
+
 #include "util.h"
 
-Dictionary::Dictionary(std::string dataset, char deli)
-	: dataset_name(dataset), delim(deli) 
+Dictionary::Dictionary(std::string dataset)
+	: dataset_name(dataset)
 {
 	load();
 }
@@ -34,32 +37,35 @@ void Dictionary::load()
 	{
 		std::string line;
 
+		getline(in, line);
+
+		if (in.fail()) return;
+
+		delim = line[0];
+
 		while (getline(in, line))
 		{
-			std::string word, def;
-
 			size_t i = 0;
 
 			while (i < line.size() && line[i] != delim)
-				word.push_back(line[i++]);
+				i++;
 
 			if (i >= line.size())
 				continue;
 
-			def = line.substr(i + 1);
+			std::string word = line.substr(0, i), def = line.substr(i + 1);
 
-			bool is_valid;
+			bool is_valid = false;
 
 			Word w;
 
-			word_tree.insert(word, def, is_valid, w);
+			word_tree.root = word_tree.insert_helper(word_tree.root, word, def, 0, nullptr, is_valid, w);
 
 			if (is_valid)
 			{
-				for (std::string keyword : util::str::split(def))
-				{
-					keyword_table.add_to_table(keyword, w);
-				}
+				word_tree.words_cache.push_back(w);
+				for (const std::string& keyword : util::str::split(def))
+					keyword_table.add_to_table_helper(keyword, w);
 			}
 		}
 	}
@@ -84,58 +90,126 @@ void Dictionary::cache()
 	out.open(main_folder + dataset_name + ".txt");
 
 	if (out)
-		word_tree.print(delim, out);
+	{
+		out << delim << '\n';
+		word_tree.print_helper(word_tree.root, delim, out);
+	}
 }
 
-bool Dictionary::dataset_is_equal(std::string name, char delim)
+void Dictionary::action_on_favorite_file(std::string word, bool status)
 {
-	return (name == dataset_name) && (delim == this->delim);
+	std::string path = main_folder + "FAV_" + dataset_name + ".txt";
+	std::string temp_file = main_folder + "temp.txt";
+
+	std::ifstream original(path);
+	std::ofstream temp(temp_file);
+
+	if (original && temp)
+	{
+		std::string str;
+		bool duplicate = false;
+
+		while (getline(original, str))
+		{
+			if (word == str)
+			{
+				duplicate = true;
+				if (!status) temp << str << '\n';
+			}
+			else
+			{
+				temp << str << '\n';
+			}
+		}
+
+		if (!status && !duplicate) temp << str << '\n';
+
+		original.close();
+		temp.close();
+
+		std::filesystem::copy_file(temp_file, path);
+
+		std::filesystem::remove(temp_file);
+	}
+}
+
+void Dictionary::pushing_into_history_file(std::string word)
+{
+	time_t t = time(0);
+
+	struct tm now;
+	localtime_s(&now, &t);
+
+	std::ofstream out;
+	out.open(main_folder + "HIS_" + dataset_name + ".txt", std::ios::app);
+
+	if (out)
+	{
+		out << now.tm_year + 1900 << "~"
+			<< now.tm_mon + 1 << "~"
+			<< now.tm_mday << "~"
+			<< word << "\n";
+	}
+}
+
+bool Dictionary::dataset_is_equal(std::string name)
+{
+	return name == dataset_name;
 }
 
 size_t Dictionary::get_dictionary_size()
 {
-	return word_tree.get_words_list().size();
+	return word_tree.words_cache.size();
 }
 
 void Dictionary::insert(std::string word, std::string def)
 {
-	bool is_valid;
+	bool is_valid = false;
 
 	Word w;
 
-	word_tree.insert(word, def, is_valid, w);
+	word_tree.root = word_tree.insert_helper(word_tree.root, word, def, 0, nullptr, is_valid, w);
 
 	if (is_valid)
 	{
+		size_t index;
+
+		util::algo::binary_search(word_tree.words_cache, w, index);
+
+		if (word_tree.words_cache.empty())
+			word_tree.words_cache.push_back(w);
+		else
+			word_tree.words_cache.insert(word_tree.words_cache.begin() + index + 
+				(word_tree.words_cache[index] < w), w);
+
+
 		for (const std::string& keyword : util::str::split(def))
-			keyword_table.add_to_table(keyword, w);
+			keyword_table.add_to_table_helper(keyword, w);
 	}
 }
 
 void Dictionary::remove(std::string word)
 {
-	Word w = Word();
+	std::string def;
 
-	word_tree.remove(word, w);
-
-	if (!w.get_word().empty())
+	if (word_tree.remove_helper(word_tree.root, word, 0, def))
 	{
-		std::string def = w.get_definition();
+		Ternary_Search_Tree temp;
+		Word w;
+		bool dummy;
 
-		for (std::string keyword : util::str::split(def))
-			keyword_table.remove_from_table(keyword, w);
+		temp.root = temp.insert_helper(temp.root, word, def, 0, nullptr, dummy, w);
+
+		for (const std::string& word : util::str::split(def))
+		{
+			keyword_table.remove_from_table_helper(word, w);
+		}
 	}
-
 }
 
 Word Dictionary::search_for_definition(std::string word)
 {
-	std::time_t t = std::time(0);   // get time now
-	std::tm* now = std::localtime(&t);
-	std::ofstream out;
-	out.open(main_folder + "HIS_" + dataset_name + ".txt", std::ios::app);
-	out << now->tm_year + 1900 <<"~" << now->tm_mon + 1<< "~" << now->tm_mday <<"~" << word << "\n";
-	return word_tree.search(word);
+	return Word(word_tree.search_helper(word_tree.root, word, 0));
 }
 
 std::vector<Word> Dictionary::get_favorite_list()
@@ -146,9 +220,10 @@ std::vector<Word> Dictionary::get_favorite_list()
 	std::vector<Word> fav_list;
 	while (std::getline(in, t))
 	{
-		Word temp = Word(word_tree.search(t));
+		Word temp = Word(word_tree.search_helper(word_tree.root, t, 0));
 		if (!temp.get_word().empty()) fav_list.push_back(temp);
 	}
+	return fav_list;
 }
 
 std::vector<std::string> Dictionary::get_history_list()
@@ -164,63 +239,44 @@ std::vector<std::string> Dictionary::get_history_list()
 	return history;
 }
 
-std::vector<Word> Dictionary::random_words(size_t n) 
-{ 
-	std::vector<Word> randomWords;
-	srand((unsigned int)time(0));
-	std::vector<int> index;
+void Dictionary::clear_history()
+{
+	if (std::filesystem::exists("HIS_" + dataset_name + ".txt"))
+		std::filesystem::remove("HIS_" + dataset_name + ".txt");
+}
 
-	//random 4 number
-	while (index.size() < 4)
+std::vector<Word> Dictionary::random_words(size_t n)
+{
+	std::vector<Word> words = word_tree.words_cache;
+
+	std::vector<bool> existed;
+
+	existed.resize(words.size());
+
+	for (size_t i = 0; i < existed.size(); i++)
+		existed[i] = 0;
+
+	std::vector<Word> randomWords;
+
+	std::mt19937 md(std::random_device{}());
+
+	std::uniform_int_distribution<size_t> dis(0, words.size() - 1);
+
+	size_t count = 0;
+
+	while (count < n)
 	{
-		int t = rand() % n;
-		bool check = false;
-		for (int i = 0; i < index.size(); ++i)
-			if (t == index[i])
-			{
-				check = true;
-				break;
-			}
-		if (!check) index.push_back(t);
+		size_t i = dis(md);
+
+		if (existed[i] == 0)
+		{
+			existed[i] = 1;
+			randomWords.push_back(words[i]);
+			count++;
+		}
 	}
 
-	//sort 4 number
-	for (int i = 0; i < index.size(); ++i)
-		for (int j = i; j < index.size(); ++j)
-			if (index[i] > index[j])
-			{
-				int temp = index[i];
-				index[i] = index[j];
-				index[j] = temp;
-			}
-
-	std::vector<Word> temp = word_tree.get_words_list();
-	for (int i = 0; i < 4; ++i)
-		randomWords.push_back(temp[index[i]]);
 	return randomWords;
 }
 
 std::vector<std::string> Dictionary::get_prediction(std::string prefix) { return {}; }
-
-void Dictionary::action_on_favorite_file(std::string word, bool status)
-{
-	std::string path = main_folder + "FAV_" + dataset_name + ".txt"; 
-	std::fstream fst(path, std::ios::app); fst.close();
-	std::fstream fst2("temp.txt", std::ios::app);
-	fst.open(path, std::ios::in);
-	std::string x; //temp string
-	bool duplicated = false;
-	while (getline(fst, x)) {
-		if (word == x) {
-			duplicated = true;
-			if (!status) fst2 << x << "\n";
-		}
-		else fst2 << x << "\n";
-	}
-	fst.close();
-	if (status == 0 && !duplicated) fst2 << word << "\n";
-	fst2.close();
-	const char* p = path.c_str();
-	remove(p);
-	rename("temp.txt", p);
-}

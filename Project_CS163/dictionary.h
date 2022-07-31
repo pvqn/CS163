@@ -10,15 +10,15 @@ const std::string main_folder = "dataset/";
 class Dictionary
 {
 private:
-	const std::string dataset_name;
-	const char delim;
+	std::string dataset_name;
+	char delim;
 
 	Hash_Table keyword_table;
 	Ternary_Search_Tree word_tree;
 
 
 public:
-	Dictionary(std::string dataset, char deli);
+	Dictionary(std::string dataset);
 
 	Dictionary(const Dictionary& other);
 
@@ -48,7 +48,7 @@ private:
 	void pushing_into_history_file(std::string word); //NOT YET
 public:
 	// Check if the Dictionary is occupied
-	bool dataset_is_equal(std::string name, char delim); //DONE
+	bool dataset_is_equal(std::string name); //DONE
 
 	// Get the size of the dictionary
 	size_t get_dictionary_size(); //DONE
@@ -63,7 +63,7 @@ public:
 	Word search_for_definition(std::string word); //DONE
 
 	// From FAV_file_name.txt
-	std::vector<Word> get_favorite_list(); //NOT YET
+	std::vector<Word> get_favorite_list(); //DONE
 
 	// From HIS_file_name.txt
 	std::vector<std::string> get_history_list(); //DONE
