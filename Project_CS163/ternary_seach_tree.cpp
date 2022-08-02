@@ -15,7 +15,6 @@ std::string Word::get_definition() const
 	return eow ? eow->def : "";
 }
 
-// Get the word from the know Word struct
 std::string Word::get_word() const
 {
 	if (!eow) return "";
@@ -118,9 +117,9 @@ TST_Node* Ternary_Search_Tree::rotate_left(TST_Node* root)
 
 	if (parent)
 	{
-		if (parent->left == root) parent->left = root;
-		if (parent->mid == root) parent->mid = root;
-		if (parent->right == root) parent->right = root;
+		if (parent->left == root) parent->left = child;
+		if (parent->mid == root) parent->mid = child;
+		if (parent->right == root) parent->right = child;
 	}
 
 	return child;
@@ -139,9 +138,9 @@ TST_Node* Ternary_Search_Tree::rotate_right(TST_Node* root)
 
 	if (parent)
 	{
-		if (parent->left == root) parent->left = root;
-		if (parent->mid == root) parent->mid = root;
-		if (parent->right == root) parent->right = root;
+		if (parent->left == root) parent->left = child;
+		if (parent->mid == root) parent->mid = child;
+		if (parent->right == root) parent->right = child;
 	}
 
 	return child;
@@ -154,8 +153,7 @@ unsigned int Ternary_Search_Tree::get_weight(TST_Node* root)
 
 void Ternary_Search_Tree::set_weight(TST_Node* root)
 {
-	if (root)
-		root->weight = get_weight(root->mid) + !root->def.empty();
+	root->weight = get_weight(root->mid) +!root->def.empty();
 }
 
 TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word,
@@ -235,8 +233,7 @@ void Ternary_Search_Tree::update_def_helper(TST_Node* root, std::string new_def)
 }
 
 
-bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
-	size_t index, std::string& def)
+bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index)
 {
 	if (!root)
 		return 0;
@@ -255,13 +252,6 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 		}
 		if (!root->def.empty())
 		{
-			size_t index;
-
-			if (util::algo::binary_search(words_cache, Word(root), index))
-				words_cache.erase(words_cache.begin() + index);
-
-			def = root->def;
-
 			root->def.clear();
 			set_weight(root);
 
@@ -272,12 +262,12 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 	else // still in the string
 	{
 		if (word[index] < root->data)
-			remove_helper(root->left, word, index, def);
+			remove_helper(root->left, word, index);
 		else if (word[index] > root->data)
-			remove_helper(root->right, word, index, def);
+			remove_helper(root->right, word, index);
 		else if (word[index] == root->data)
 		{
-			if (remove_helper(root->mid, word, index + 1, def)) // this string is not the prefix of any others
+			if (remove_helper(root->mid, word, index + 1)) // this string is not the prefix of any others
 			{
 				delete root->mid;
 				root->mid = nullptr;

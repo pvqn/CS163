@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <random>
 #include <ctime>
-#include <iostream>
 
 #include "util.h"
 
@@ -33,7 +32,10 @@ void Dictionary::load()
 
 	in.open(main_folder + dataset_name + ".txt");
 
-	if (in.is_open())
+	std::ifstream stop;
+	stop.open(main_folder + "stopwords.txt");
+
+	if (in.is_open() && stop.is_open())
 	{
 		std::string line;
 
@@ -42,6 +44,19 @@ void Dictionary::load()
 		if (in.fail()) return;
 
 		delim = line[0];
+
+		Ternary_Search_Tree stop_tree;
+
+		while (getline(stop, line))
+		{
+			for (char& ch : line)
+				ch = toupper(ch);
+
+			Word eow;
+			bool is_valid;
+			stop_tree.root = stop_tree.insert_helper(stop_tree.root, line, "1",
+				0, nullptr, is_valid, eow);
+		}
 
 		while (getline(in, line))
 		{
@@ -64,8 +79,33 @@ void Dictionary::load()
 			if (is_valid)
 			{
 				word_tree.words_cache.push_back(w);
-				for (const std::string& keyword : util::str::split(def))
-					keyword_table.add_to_table_helper(keyword, w);
+
+				std::vector<std::string> split = util::str::split(def);
+
+				std::vector<std::string> hashing(split.size(), "");
+
+				for (const std::string& keyword : split)
+				{
+					if (stop_tree.search_helper(stop_tree.root, keyword, 0))
+						continue;
+
+					size_t h = (7 + 31 * (size_t)keyword.front()
+						+ 31 * 31 + (size_t)keyword.back()) % hashing.size();
+
+					for (size_t i = 0; i < hashing.size(); i++)
+					{
+						if (!hashing[(h + i) % hashing.size()].empty())
+						{
+							if (hashing[(h + i) % hashing.size()] == keyword) break;
+						}
+						else
+						{
+							hashing[(h + i) % hashing.size()] = keyword;
+							keyword_table.add_to_table_helper(keyword, w, true);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -172,38 +212,56 @@ void Dictionary::insert(std::string word, std::string def)
 
 	if (is_valid)
 	{
-		size_t index;
+		std::string find;
 
-		util::algo::binary_search(word_tree.words_cache, w, index);
+		word_tree.words_cache.push_back(w);
+		std::ifstream stopwords(main_folder + "stopwords.txt");
 
-		if (word_tree.words_cache.empty())
-			word_tree.words_cache.push_back(w);
-		else
-			word_tree.words_cache.insert(word_tree.words_cache.begin() + index + 
-				(word_tree.words_cache[index] < w), w);
+		if (stopwords)
+		{
+			std::string tmp;
+			while (getline(stopwords, tmp))
+			{
+				for (char& ch : tmp)
+					ch = toupper(ch);
 
+				find += (find.empty() ? "" : " ") + tmp;
+			}
+		}
 
 		for (const std::string& keyword : util::str::split(def))
-			keyword_table.add_to_table_helper(keyword, w);
+		{
+			if (find.find(keyword) != std::string::npos)
+				keyword_table.add_to_table_helper(keyword, w);
+		}
 	}
 }
 
 void Dictionary::remove(std::string word)
 {
-	std::string def;
+	TST_Node* search = word_tree.search_helper(word_tree.root, word, 0);
 
-	if (word_tree.remove_helper(word_tree.root, word, 0, def))
+	if (search)
 	{
-		Ternary_Search_Tree temp;
-		Word w;
-		bool dummy;
+		Word w = Word(search);
 
-		temp.root = temp.insert_helper(temp.root, word, def, 0, nullptr, dummy, w);
+		std::string def = w.get_definition();
 
-		for (const std::string& word : util::str::split(def))
+		for (const std::string& str : util::str::split(def))
+			keyword_table.remove_from_table_helper(str, w);
+
+		for (size_t i = 0; i < word_tree.words_cache.size() - 1; i++)
 		{
-			keyword_table.remove_from_table_helper(word, w);
+			if (w == word_tree.words_cache[i])
+			{
+				util::algo::swap(word_tree.words_cache[i], word_tree.words_cache.back());
+				break;
+			}
 		}
+
+		word_tree.words_cache.pop_back();
+
+		word_tree.remove_helper(word_tree.root, word, 0);
 	}
 }
 

@@ -55,6 +55,8 @@ public:
 	Word(TST_Node* eow_) : eow(eow_) {}
 	Word(const Word& word) : eow(word.eow) {}
 
+	Word(Word&& word) = default;
+
 	Word& operator=(const Word& word);
 
 	// Get the definition from the know Word struct
@@ -123,8 +125,7 @@ private:
 	 *
 	 * Return bool for deleting process status
 	 **/
-	bool remove_helper(TST_Node* root, const std::string& word,
-		size_t index, std::string& def);
+	bool remove_helper(TST_Node* root, const std::string& word, size_t index);
 
 	TST_Node* search_helper(TST_Node* root, std::string& prefix, size_t index);
 
