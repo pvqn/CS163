@@ -116,6 +116,12 @@ void Dictionary::reset()
 	word_tree.~Ternary_Search_Tree();
 
 	keyword_table.~Hash_Table();
+	
+	// reset history.txt and fav.txt
+	if (std::filesystem::exists(main_folder + "HIS_" + dataset_name + ".txt"))
+		std::filesystem::remove(main_folder + "HIS_" + dataset_name + ".txt");
+	if (std::filesystem::exists(main_folder + "FAV_" + dataset_name + ".txt"))
+		std::filesystem::remove(main_folder + "FAV_" + dataset_name + ".txt");
 
 	std::filesystem::copy_file(main_folder + "ORG_" + dataset_name + ".txt",
 		main_folder + dataset_name + ".txt");
@@ -134,6 +140,7 @@ void Dictionary::cache()
 		out << delim << '\n';
 		word_tree.print_helper(word_tree.root, delim, out);
 	}
+	out.close();
 }
 
 void Dictionary::action_on_favorite_file(std::string word, bool status)
@@ -250,16 +257,19 @@ void Dictionary::remove(std::string word)
 		for (const std::string& str : util::str::split(def))
 			keyword_table.remove_from_table_helper(str, w);
 
+		bool find = false;
+
 		for (size_t i = 0; i < word_tree.words_cache.size() - 1; i++)
 		{
 			if (w == word_tree.words_cache[i])
 			{
 				util::algo::swap(word_tree.words_cache[i], word_tree.words_cache.back());
+				find = true;
 				break;
 			}
 		}
 
-		word_tree.words_cache.pop_back();
+		if (find) word_tree.words_cache.pop_back();
 
 		word_tree.remove_helper(word_tree.root, word, 0);
 	}
@@ -305,6 +315,7 @@ std::vector<Word> Dictionary::get_favorite_list()
 		Word temp = Word(word_tree.search_helper(word_tree.root, t, 0));
 		if (!temp.get_word().empty()) fav_list.push_back(temp);
 	}
+	in.close();
 	return fav_list;
 }
 
@@ -318,13 +329,14 @@ std::vector<std::string> Dictionary::get_history_list()
 	{
 		history.insert(history.begin(), t);
 	}
+	in.close();
 	return history;
 }
 
 void Dictionary::clear_history()
 {
-	if (std::filesystem::exists("HIS_" + dataset_name + ".txt"))
-		std::filesystem::remove("HIS_" + dataset_name + ".txt");
+	if (std::filesystem::exists(main_folder + "HIS_" + dataset_name + ".txt"))
+		std::filesystem::remove(main_folder + "HIS_" + dataset_name + ".txt");
 }
 
 std::vector<Word> Dictionary::random_words(size_t n)
