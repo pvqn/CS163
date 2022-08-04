@@ -1,14 +1,16 @@
 #include "GUI/mainwindow.h"
+
 #include "./ui_mainwindow.h"
 
+#include <QRandomGenerator>
 
 mainpage::mainpage(QWidget *parent)
     : QMainWindow(parent)
-    , myDict(Dictionary("slang", '\t'))
     , ui(new Ui::mainpage)
 {
-
     path = QCoreApplication::applicationDirPath();
+
+    database.change_dataset("slang");
 
     this->setFixedSize(800, 500);
 
@@ -16,11 +18,21 @@ mainpage::mainpage(QWidget *parent)
 
     ui->setupUi(this);
 
+    ui->comboBox->clear();
+
+    for (const QString& file_name : database.get_databse_list())
+    {
+        ui->comboBox->addItem(file_name);
+    }
+
     ui->recommendationBar->setVisible(false);
     turnOnButton(ui->searchByWordBtt);
 
-    ui->dataDetectBtt->setText(QString::fromUtf8("Currently using: ") + QString::fromUtf8("<span style=' font-weight: bold; color:#aa0000;'>" + myDict.pathCurrentDataset + "</span>"));
-    ui->sizeData->setText("This dataset has a total of " + QString::number(myDict.size) + " words.");
+    ui->dataDetectBtt->setText(QString("Currently using: ") +
+                               QString("<span style=' font-weight: bold; color:#aa0000;'>" +
+                                                 database.get().get_dataset_name() + "</span>"));
+    ui->sizeData->setText(QString("This dataset has a total of ")
+                          + QString::number(database.get().get_dictionary_size()) + QString(" words."));
 
     QPixmap pixmap1(path + "/resources/refresh_black.gif");
     QIcon ButtonIcon1(pixmap1);
@@ -79,12 +91,16 @@ mainpage::mainpage(QWidget *parent)
                                             }");
 }
 
-void mainpage::getPrediction(std::string pref) {
+void mainpage::getPrediction(QString pref) {
     ui->recommendationBar->clear();
-    std::vector<std::string> preds = ((this->s_status) ? myDict.predictionByDef(pref) : myDict.predictionByWord(pref));
+    std::vector<QString> preds = ((this->s_status) ?
+                                      database.get().get_word_prediction(pref) :
+                                      database.get().get_keyword_prediction(pref));
     for (int i = 0; i < preds.size(); i++) {
+        qDebug() << preds[i] << '\n';
+
         QListWidgetItem* item = new QListWidgetItem;
-        item->setText(QString::fromUtf8(preds[i]));
+        item->setText(preds[i]);
         ui->recommendationBar->addItem(item);
     }
 }
@@ -95,7 +111,7 @@ void setButtonIcon(QMovie* myMovie, QPushButton* btt, int frame) {
 
 void mainpage::turnOnButton(QPushButton* btt) {
     btt->setStyleSheet("text-align: center; background-color: rgb(215, 255, 181);");
-    this->s_status = ((btt == ui->searchByWordBtt) ? 0 : 1);
+    this->s_status = (btt == ui->searchByWordBtt);
 }
 
 void mainpage::turnOffButton(QPushButton* btt) {
@@ -191,7 +207,7 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                         this->animationEnded = true;
                         this->animationAlreadyDone = false;
                     }
-                    getPrediction(temptext.toStdString());
+                    getPrediction(temptext);
                 }
                 else {
                     QString temptext = k->text();
@@ -251,13 +267,15 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                         this->animationEnded = false;
                     }
                     if (this->s_status) {
-                        if (events->key() == Qt::Key_Space) getPrediction(temptext.toStdString());
+                        if (events->key() == Qt::Key_Space) getPrediction(temptext);
                     }
-                    else getPrediction(temptext.toStdString());
+                    else getPrediction(temptext);
                 }
             }
         }
+
         else if (obj == (QObject*)ui->resetDataBtt) {
+#ifdef __APPLE__
             auto movie1 = new QMovie(this);
 
             if (event->type() == QEvent::HoverEnter) {
@@ -285,8 +303,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon1(pixmap1);
                 ui->resetDataBtt->setIcon(ButtonIcon1);
             }
+#endif
         }
         else if (obj == (QObject*)ui->addWordBtt) {
+#ifdef __APPLE__
             auto movie2 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie2->setFileName(path + "/resources/add_black.gif");
@@ -315,9 +335,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon2(pixmap2);
                 ui->addWordBtt->setIcon(ButtonIcon2);
             }
-
+#endif
         }
         else if (obj == (QObject*) ui->randomWord) {
+#ifdef __APPLE__
             auto movie3 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie3->setFileName(path + "/resources/shuffle_black.gif");
@@ -346,9 +367,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon3(pixmap3);
                 ui->randomWord->setIcon(ButtonIcon3);
             }
-
+#endif
         }
         else if (obj == (QObject*)ui->changeModeBtt) {
+#ifdef __APPLE__
             auto movie4 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie4->setFileName(path + "/resources/change_black.gif");
@@ -377,9 +399,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon4(pixmap4);
                 ui->changeModeBtt->setIcon(ButtonIcon4);
             }
-
+#endif
         }
         else if (obj == (QObject*)ui->generateQuesBtt) {
+#ifdef __APPLE__
             auto movie5 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie5->setFileName(path + "/resources/generate_black.gif");
@@ -408,18 +431,19 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon5(pixmap5);
                 ui->generateQuesBtt->setIcon(ButtonIcon5);
             }
-
+#endif
         }
         else if (obj == (QObject*)ui->favFuncBtt) {
+#ifdef __APPLE__
             auto movie6 = new QMovie(this);
-            bool isInFav = isInFavList(ui->word->text().toStdString());
+            bool isInFav = isInFavList(ui->word->text());
             if (event->type() == QEvent::HoverEnter) {
                 if (isInFav) {
                     movie6->setFileName(path + "/resources/fav_superblack.gif");
                     connect(movie6, &QMovie::frameChanged, [=]{
                         ui->favFuncBtt->setIcon(movie6->currentPixmap());
                     });
-                    connect(movie6, &QMovie::frameChanged, this,  [movie6, this]() {
+                    connect(movie6, &QMovie::frameChanged, this,  [movie6]() {
                         if(movie6->currentFrameNumber() == (movie6->frameCount() - 1)) {
                         movie6->stop();
                             if (movie6->state() == QMovie::NotRunning) {
@@ -436,7 +460,7 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                     connect(movie6, &QMovie::frameChanged, [=]{
                         ui->favFuncBtt->setIcon(movie6->currentPixmap());
                     });
-                    connect(movie6, &QMovie::frameChanged, this,  [movie6, this]() {
+                    connect(movie6, &QMovie::frameChanged, this,  [movie6]() {
                         if(movie6->currentFrameNumber() == (movie6->frameCount() - 1)) {
                             movie6->stop();
                             if (movie6->state() == QMovie::NotRunning) {
@@ -465,8 +489,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                     ui->favFuncBtt->setIcon(ButtonIcon6);
                 }
              }
+#endif
         }
         else if (obj == (QObject*)ui->editWordBtt) {
+#ifdef __APPLE__
             auto movie7 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie7->setFileName(path + "/resources/edit_black.gif");
@@ -495,8 +521,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon7(pixmap7);
                 ui->editWordBtt->setIcon(ButtonIcon7);
             }
+#endif
         }
         else if (obj == (QObject*)ui->deleteWordBtt) {
+#ifdef __APPLE__
             auto movie8 = new QMovie(this);
             if (event->type() == QEvent::HoverEnter) {
                 movie8->setFileName(path + "/resources/trash_black.gif");
@@ -525,9 +553,11 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                 QIcon ButtonIcon8(pixmap8);
                 ui->deleteWordBtt->setIcon(ButtonIcon8);
             }
+#endif
         }
         obj = obj->parent();
     }
+
     return false;
 }
 
@@ -540,25 +570,20 @@ void mainpage::on_datasetBtt_clicked()
 {
     ui->searchBar->clearFocus();
     ui->stackedWidget->setCurrentWidget(ui->page_5);
-    ui->dataDetectBtt->setText(QString::fromUtf8("Currently using: ") + QString::fromUtf8("<span style=' font-weight: bold; color:#aa0000;'>" + myDict.pathCurrentDataset + "</span>"));
-    ui->sizeData->setText("This dataset has a total of " + QString::number(myDict.size) + " words.");
+    ui->dataDetectBtt->setText(QString("Currently using: ")
+                               + QString("<span style=' font-weight: bold; color:#aa0000;'>")
+                               + database.get().get_dataset_name() + QString("</span>"));
+    ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
 }
 
-bool mainpage::isInFavList(std::string temp)
+bool mainpage::isInFavList(QString temp)
 {
-    std::ifstream fin;
-    fin.open("user_favlist.txt");
-    std::vector<std::string> favList;
-    std::string t;
-    while (std::getline(fin,t))
+    for (const Word& str : database.get().get_favorite_list())
     {
-        favList.push_back(t);
+        if (temp == str.get_word()) return true;
     }
-    fin.close();
-    for (int i=0; i<favList.size(); ++i)
-        if (favList[i]==temp) return true;
-    return false;
 
+    return false;
 }
 
 void mainpage::on_recommendationBar_itemClicked(QListWidgetItem *item)
@@ -568,70 +593,86 @@ void mainpage::on_recommendationBar_itemClicked(QListWidgetItem *item)
 
 void mainpage::on_quizBtt_clicked()
 {
-     word_or_def=0;
+     word_or_def = 0;
      ui->stackedWidget->setCurrentWidget(ui->page_2);
-     myDict.random4Word();
-     std::vector<TreeNode*>result=myDict.getVector();
-     int index=myDict.getIndex();
 
-     ui->questionTable->setText("What is the definition of \"" + QString::fromUtf8(get_word(result[index])) + "\" ?");
-     ui->choice1Btt->setText(QString::fromUtf8(result[0]->def));
-     ui->choice2Btt->setText(QString::fromUtf8(result[1]->def));
-     ui->choice3Btt->setText(QString::fromUtf8(result[2]->def));
-     ui->choice4Btt->setText(QString::fromUtf8(result[3]->def));
+     random_cache = database.get().random_words(4);
+
+     index_random_cache = QRandomGenerator::global()->bounded(0, 3);
+
+     ui->questionTable->setText("What is the definition of \"" + random_cache[index_random_cache].get_word() + "\" ?");
+     ui->choice1Btt->setText(random_cache[0].get_definition());
+     ui->choice2Btt->setText(random_cache[1].get_definition());
+     ui->choice3Btt->setText(random_cache[2].get_definition());
+     ui->choice4Btt->setText(random_cache[3].get_definition());
 
      unlockChoice();
-
 }
 
 bool mainpage::isTrue(QString def)
 {
-    if (word_or_def==0)
-    if (def==QString::fromUtf8(myDict.getVector()[myDict.getIndex()]->def))
-        return true;
-    if (word_or_def==1)
-        if (def==QString::fromUtf8(get_word(myDict.getVector()[myDict.getIndex()])))
-           return true;
-     return false;
+    QString ans = word_or_def ? random_cache[index_random_cache].get_word()
+                              : random_cache[index_random_cache].get_definition();
+
+    return (def == ans);
 }
 
 void mainpage::on_favlistBtt_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_3);
     ui->favTable->clear();
-    std::ifstream fin;
-    fin.open("user_favlist.txt");
-    std::string t;
-    while (getline(fin,t))
-        ui->favTable->addItem(QString::fromUtf8(t));
-    fin.close();
+
+    for (const Word& str : database.get().get_favorite_list())
+    {
+        ui->favTable->addItem(str.get_word());
+    }
 }
 
 void mainpage::on_historyBtt_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_4);
     ui->historyTable->clear();
-    std::ifstream fin("history.txt");
-    std::string lastdate = "";
-    while (true) {
-        std::string date; fin >> date;
-        if (date.empty()) break;
-        std::string word; getline(fin, word);
-        if (date != lastdate) {
-            QTreeWidgetItem* item = new QTreeWidgetItem;
-            item->setText(0, QString::fromUtf8(date));
-            ui->historyTable->addTopLevelItem(item);
-            lastdate = date;
+
+    QString date_temp;
+
+    for (const QString& line : database.get().get_history_list())
+    {
+        std::vector<QString> date;
+
+        QString word;
+
+        for (const QChar& ch : line)
+        {
+            if (ch == '~')
+            {
+                date.push_back(word);
+                word.clear();
+            }
+            else
+                word.append(ch);
         }
+
+        QString date_str = date[2] + '/' + date[1] + '/' + date[0];
+
+        if (date_str != date_temp)
+        {
+            QTreeWidgetItem* item = new QTreeWidgetItem;
+            item->setText(0, date_str);
+            ui->historyTable->addTopLevelItem(item);
+            date_temp = date_str;
+        }
+
         QTreeWidgetItem* item = new QTreeWidgetItem;
-        item->setText(0, QString::fromUtf8(word));
-        for (int i = 0; i < ui->historyTable->topLevelItemCount(); i++) {
-            if (ui->historyTable->topLevelItem(i)->text(0).toStdString() == date) {
+        item->setText(0, word);
+
+        for (int i = 0; i < ui->historyTable->topLevelItemCount(); i++)
+        {
+            if (ui->historyTable->topLevelItem(i)->text(0) == date_str)
+            {
                 ui->historyTable->topLevelItem(i)->addChild(item);
             }
         }
     }
-    fin.close();
 }
 
 void mainpage::on_choice1Btt_clicked()
@@ -667,27 +708,26 @@ void mainpage::on_changeModeBtt_clicked()
 
     unlockChoice();
 
-    if (word_or_def==1) word_or_def=0; else word_or_def=1;
-    myDict.random4Word();
-    std::vector<TreeNode*>result=myDict.getVector();
-    int index=myDict.getIndex();
-    if (word_or_def==0)
-    {
-        ui->questionTable->setText("What is the definition of \"" + QString::fromUtf8(get_word(result[index])) + "\" ?");
-        ui->choice1Btt->setText(QString::fromUtf8(result[0]->def));
-        ui->choice2Btt->setText(QString::fromUtf8(result[1]->def));
-        ui->choice3Btt->setText(QString::fromUtf8(result[2]->def));
-        ui->choice4Btt->setText(QString::fromUtf8(result[3]->def));
-    }
-    else
-    {
-        ui->questionTable->setText("What is the word of \"" + QString::fromUtf8(result[index]->def) + "\" ?");
-        ui->choice1Btt->setText(QString::fromUtf8(get_word(result[0])));
-        ui->choice2Btt->setText(QString::fromUtf8(get_word(result[1])));
-        ui->choice3Btt->setText(QString::fromUtf8(get_word(result[2])));
-        ui->choice4Btt->setText(QString::fromUtf8(get_word(result[3])));
-    }
+    word_or_def = !word_or_def;
 
+    random_cache = database.get().random_words(4);
+
+    index_random_cache = QRandomGenerator::global()->bounded(0, 3);
+
+    QString question = word_or_def ?
+                "What is the word of \"" + random_cache[index_random_cache].get_definition() + "\" ?" :
+                "What is the definition of \"" + random_cache[index_random_cache].get_word() + "\" ?";
+
+    QString ans_1 = word_or_def ? random_cache[0].get_word() : random_cache[0].get_definition();
+    QString ans_2 = word_or_def ? random_cache[1].get_word() : random_cache[1].get_definition();
+    QString ans_3 = word_or_def ? random_cache[2].get_word() : random_cache[2].get_definition();
+    QString ans_4 = word_or_def ? random_cache[3].get_word() : random_cache[3].get_definition();
+
+    ui->questionTable->setText(question);
+    ui->choice1Btt->setText(ans_1);
+    ui->choice2Btt->setText(ans_2);
+    ui->choice3Btt->setText(ans_3);
+    ui->choice4Btt->setText(ans_4);
 }
 
 void mainpage::on_generateQuesBtt_clicked()
@@ -695,42 +735,36 @@ void mainpage::on_generateQuesBtt_clicked()
 
     unlockChoice();
 
-    myDict.random4Word();
-    std::vector<TreeNode*>result = myDict.getVector();
-    int index=myDict.getIndex();
+    random_cache = database.get().random_words(4);
 
-    if (word_or_def==0)
-    {
-        ui->questionTable->setText("What is the definition of \"" + QString::fromUtf8(get_word(result[index])) + "\" ?");
+    index_random_cache = QRandomGenerator::global()->bounded(0, 3);
 
-        ui->choice1Btt->setText(QString::fromUtf8(result[0]->def));
-        ui->choice2Btt->setText(QString::fromUtf8(result[1]->def));
-        ui->choice3Btt->setText(QString::fromUtf8(result[2]->def));
-        ui->choice4Btt->setText(QString::fromUtf8(result[3]->def));
-    }
-    else
-    {
+    QString question = word_or_def ?
+                "What is the word of \"" + random_cache[index_random_cache].get_definition() + "\" ?" :
+                "What is the definition of \"" + random_cache[index_random_cache].get_word() + "\" ?";
 
-        ui->questionTable->setText("What is the word of \"" + QString::fromUtf8(result[index]->def)+ "\" ?");
-        ui->choice1Btt->setText(QString::fromUtf8(get_word(result[0])));
-        ui->choice2Btt->setText(QString::fromUtf8(get_word(result[1])));
-        ui->choice3Btt->setText(QString::fromUtf8(get_word(result[2])));
-        ui->choice4Btt->setText(QString::fromUtf8(get_word(result[3])));
-    }
+    QString ans_1 = word_or_def ? random_cache[0].get_word() : random_cache[0].get_definition();
+    QString ans_2 = word_or_def ? random_cache[1].get_word() : random_cache[1].get_definition();
+    QString ans_3 = word_or_def ? random_cache[2].get_word() : random_cache[2].get_definition();
+    QString ans_4 = word_or_def ? random_cache[3].get_word() : random_cache[3].get_definition();
 
-
+    ui->questionTable->setText(question);
+    ui->choice1Btt->setText(ans_1);
+    ui->choice2Btt->setText(ans_2);
+    ui->choice3Btt->setText(ans_3);
+    ui->choice4Btt->setText(ans_4);
 }
 
 void mainpage::on_favFuncBtt_clicked()
 {
     if (ui->favFuncBtt->text()=="❤")
     {
-        actionOnFavList(ui->word->text().toStdString(),true);
+        database.get().action_on_favorite_file(ui->word->text(), true);
         ui->favFuncBtt->setText("♡");
     }
     else
     {
-        actionOnFavList(ui->word->text().toStdString(),false);
+        database.get().action_on_favorite_file(ui->word->text(), false);
         ui->favFuncBtt->setText("❤");
     }
 }
@@ -740,50 +774,38 @@ void mainpage::on_editWordBtt_clicked()
     dialog_addnewword* newDialog_AddNewWord = new dialog_addnewword(this, this->ui->word->text(), this->ui->def->text());
     newDialog_AddNewWord->show();
     connect(newDialog_AddNewWord, &dialog_addnewword::buttonClicked, this, [&](QString word, QString def) {
-        auto node = myDict.search(word.toStdString());
-        if (node) node->def = def.toStdString();
-        else {
-            myDict.insert(word.toStdString(), def.toStdString());
-        }
+        Word w = database.get().search_for_definition(word, 0);
+        if (!w.get_word().isEmpty())
+            database.get().edit_definition(word, def);
+        else
+            database.get().insert(word, def);
         updateUIWord(word);
     });
 }
 
 void mainpage::on_randomWord_clicked()
 {
-    std::vector<TreeNode*> result;
-    int index = -1;
-    QString stringGotten = ui->word->text();
-    do {
-        struct timespec ts;
-        {
-           long tv_nsec = 763;
-        }
-        nanosleep(&ts, NULL);
-        myDict.random4Word();
-        result = myDict.getVector();
-        for (int i = 0; i < 4; i++) {
-            if (QString::fromUtf8(get_word(result[i])) != stringGotten) {
-                index = i;
-                break;
-            }
-        }
-    }
-    while (stringGotten == QString::fromUtf8(get_word(result[index])));
-    stringGotten = QString::fromUtf8(get_word(result[index]));
+    Word random = database.get().random_words(1)[0];
+
+    while (random.get_word() == ui->word->text())
+        random = database.get().random_words(1)[0];
+
     ui->stackedWidget->setCurrentWidget(ui->page);
-    ui->word->setText(QString::fromUtf8(get_word(result[index])));
-    ui->def->setText(QString::fromUtf8(myDict.search(get_word(result[index]))->def));
-    if (isInFavList(get_word(result[index])))
+    ui->word->setText(random.get_word());
+    ui->def->setText(random.get_definition());
+
+    if (isInFavList(random.get_word()))
         ui->favFuncBtt->setText("❤");
     else ui->favFuncBtt->setText("♡");
+
+    ui->favFuncBtt->setText(isInFavList(random.get_word()) ? "❤" : "♡");
 }
 
 void mainpage::on_deleteWordBtt_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_6);
-    myDict.remove(ui->word->text().toStdString());
-    getPrediction(ui->searchBar->text().toStdString());
+    database.get().remove(ui->word->text());
+    getPrediction(ui->searchBar->text());
 }
 
 void mainpage::on_searchbyBtt_clicked()
@@ -874,8 +896,9 @@ void mainpage::on_searchByDefBtt_clicked()
 
 void mainpage::on_resetDataBtt_clicked()
 {
-    myDict.reset();
-    ui->sizeData->setText("This dataset has a total of " + QString::number(myDict.size) + " words.");
+    database.get().reset();
+    ui->sizeData->setText(QString("This dataset has a total of ")
+                          + QString::number(database.get().get_dictionary_size()) + QString(" words."));
 }
 
 void mainpage::on_addWordBtt_clicked()
@@ -883,11 +906,11 @@ void mainpage::on_addWordBtt_clicked()
     dialog_addnewword* newDialog_AddNewWord = new dialog_addnewword(this, "", "");
     newDialog_AddNewWord->show();
     connect(newDialog_AddNewWord, &dialog_addnewword::buttonClicked, this, [&](QString word, QString def) {
-        auto node = myDict.search(word.toStdString());
-        if (node) node->def = def.toStdString();
-        else {
-            myDict.insert(word.toStdString(), def.toStdString());
-        }
+        Word w = database.get().search_for_definition(word, 0);
+        if (!w.get_word().isEmpty())
+            database.get().edit_definition(word, def);
+        else
+            database.get().insert(word, def);
         updateUIWord(word);
     });
 }
@@ -897,9 +920,8 @@ void mainpage::on_deleteHis_clicked()
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Test", "Are you sure?", QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
-        std::ofstream fout("history.txt");
-        fout << "";
-        fout.close();
+        database.get().clear_history();
+        ui->historyTable->clear();
     }
 }
 
@@ -921,15 +943,28 @@ void mainpage::on_favTable_itemDoubleClicked(QListWidgetItem *item)
 void mainpage::updateUIWord(QString word) {
     ui->stackedWidget->setCurrentWidget(ui->page);
     ui->word->setText(word);
-    ui->def->setText(QString::fromUtf8(myDict.search(word.toStdString())->def));
-    if (isInFavList(word.toStdString())) {
-        QPixmap pixmap6("/Users/hoangtheanh/Project_Dictionary/resources/fav_superblack.gif");
+    ui->def->setText(database.get().search_for_definition(word, 1).get_definition());
+    if (isInFavList(word)) {
+        QPixmap pixmap6("resources/fav_superblack.gif");
         QIcon ButtonIcon6(pixmap6);
         ui->favFuncBtt->setIcon(ButtonIcon6);
     }
     else {
-        QPixmap pixmap6("/Users/hoangtheanh/Project_Dictionary/resources/fav_black.gif");
+        QPixmap pixmap6("resources/fav_black.gif");
         QIcon ButtonIcon6(pixmap6);
         ui->favFuncBtt->setIcon(ButtonIcon6);
     }
 }
+
+void mainpage::on_pushButton_3_clicked()
+{
+    QString str = ui->comboBox->currentText();
+
+    database.change_dataset(str);
+
+    ui->dataDetectBtt->setText(QString("Currently using: ")
+                               + QString("<span style=' font-weight: bold; color:#aa0000;'>")
+                               + database.get().get_dataset_name() + QString("</span>"));
+    ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
+}
+

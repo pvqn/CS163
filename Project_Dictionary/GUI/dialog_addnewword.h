@@ -2,7 +2,7 @@
 #define DIALOG_ADDNEWWORD_H
 
 #include <QMainWindow>
-#include <operation/dictionary.hpp>
+#include "operation/database.h"
 
 namespace Ui {
 class dialog_addnewword;

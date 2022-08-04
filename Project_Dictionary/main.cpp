@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     w.setWindowOpacity(0.985);
     //w.setAttribute(Qt::WA_MacShowFocusRect, 1);
 #endif
-    w.setWindowTitle("");
+    w.setWindowTitle("Dictionary");
 
     w.show();
     return a.exec();

@@ -19,7 +19,8 @@
 #include <QMovie>
 #include <QDir>
 #include <GUI/dialog_addnewword.h>
-#include "operation/dictionary.hpp"
+
+#include "operation/database.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class mainpage; }
@@ -33,12 +34,17 @@ public:
     mainpage(QWidget *parent = nullptr);
     bool eventFilter(QObject *obj, QEvent *event);
     ~mainpage();
-    Dictionary myDict;
+
     int eventchecker = -1;
     int word_or_def = 0;
     Ui::mainpage *ui = nullptr;
-    bool s_status = 0;
+    bool s_status = 1;
     QString anschoice = "";
+
+    Database database;
+
+    std::vector<Word> random_cache;
+    size_t index_random_cache;
 
 private slots:
     void on_datasetBtt_clicked();
@@ -87,6 +93,8 @@ private slots:
 
     void on_favTable_itemDoubleClicked(QListWidgetItem *item);
 
+    void on_pushButton_3_clicked();
+
 signals:
     void loadSucceed();
 
@@ -98,9 +106,9 @@ private:
 
     bool animationEnded = false;
 
-    void getPrediction(std::string s);
+    void getPrediction(QString s);
 
-    bool isInFavList(std::string);
+    bool isInFavList(QString temp);
 
     bool isTrue(QString def);
 

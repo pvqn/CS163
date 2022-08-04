@@ -180,7 +180,7 @@ background-color: rgb(202, 204, 208);
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <property name="spacing">
-          <number>-1</number>
+          <number>4</number>
          </property>
          <item>
           <widget class="QLabel" name="word">
@@ -1091,7 +1091,7 @@ background-color: rgb(226, 226, 232);
      </widget>
     </widget>
     <widget class="QWidget" name="page_4">
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -1185,6 +1185,11 @@ background-color: rgb(226, 226, 232);
 	background-color: rgb(226, 226, 232);
 }</string>
          </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>
@@ -1320,7 +1325,7 @@ border: 2px solid rgb(120, 159, 240);
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0">
              <property name="spacing">
-              <number>-1</number>
+              <number>4</number>
              </property>
              <property name="sizeConstraint">
               <enum>QLayout::SetFixedSize</enum>
