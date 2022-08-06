@@ -89,6 +89,7 @@ mainpage::mainpage(QWidget *parent)
                                                 border-right:0px;\
                                                 background: rgb(226, 226, 232);\
                                             }");
+
 }
 
 void mainpage::getPrediction(QString pref) {
@@ -112,6 +113,7 @@ void setButtonIcon(QMovie* myMovie, QPushButton* btt, int frame) {
 void mainpage::turnOnButton(QPushButton* btt) {
     btt->setStyleSheet("text-align: center; background-color: rgb(215, 255, 181);");
     this->s_status = (btt == ui->searchByWordBtt);
+   // if (this->s_status) qDebug() <<"True \n"; else qDebug() <<"False \n";
 }
 
 void mainpage::turnOffButton(QPushButton* btt) {
@@ -266,8 +268,10 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
 
                         this->animationEnded = false;
                     }
-                    if (this->s_status) {
+                    if (!this->s_status) {
+
                         if (events->key() == Qt::Key_Space) getPrediction(temptext);
+
                     }
                     else getPrediction(temptext);
                 }
@@ -589,6 +593,10 @@ bool mainpage::isInFavList(QString temp)
 void mainpage::on_recommendationBar_itemClicked(QListWidgetItem *item)
 {
     updateUIWord(item->text());
+    if (!isInFavList(item->text()))
+            ui->favFuncBtt->setText("♡");
+        else
+            ui->favFuncBtt->setText("❤");
 }
 
 void mainpage::on_quizBtt_clicked()

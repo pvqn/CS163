@@ -38,7 +38,7 @@ public:
     int eventchecker = -1;
     int word_or_def = 0;
     Ui::mainpage *ui = nullptr;
-    bool s_status = 1;
+    bool s_status = false;
     QString anschoice = "";
 
     Database database;
