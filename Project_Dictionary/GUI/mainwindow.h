@@ -13,7 +13,8 @@
 #include <QShortcut>
 #include <QListWidgetItem>
 #include <QMessageBox>
-#include <thread>
+#include <QThread>
+#include <QtConcurrent/QtConcurrent>
 #include <QPixmap>
 #include <QTreeWidgetItem>
 #include <QMovie>
@@ -35,16 +36,23 @@ public:
     bool eventFilter(QObject *obj, QEvent *event);
     ~mainpage();
 
-    int eventchecker = -1;
-    int word_or_def = 0;
-    Ui::mainpage *ui = nullptr;
-    bool s_status = false;
-    QString anschoice = "";
+//    int eventchecker = -1;
+//    int word_or_def = 0;
+//
+//    bool s_status = false;
+//    QString anschoice = "";
 
     Database database;
+    Ui::mainpage *ui = nullptr;
+
+    bool s_status = false;
+    int word_or_def = 0;
+    QString anschoice = "";
 
     std::vector<Word> random_cache;
     size_t index_random_cache;
+
+    QFuture<void> load_thread;
 
 private slots:
     void on_datasetBtt_clicked();
@@ -94,6 +102,8 @@ private slots:
     void on_favTable_itemDoubleClicked(QListWidgetItem *item);
 
     void on_pushButton_3_clicked();
+
+    void closeEvent(QCloseEvent* event);
 
 signals:
     void loadSucceed();

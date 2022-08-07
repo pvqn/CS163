@@ -4,13 +4,16 @@
 
 #include <QRandomGenerator>
 
+#include <QFuture>
+#include <QMessageBox>
+#include <QtConcurrent/QtConcurrent>
+
+
 mainpage::mainpage(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::mainpage)
 {
     path = QCoreApplication::applicationDirPath();
-
-    database.change_dataset("slang");
 
     this->setFixedSize(800, 500);
 
@@ -24,6 +27,8 @@ mainpage::mainpage(QWidget *parent)
     {
         ui->comboBox->addItem(file_name);
     }
+
+    database.change_dataset(ui->comboBox->currentText());
 
     ui->recommendationBar->setVisible(false);
     turnOnButton(ui->searchByWordBtt);
@@ -94,6 +99,9 @@ mainpage::mainpage(QWidget *parent)
 
 void mainpage::getPrediction(QString pref) {
     ui->recommendationBar->clear();
+
+    if (!load_thread.isFinished()) return;
+
     std::vector<QString> preds = ((this->s_status) ?
                                       database.get().get_word_prediction(pref) :
                                       database.get().get_keyword_prediction(pref));
@@ -268,12 +276,8 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
 
                         this->animationEnded = false;
                     }
-                    if (!this->s_status) {
 
-                        if (events->key() == Qt::Key_Space) getPrediction(temptext);
-
-                    }
-                    else getPrediction(temptext);
+                    getPrediction(temptext);
                 }
             }
         }
@@ -570,10 +574,22 @@ mainpage::~mainpage()
     delete ui;
 }
 
+void mainpage::closeEvent(QCloseEvent* event)
+{
+    hide();
+
+    load_thread.waitForFinished();
+
+    QMainWindow::closeEvent(event);
+}
+
 void mainpage::on_datasetBtt_clicked()
 {
     ui->searchBar->clearFocus();
     ui->stackedWidget->setCurrentWidget(ui->page_5);
+
+    if (!load_thread.isFinished()) return;
+
     ui->dataDetectBtt->setText(QString("Currently using: ")
                                + QString("<span style=' font-weight: bold; color:#aa0000;'>")
                                + database.get().get_dataset_name() + QString("</span>"));
@@ -601,6 +617,8 @@ void mainpage::on_recommendationBar_itemClicked(QListWidgetItem *item)
 
 void mainpage::on_quizBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
      word_or_def = 0;
      ui->stackedWidget->setCurrentWidget(ui->page_2);
 
@@ -627,6 +645,8 @@ bool mainpage::isTrue(QString def)
 
 void mainpage::on_favlistBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     ui->stackedWidget->setCurrentWidget(ui->page_3);
     ui->favTable->clear();
 
@@ -638,6 +658,8 @@ void mainpage::on_favlistBtt_clicked()
 
 void mainpage::on_historyBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     ui->stackedWidget->setCurrentWidget(ui->page_4);
     ui->historyTable->clear();
 
@@ -779,6 +801,8 @@ void mainpage::on_favFuncBtt_clicked()
 
 void mainpage::on_editWordBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     dialog_addnewword* newDialog_AddNewWord = new dialog_addnewword(this, this->ui->word->text(), this->ui->def->text());
     newDialog_AddNewWord->show();
     connect(newDialog_AddNewWord, &dialog_addnewword::buttonClicked, this, [&](QString word, QString def) {
@@ -793,6 +817,8 @@ void mainpage::on_editWordBtt_clicked()
 
 void mainpage::on_randomWord_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     Word random = database.get().random_words(1)[0];
 
     while (random.get_word() == ui->word->text())
@@ -818,6 +844,8 @@ void mainpage::on_deleteWordBtt_clicked()
 
 void mainpage::on_searchbyBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     ui->stackedWidget->setCurrentWidget(ui->page_7);
 }
 
@@ -904,13 +932,21 @@ void mainpage::on_searchByDefBtt_clicked()
 
 void mainpage::on_resetDataBtt_clicked()
 {
-    database.get().reset();
-    ui->sizeData->setText(QString("This dataset has a total of ")
-                          + QString::number(database.get().get_dictionary_size()) + QString(" words."));
+    if (!load_thread.isFinished()) return;
+
+    load_thread = QtConcurrent::run([=]()
+    {
+        database.get().reset();
+    }).then([=]()
+    {
+        ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
+    });
 }
 
 void mainpage::on_addWordBtt_clicked()
 {
+    if (!load_thread.isFinished()) return;
+
     dialog_addnewword* newDialog_AddNewWord = new dialog_addnewword(this, "", "");
     newDialog_AddNewWord->show();
     connect(newDialog_AddNewWord, &dialog_addnewword::buttonClicked, this, [&](QString word, QString def) {
@@ -939,7 +975,7 @@ void mainpage::on_historyTable_itemDoubleClicked(QTreeWidgetItem *item, int colu
         if (ui->historyTable->topLevelItem(i) == item) return;
     }
     QString word = item->text(column);
-    word.erase(word.begin(), word.begin()+1);
+
     updateUIWord(word);
 }
 
@@ -968,11 +1004,23 @@ void mainpage::on_pushButton_3_clicked()
 {
     QString str = ui->comboBox->currentText();
 
-    database.change_dataset(str);
+    if (str == database.get().get_dataset_name()
+            || !ui->checkBox->isChecked()
+            || !load_thread.isFinished()) return;
 
     ui->dataDetectBtt->setText(QString("Currently using: ")
                                + QString("<span style=' font-weight: bold; color:#aa0000;'>")
-                               + database.get().get_dataset_name() + QString("</span>"));
-    ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
+                               + str + QString("</span>"));
+
+    ui->sizeData->setText("Please wait, the dataset is building");
+
+    load_thread = QtConcurrent::run([=]()
+    {
+        database.change_dataset(str);
+    }).then([=]()
+    {
+        ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
+        ui->checkBox->setCheckState(Qt::CheckState::Unchecked);
+    });
 }
 

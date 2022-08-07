@@ -47,5 +47,6 @@ int main(int argc, char *argv[])
     w.setWindowTitle("Dictionary");
 
     w.show();
+
     return a.exec();
 }
