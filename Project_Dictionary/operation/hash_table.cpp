@@ -257,7 +257,7 @@ void Hash_Table::add_to_table_helper(QString keyword, Word word, bool load)
 	{
         if (sorted[h1] == 0)
         {
-            std::sort(table[h1].begin(), table[h1].end());
+            sort(table[h1]);
             sorted[h1] = 1;
         }
 
@@ -305,7 +305,7 @@ void Hash_Table::remove_from_table_helper(QString keyword, Word word)
 
     if (sorted[h1] == 0)
     {
-        std::sort(table[h1].begin(), table[h1].end());
+        sort(table[h1]);
         sorted[h1] = 1;
     }
 
@@ -322,6 +322,12 @@ std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
     Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), 0, Word());
 
     size_t h1 = hashing_1(keyword);
+
+    if (sorted[h1] == 0)
+    {
+        sort(table[h1]);
+        sorted[h1] = 1;
+    }
 
     size_t index = bucket_binary_search(table[h1], b,
             0, table[h1].size() - 1);
