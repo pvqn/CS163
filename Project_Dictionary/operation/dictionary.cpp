@@ -97,7 +97,8 @@ void Dictionary::load()
                       if (!hashing[(h + i) % hashing.size()].isEmpty())
                       {
                         if (hashing[(h + i) % hashing.size()] == str) break;
-                      } else
+                      }
+                      else
                       {
                         hashing[(h + i) % hashing.size()] = str;
                         keyword_table.add_to_table_helper(str, w, true);
@@ -403,39 +404,47 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
     std::vector<QString> result;
 
     QString hashing_check[10000];
+    size_t freq_check[10000] = {0};
 
-    for (const QString& str : util::str::split(prefix))
+    std::vector<QString> spl = util::str::split(prefix);
+
+    for (const QString& str : spl)
     {
-        if (result.size() == 15) break;
-
         for (const Word& w : keyword_table.find_by_keyword(str))
         {
             QString s = w.get_word();
 
-            size_t hashing = (1 + 31 * str.front().unicode()
-                              + 31 * 31 * str.back().unicode()) % 10000;
+            size_t hashing = (1 + 31 * s.front().unicode()
+                              + 31 * 31 * s.back().unicode()) % 10000;
 
-            size_t i = 0;
-
-            while (i < 10000)
+            for (size_t i = 0; i < 10000; i++)
             {
                 if (!hashing_check[(i + hashing) % 10000].isEmpty())
                 {
-                    if (hashing_check[(i + hashing) % 10000] == s) break;
+                    if (hashing_check[(i + hashing) % 10000] == s)
+                    {
+                        freq_check[(i + hashing) % 10000]++;
+                        break;
+                    }
                 }
                 else
                 {
                     hashing_check[(i + hashing) % 10000] = s;
-                    result.push_back(s);
+                    freq_check[(i + hashing) % 10000] = 1;
                     break;
                 }
-
-                i++;
             }
         }
     }
 
-    result.resize(15);
+    for (size_t i = 0; i < 10000; i++)
+    {
+        if (freq_check[i] == spl.size())
+            result.push_back(hashing_check[i]);
+    }
+
+    if (result.size() > 15)
+        result.resize(15);
 
     return result;
 }

@@ -6,7 +6,7 @@
 
 #include <QFuture>
 #include <QMessageBox>
-#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent>
 
 
 mainpage::mainpage(QWidget *parent)
@@ -106,8 +106,6 @@ void mainpage::getPrediction(QString pref) {
                                       database.get().get_word_prediction(pref) :
                                       database.get().get_keyword_prediction(pref));
     for (int i = 0; i < preds.size(); i++) {
-        qDebug() << preds[i] << '\n';
-
         QListWidgetItem* item = new QListWidgetItem;
         item->setText(preds[i]);
         ui->recommendationBar->addItem(item);

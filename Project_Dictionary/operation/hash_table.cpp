@@ -238,8 +238,9 @@ void Hash_Table::introsort(std::vector<Hash_Table_Bucket> &v, size_t left,
 
 void Hash_Table::sort(std::vector<Hash_Table_Bucket> &v)
 {
-  size_t depth = size_t(2 * log2(v.size()));
-  introsort(v, 0, v.size() - 1, depth);
+    if (v.size() == 0) return;
+    size_t depth = size_t(2 * log2(v.size()));
+    introsort(v, 0, v.size() - 1, depth);
 }
 
 void Hash_Table::add_to_table_helper(QString keyword, Word word, bool load)
@@ -328,6 +329,8 @@ std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
         sort(table[h1]);
         sorted[h1] = 1;
     }
+
+    if (!table[h1].size()) return {};
 
     size_t index = bucket_binary_search(table[h1], b,
             0, table[h1].size() - 1);

@@ -4,6 +4,7 @@
 #include <QChar>
 #include <QTextStream>
 #include <string>
+#include <vector>
 
 class TST_Node
 {

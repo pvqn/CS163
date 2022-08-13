@@ -1,6 +1,7 @@
 #include "GUI/mainwindow.h"
 
 #include <QApplication>
+#include <filesystem>
 
 QString splashCut(QString t){
     QString tmp = "";
