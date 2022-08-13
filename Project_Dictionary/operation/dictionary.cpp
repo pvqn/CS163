@@ -125,24 +125,6 @@ void Dictionary::cache()
     }
 }
 
-void Dictionary::reset()
-{
-    QFile::remove(main_folder + dataset_name + ".txt");
-
-    Dictionary temp = Dictionary(dataset_name);
-
-    keyword_table.~Hash_Table();
-    word_tree.~Ternary_Search_Tree();
-
-    word_tree.root = temp.word_tree.root;
-    temp.word_tree.root = nullptr;
-
-    word_tree.words_cache = temp.word_tree.words_cache;
-
-    for (size_t i = 0; i < h1_val; i++)
-        keyword_table.table[i] = temp.keyword_table.table[i];
-}
-
 void Dictionary::action_on_favorite_file(QString word, bool status)
 {
     QString path = main_folder + "FAV_" + dataset_name + ".txt";
@@ -410,8 +392,10 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
 
     for (const QString& str : spl)
     {
+        if (result.size() == 15) break;
         for (const Word& w : keyword_table.find_by_keyword(str))
         {
+            if (result.size() == 15) break;
             QString s = w.get_word();
 
             size_t hashing = (1 + 31 * s.front().unicode()
@@ -424,6 +408,13 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
                     if (hashing_check[(i + hashing) % 10000] == s)
                     {
                         freq_check[(i + hashing) % 10000]++;
+
+                        if (freq_check[i] == spl.size())
+                        {
+                            if (result.size() < 15)
+                                result.push_back(hashing_check[i]);
+                        }
+
                         break;
                     }
                 }

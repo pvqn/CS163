@@ -41,6 +41,8 @@ public:
     std::vector<QString> get_databse_list();
 
 	Dictionary& get();
+
+    void reset();
 };
 
 #endif

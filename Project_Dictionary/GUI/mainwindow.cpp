@@ -7,6 +7,7 @@
 #include <QFuture>
 #include <QMessageBox>
 #include <QtConcurrent>
+#include <QProgressDialog>
 
 
 mainpage::mainpage(QWidget *parent)
@@ -576,9 +577,28 @@ void mainpage::closeEvent(QCloseEvent* event)
 {
     hide();
 
-    load_thread.waitForFinished();
+    QProgressDialog *dialog = new QProgressDialog;
+    dialog->setCancelButton(nullptr);
 
-    QMainWindow::closeEvent(event);
+    dialog->setLabelText("Loading");
+
+    dialog->setLabelText("Please wait, data is indexing...");
+
+    dialog->setRange(0,0);
+
+    dialog->setWindowFlags(Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint);
+
+    dialog->show();
+
+    auto *watcher = new QFutureWatcher<void>(this);
+    watcher->setFuture(load_thread);
+
+    connect(watcher, &QFutureWatcher<void>::finished, this, [=]() {
+        dialog->close();
+        delete dialog;
+        QMainWindow::closeEvent(event);
+        watcher->deleteLater();
+    });
 }
 
 void mainpage::on_datasetBtt_clicked()
@@ -932,9 +952,11 @@ void mainpage::on_resetDataBtt_clicked()
 {
     if (!load_thread.isFinished()) return;
 
+    ui->sizeData->setText("Please wait, the dataset is building");
+
     load_thread = QtConcurrent::run([=]()
     {
-        database.get().reset();
+        database.reset();
     }).then([=]()
     {
         ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");

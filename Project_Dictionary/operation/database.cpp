@@ -79,3 +79,19 @@ Dictionary& Database::get()
 {
 	return *current;
 }
+
+void Database::reset()
+{
+    size_t i = 0;
+
+    while (i < list.size() && list[i] != current)
+        i++;
+
+    QString name = current->get_dataset_name();
+
+    QFile::remove(main_folder + name + ".txt");
+
+    delete current;
+
+    current = list[i] = new Dictionary(name);
+}

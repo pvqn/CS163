@@ -41,8 +41,6 @@ private:
 	// Adding a word to HIS_ file along with date
     void pushing_into_history_file(QString word);
 public:
-    void reset();
-
 	// Check if the Dictionary is occupied
     bool dataset_is_equal(QString name);
 

@@ -14,14 +14,15 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QThread>
-#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent>
 #include <QPixmap>
 #include <QTreeWidgetItem>
 #include <QMovie>
 #include <QDir>
-#include <GUI/dialog_addnewword.h>
+#include "GUI/dialog_addnewword.h"
 
 #include "operation/database.h"
+#include <vector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class mainpage; }
