@@ -153,7 +153,7 @@ unsigned int Ternary_Search_Tree::get_weight(TST_Node* root)
 
 void Ternary_Search_Tree::set_weight(TST_Node* root)
 {
-	root->weight = get_weight(root->mid) +!root->def.empty();
+	root->weight = get_weight(root->mid) + !root->def.empty();
 }
 
 TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word,
@@ -261,8 +261,10 @@ bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word,
 	}
 	else // still in the string
 	{
-		if (word[index] < root->data) remove_helper(root->left, word, index);
-		else if (word[index] > root->data) remove_helper(root->right, word, index);
+		if (word[index] < root->data)
+			remove_helper(root->left, word, index);
+		else if (word[index] > root->data)
+			remove_helper(root->right, word, index);
 		else if (word[index] == root->data)
 		{
 			if (remove_helper(root->mid, word, index + 1)) // this string is not the prefix of any others
@@ -318,19 +320,44 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, std::string& prefix
 	return search_helper(root->left, prefix, index);
 }
 
-std::vector<std::string> Ternary_Search_Tree::get_prediction_helper(std::string prefix)
-{
-	std::vector<std::string> result;
-	return result;
-}
-
 void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::string>& result, size_t& count)
 {
-	
+	if (root == nullptr || count == 0)
+		return;
+	if (!root->def.empty())
+	{
+		result.push_back(Word(root).get_word());
+		--count;
+	}
+	get_leaf_helper(root->left, result, count);
+	get_leaf_helper(root->mid, result, count);
+	get_leaf_helper(root->right, result, count);
 }
 
 void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) // DONR
 {
-	
+	if (current)
+	{
+		print_helper(current->left, separator, os);
+
+		if (!current->def.empty())
+			os << Word(current).get_word() << separator << current->def << '\n';
+
+		print_helper(current->mid, separator, os);
+		print_helper(current->right, separator, os);
+	}
 }
 
+std::vector<std::string> Ternary_Search_Tree::get_prediction_helper(std::string prefix)
+{
+	std::vector<std::string> result;
+	size_t count_max = 15;
+	TST_Node* current = search_helper(root, prefix, 0);
+	if (!current->def.empty())
+	{
+		result.push_back(Word(current).get_word());
+		--count_max;
+	}
+	get_leaf_helper(current->mid, result, count_max);
+	return result;
+}
