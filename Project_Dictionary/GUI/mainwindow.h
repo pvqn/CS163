@@ -37,12 +37,6 @@ public:
     bool eventFilter(QObject *obj, QEvent *event);
     ~mainpage();
 
-//    int eventchecker = -1;
-//    int word_or_def = 0;
-//
-//    bool s_status = false;
-//    QString anschoice = "";
-
     Database database;
     Ui::mainpage *ui = nullptr;
 

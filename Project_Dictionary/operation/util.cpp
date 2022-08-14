@@ -8,7 +8,7 @@ std::vector<QString> util::str::split(QString definition)
 
     for (QChar ch : definition)
 	{
-        if (!ch.isSpace() && !ch.isPunct())
+        if (ch.isLetterOrNumber())
             temp.push_back(ch.toUpper());
 		else
 		{

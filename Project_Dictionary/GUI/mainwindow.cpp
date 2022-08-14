@@ -29,16 +29,23 @@ mainpage::mainpage(QWidget *parent)
         ui->comboBox->addItem(file_name);
     }
 
-    database.change_dataset(ui->comboBox->currentText());
-
-    ui->recommendationBar->setVisible(false);
-    turnOnButton(ui->searchByWordBtt);
+    ui->sizeData->setText("Please wait, the dataset is building");
 
     ui->dataDetectBtt->setText(QString("Currently using: ") +
                                QString("<span style=' font-weight: bold; color:#aa0000;'>" +
-                                                 database.get().get_dataset_name() + "</span>"));
-    ui->sizeData->setText(QString("This dataset has a total of ")
-                          + QString::number(database.get().get_dictionary_size()) + QString(" words."));
+                                                 ui->comboBox->currentText() + "</span>"));
+
+    load_thread = QtConcurrent::run([=]()
+    {
+        database.change_dataset(ui->comboBox->currentText());
+    }).then([=]()
+    {
+        ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
+        ui->checkBox->setCheckState(Qt::CheckState::Unchecked);
+    });
+
+    ui->recommendationBar->setVisible(false);
+    turnOnButton(ui->searchByWordBtt);
 
     QPixmap pixmap1(path + "/resources/refresh_black.gif");
     QIcon ButtonIcon1(pixmap1);
@@ -106,6 +113,7 @@ void mainpage::getPrediction(QString pref) {
     std::vector<QString> preds = ((this->s_status) ?
                                       database.get().get_word_prediction(pref) :
                                       database.get().get_keyword_prediction(pref));
+
     for (int i = 0; i < preds.size(); i++) {
         QListWidgetItem* item = new QListWidgetItem;
         item->setText(preds[i]);
@@ -605,13 +613,6 @@ void mainpage::on_datasetBtt_clicked()
 {
     ui->searchBar->clearFocus();
     ui->stackedWidget->setCurrentWidget(ui->page_5);
-
-    if (!load_thread.isFinished()) return;
-
-    ui->dataDetectBtt->setText(QString("Currently using: ")
-                               + QString("<span style=' font-weight: bold; color:#aa0000;'>")
-                               + database.get().get_dataset_name() + QString("</span>"));
-    ui->sizeData->setText("This dataset has a total of " + QString::number(database.get().get_dictionary_size()) + " words.");
 }
 
 bool mainpage::isInFavList(QString temp)

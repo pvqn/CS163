@@ -277,7 +277,7 @@ void Dictionary::edit_definition(QString word, QString def)
         keyword_table.remove_from_table_helper(keyword_old, w);
 
     for (const QString& keyword_new : util::str::split(def))
-        keyword_table.remove_from_table_helper(keyword_new, w);
+        keyword_table.add_to_table_helper(keyword_new, w);
 
     word_tree.update_def_helper(node, def);
 }

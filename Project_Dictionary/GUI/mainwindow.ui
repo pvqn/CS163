@@ -128,7 +128,7 @@ background-color: rgb(202, 204, 208);
      </size>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_6">
      <widget class="QLabel" name="label_3">
@@ -746,7 +746,7 @@ text-align:center;
      </widget>
     </widget>
     <widget class="QWidget" name="page_2">
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget_2">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -1032,7 +1032,7 @@ text-align:center;
      </widget>
     </widget>
     <widget class="QWidget" name="page_3">
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget_3">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -1091,7 +1091,7 @@ background-color: rgb(226, 226, 232);
      </widget>
     </widget>
     <widget class="QWidget" name="page_4">
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget_4">
       <property name="geometry">
        <rect>
         <x>0</x>

@@ -55,7 +55,7 @@ public:
 	// Delete word with definition
     void remove(QString word);
 
-	// Delete the definition of a word
+    // Edit the definition of a word
     void edit_definition(QString word, QString def);
 
 	// Search a word by definition

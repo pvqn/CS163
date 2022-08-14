@@ -1,55 +1,18 @@
 #include "database.h"
 
+#include <vector>
 #include <QDirIterator>
 
 Database::~Database()
 {
-	for (Dictionary*& dictionary : list)
-	{
-		delete dictionary;
-		dictionary = nullptr;
-	}
+    delete current;
 	current = nullptr;
-}
-
-void Database::set_cache_mode(bool to_cache)
-{
-	cache_mode = to_cache;
-
-	if (!cache_mode)
-	{
-		for (Dictionary*& dictionary : list)
-		{
-			if (dictionary != current) delete dictionary;
-		}
-
-        list.clear();
-        list.push_back(current);
-	}
 }
 
 void Database::change_dataset(QString file_name)
 {
-	if (cache_mode)
-	{
-		for (Dictionary* dictionary : list)
-		{
-            if (dictionary->dataset_is_equal(file_name))
-			{
-				current = dictionary;
-				return;
-			}
-		}
-
-        list.push_back(new Dictionary(file_name));
-		current = list.back();
-	}
-	else
-	{
-		delete current;
-		list.resize(1);
-        current = list[0] = new Dictionary(file_name);
-	}
+    delete current;
+    current = new Dictionary(file_name);
 }
 
 std::vector<QString> Database::get_databse_list()
@@ -82,16 +45,11 @@ Dictionary& Database::get()
 
 void Database::reset()
 {
-    size_t i = 0;
-
-    while (i < list.size() && list[i] != current)
-        i++;
-
-    QString name = current->get_dataset_name();
-
-    QFile::remove(main_folder + name + ".txt");
+    QString name = get().get_dataset_name();
 
     delete current;
 
-    current = list[i] = new Dictionary(name);
+    QFile::remove(main_folder + name + ".txt");  
+
+    current = new Dictionary(name);
 }

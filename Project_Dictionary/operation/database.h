@@ -3,8 +3,6 @@
 #include <QString>
 #include <QChar>
 
-#include <vector>
-
 #include "dictionary.h"
 
 /**
@@ -25,16 +23,13 @@
 class Database
 {
 private:
-	std::vector<Dictionary*> list{ nullptr };
-	Dictionary* current = nullptr;
+    Dictionary* current = nullptr;
 
 	// cache_mode: safe old tree in RAM until the program is teminated
 	bool cache_mode = false;
 public:
 	Database() = default;
 	~Database();
-
-	void set_cache_mode(bool to_cache);
 
     void change_dataset(QString file_name);
 
