@@ -326,28 +326,11 @@ std::vector<std::string> Ternary_Search_Tree::get_prediction_helper(std::string 
 
 void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::string>& result, size_t& count)
 {
-	if (root == nullptr || count == 0)
-		return;
-	if (!root->def.empty())
-	{
-		result.push_back(Word(root).get_word());
-		--count;
-	}
-	get_leaf_helper(root->left, result, count);
-	get_leaf_helper(root->mid, result, count);
-	get_leaf_helper(root->right, result, count);
+	
 }
 
 void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) // DONR
 {
-	if (current)
-	{
-		print_helper(current->left, separator, os);
-
-		if (!current->def.empty()) os << Word(current).get_word() << separator << current->def << '\n';
-
-		print_helper(current->mid, separator, os);
-		print_helper(current->right, separator, os);
-	}
+	
 }
 
