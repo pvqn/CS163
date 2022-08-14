@@ -9,6 +9,12 @@ file(GLOB SOURCES_ICON "resources")
 file(COPY ${SOURCES_DATA} DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${SOURCES_ICON} DESTINATION ${CMAKE_BINARY_DIR})
 
+set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/resources/win_icon.rc")
+
+set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.icns")
+
 project(Project_CS163 VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -27,6 +33,8 @@ set(PROJECT_SOURCES
         ${SOURCES_GUI}
         ${SOURCES_OPERATION}
 	${SOURCES_ICON}
+        ${app_icon_resource_windows}
+        ${app_icon_macos}
         main.cpp
 )
 
@@ -47,7 +55,7 @@ else()
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(untitled
+        add_executable(Project_CS163
             ${PROJECT_SOURCES}
         )
     endif()
