@@ -319,24 +319,25 @@ std::vector<Word> Dictionary::get_favorite_list()
 	return fav_list;
 }
 
-std::vector<std::string> Dictionary::get_history_list()
-{
-	std::ifstream in;
-	in.open(main_folder + "HIS_" + dataset_name + ".txt");
-	std::string t;
-	std::vector <std::string> history;
-	while (std::getline(in, t))
-	{
-		history.insert(history.begin(), t);
-	}
-	in.close();
-	return history;
-}
-
 void Dictionary::clear_history()
 {
 	if (std::filesystem::exists(main_folder + "HIS_" + dataset_name + ".txt"))
 		std::filesystem::remove(main_folder + "HIS_" + dataset_name + ".txt");
+}
+
+std::vector<std::string> Dictionary::get_history_list()
+{
+	std::ifstream in;
+
+	in.open(main_folder + "HIS_" + dataset_name + ".txt");
+
+	std::string t;
+	std::vector <std::string> history;
+	while (std::getline(in, t)) history.insert(history.begin(), t);
+
+	in.close();
+
+	return history;
 }
 
 std::vector<Word> Dictionary::random_words(size_t n)
