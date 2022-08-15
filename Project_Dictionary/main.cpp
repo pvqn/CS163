@@ -38,14 +38,17 @@ int main(int argc, char *argv[])
 #endif
 
     mainpage w;
+    
+    w.setWindowTitle("Dictionary");
 
 #if __APPLE__
     w.setUnifiedTitleAndToolBarOnMac(true); // activate Mac-style toolbar
     w.setAttribute(Qt::WA_TranslucentBackground);
     w.setWindowOpacity(0.985);
-    //w.setAttribute(Qt::WA_MacShowFocusRect, 1);
+    w.setAttribute(Qt::WA_MacShowFocusRect, 1);
+    
+    w.setWindowTitle("");
 #endif
-    w.setWindowTitle("Dictionary");
 
     w.setWindowIcon(QIcon(a.applicationDirPath() + "/resources/icon.ico"));
 
