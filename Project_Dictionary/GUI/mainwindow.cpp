@@ -991,9 +991,7 @@ void mainpage::on_pushButton_3_clicked()
 {
     QString str = ui->comboBox->currentText();
 
-    if (str == database.get().get_dataset_name()
-            || !ui->checkBox->isChecked()
-            || !load_thread.isFinished()) return;
+    if ( !load_thread.isFinished() || str == database.get().get_dataset_name() || !ui->checkBox->isChecked() ) return;
 
     ui->dataDetectBtt->setText(QString("Currently using: ")
                                + QString("<span style=' font-weight: bold; color:#aa0000;'>")
