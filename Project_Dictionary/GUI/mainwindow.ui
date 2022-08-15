@@ -44,44 +44,6 @@ background-color: rgb(238, 238, 238);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListWidget" name="recommendationBar">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>250</width>
-      <height>300</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">#recommendationBar{
-
-border-radius: 7px;
-padding-left: 5px;
-padding-right: 5px;
-background-color: rgb(202, 204, 208);
-}
-
-#recommendationBar::item:selected {
-	border-radius: 4px;
-	background-color: rgb(204, 0, 30);
-	color:white;
-     border-style: outset;
-}
-
-#recommendationBar::item:hover {
-	border-radius: 4px;
-	background-color:  rgb(91, 174, 255);
-	color:white;
-     border-style: outset;
-}
-
-#recommendationBar::item {
-	margin-top: 5px;
-	height: 23px;
-}</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_3">
     <property name="geometry">
      <rect>
@@ -128,14 +90,14 @@ background-color: rgb(202, 204, 208);
      </size>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="page_6">
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>30</y>
+        <y>0</y>
         <width>471</width>
         <height>61</height>
        </rect>
@@ -379,7 +341,7 @@ trouble with entering.</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>200</width>
+               <width>220</width>
                <height>16</height>
               </size>
              </property>
@@ -1196,16 +1158,54 @@ background-color: rgb(226, 226, 232);
      </widget>
     </widget>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QListWidget" name="recommendationBar">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>250</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">#recommendationBar{
+
+border-radius: 7px;
+padding-left: 5px;
+padding-right: 5px;
+background-color: rgb(202, 204, 208);
+}
+
+#recommendationBar::item:selected {
+	border-radius: 4px;
+	background-color: rgb(204, 0, 30);
+	color:white;
+     border-style: outset;
+}
+
+#recommendationBar::item:hover {
+	border-radius: 4px;
+	background-color:  rgb(91, 174, 255);
+	color:white;
+     border-style: outset;
+}
+
+#recommendationBar::item {
+	margin-top: 5px;
+	height: 23px;
+}</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
       <width>277</width>
-      <height>474</height>
+      <height>466</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
       <layout class="QHBoxLayout" name="searchpage">
        <property name="leftMargin">
@@ -1295,68 +1295,53 @@ border: 2px solid rgb(120, 159, 240);
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="leftpage">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="operation">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
-           <item>
-            <widget class="QLabel" name="settingText">
-             <property name="minimumSize">
-              <size>
-               <width>251</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>251</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color:gray;</string>
-             </property>
-             <property name="text">
-              <string>Settings</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0">
-             <property name="spacing">
-              <number>4</number>
-             </property>
-             <property name="sizeConstraint">
-              <enum>QLayout::SetFixedSize</enum>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QPushButton" name="datasetBtt">
-               <property name="minimumSize">
-                <size>
-                 <width>251</width>
-                 <height>31</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>251</width>
-                 <height>31</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">#datasetBtt {
+        <widget class="QLabel" name="settingText">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color:gray;</string>
+         </property>
+         <property name="text">
+          <string>Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="datasetBtt">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">#datasetBtt {
 background-color: rgb(193, 193, 193);
 
 border-radius: 7px;
@@ -1371,219 +1356,213 @@ background-color: rgb(241, 242, 246);
 #datasetBtt::click {
 background-color: rgb(238, 238, 238); 
 }</string>
-               </property>
-               <property name="text">
-                <string>📂 Dataset</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">buttonGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="searchbyBtt">
-               <property name="minimumSize">
-                <size>
-                 <width>251</width>
-                 <height>31</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>251</width>
-                 <height>31</height>
-                </size>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">text-align:left;
+         </property>
+         <property name="text">
+          <string>📂 Dataset</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="searchbyBtt">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">text-align:left;
 padding-left:7px;</string>
-               </property>
-               <property name="text">
-                <string>🗝 Search by</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">buttonGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_9">
-               <item>
-                <widget class="QLabel" name="extensionText">
-                 <property name="minimumSize">
-                  <size>
-                   <width>251</width>
-                   <height>16</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>251</width>
-                   <height>16</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color:gray;</string>
-                 </property>
-                 <property name="text">
-                  <string>Extensions</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="favlistBtt">
-                 <property name="minimumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">text-align:left;
+         </property>
+         <property name="text">
+          <string>🗝 Search by</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="extensionText">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color:gray;</string>
+         </property>
+         <property name="text">
+          <string>Extensions</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="favlistBtt">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">text-align:left;
 padding-left:7px;</string>
-                 </property>
-                 <property name="text">
-                  <string>💌 Favorite list</string>
-                 </property>
-                 <attribute name="buttonGroup">
-                  <string notr="true">buttonGroup</string>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="historyBtt">
-                 <property name="minimumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">text-align:left;
+         </property>
+         <property name="text">
+          <string>💌 Favorite list</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="historyBtt">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">text-align:left;
 padding-left:7px;</string>
-                 </property>
-                 <property name="text">
-                  <string>📝 History</string>
-                 </property>
-                 <attribute name="buttonGroup">
-                  <string notr="true">buttonGroup</string>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="quizBtt">
-                 <property name="minimumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>251</width>
-                   <height>31</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">text-align:left;
+         </property>
+         <property name="text">
+          <string>📝 History</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="quizBtt">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>31</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">text-align:left;
 padding-left:7px;</string>
-                 </property>
-                 <property name="text">
-                  <string>❓ Quiz</string>
-                 </property>
-                 <attribute name="buttonGroup">
-                  <string notr="true">buttonGroup</string>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout_2">
-                 <property name="topMargin">
-                  <number>100</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="groupText">
-                   <property name="minimumSize">
-                    <size>
-                     <width>251</width>
-                     <height>16</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>251</width>
-                     <height>16</height>
-                    </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">color:gray;</string>
-                   </property>
-                   <property name="text">
-                    <string>© Group 6</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="courseText">
-                   <property name="minimumSize">
-                    <size>
-                     <width>251</width>
-                     <height>16</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>251</width>
-                     <height>16</height>
-                    </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">color:gray;</string>
-                   </property>
-                   <property name="text">
-                    <string>CS163 APCS 2021-2022 </string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
+         </property>
+         <property name="text">
+          <string>❓ Quiz</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="topMargin">
+        <number>100</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="groupText">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color:gray;</string>
+         </property>
+         <property name="text">
+          <string>© Group 6</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="courseText">
+         <property name="minimumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>251</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color:gray;</string>
+         </property>
+         <property name="text">
+          <string>CS163 APCS 2021-2022 </string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -1592,6 +1571,7 @@ padding-left:7px;</string>
    <zorder>horizontalLayoutWidget_3</zorder>
    <zorder>stackedWidget</zorder>
    <zorder>verticalLayoutWidget</zorder>
+   <zorder></zorder>
    <zorder>recommendationBar</zorder>
   </widget>
   <action name="actiondjkfjskdf">
