@@ -214,10 +214,8 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 	{
 		if (root->data == word[index])
 		{
-			if (!root->def.empty())
-				return root;
-			else
-				return nullptr;
+			if (!root->def.empty()) return root;
+			else return nullptr;
 		}
 	}
 
@@ -227,6 +225,7 @@ TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& 
 		return search_helper(root->mid, word, index + 1);
 	return search_helper(root->right, word, index);
 }
+
 void Ternary_Search_Tree::update_def_helper(TST_Node* root, std::string new_def)
 {
 	root->def = new_def;
@@ -235,8 +234,8 @@ void Ternary_Search_Tree::update_def_helper(TST_Node* root, std::string new_def)
 
 bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index)
 {
-	if (!root)
-		return 0;
+	if (!root) return 0;
+
 	if (index == word.size() - 1) // at the end of the string
 	{
 		// if the string is in the tst
@@ -334,7 +333,7 @@ void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::strin
 	get_leaf_helper(root->right, result, count);
 }
 
-void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) // DONR
+void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) // DONE
 {
 	if (current)
 	{
