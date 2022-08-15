@@ -354,23 +354,10 @@ std::vector<Word> Dictionary::random_words(size_t n)
 		existed[i] = 0;
 
 	std::vector<Word> randomWords;
-
-	std::mt19937 md(std::random_device{}());
-
-	std::uniform_int_distribution<size_t> dis(0, words.size() - 1);
-
-	size_t count = 0;
-
-	while (count < n)
+	for (int i = 0; i < n; ++i)
 	{
-		size_t i = dis(md);
-
-		if (existed[i] == 0)
-		{
-			existed[i] = 1;
-			randomWords.push_back(words[i]);
-			count++;
-		}
+		srand(time(NULL));
+		randomWords.push_back(Word(rand() % n));
 	}
 
 	return randomWords;
