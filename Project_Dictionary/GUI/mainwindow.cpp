@@ -64,9 +64,7 @@ mainpage::mainpage(QWidget *parent)
 
     /**/
 
-    QPixmap pixmap4(path + "/resources/change_black.gif");
-    QIcon ButtonIcon4(pixmap4);
-    ui->changeModeBtt->setIcon(ButtonIcon4);
+    ui->changeModeBtt->setText("D");
 
     /**/
 
@@ -384,38 +382,6 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
             }
 #endif
         }
-        else if (obj == (QObject*)ui->changeModeBtt) {
-#ifdef __APPLE__
-            auto movie4 = new QMovie(this);
-            if (event->type() == QEvent::HoverEnter) {
-                movie4->setFileName(path + "/resources/change_black.gif");
-                connect(movie4, &QMovie::frameChanged, [=]{
-                  ui->changeModeBtt->setIcon(movie4->currentPixmap());
-                });
-                connect(movie4, &QMovie::frameChanged, this,  [movie4]() {
-                    if(movie4->currentFrameNumber() == (movie4->frameCount() - 1)) {
-                        movie4->stop();
-                        if (movie4->state() == QMovie::NotRunning) {
-                            emit movie4->finished();
-                            if (movie4) delete movie4;
-                        }
-                    }
-                }
-               );
-                movie4->start();
-            }
-            else if (event->type() == QEvent::HoverLeave) {
-                if (movie4) {
-                    movie4->stop();
-                    delete movie4;
-                    movie4 = nullptr;
-                }
-                QPixmap pixmap4(path + "/resources/change_black.gif");
-                QIcon ButtonIcon4(pixmap4);
-                ui->changeModeBtt->setIcon(ButtonIcon4);
-            }
-#endif
-        }
         else if (obj == (QObject*)ui->generateQuesBtt) {
 #ifdef __APPLE__
             auto movie5 = new QMovie(this);
@@ -628,10 +594,6 @@ bool mainpage::isInFavList(QString temp)
 void mainpage::on_recommendationBar_itemClicked(QListWidgetItem *item)
 {
     updateUIWord(item->text());
-    if (!isInFavList(item->text()))
-            ui->favFuncBtt->setText("♡");
-        else
-            ui->favFuncBtt->setText("❤");
 }
 
 void mainpage::on_quizBtt_clicked()
@@ -754,6 +716,7 @@ void mainpage::on_choice4Btt_clicked()
 
 void mainpage::on_changeModeBtt_clicked()
 {
+    ui->changeModeBtt->setText((ui->changeModeBtt->text() == "D") ? "W" : "D");
 
     unlockChoice();
 
@@ -782,8 +745,6 @@ void mainpage::on_changeModeBtt_clicked()
 void mainpage::on_generateQuesBtt_clicked()
 {
 
-    unlockChoice();
-
     random_cache = database.get().random_words(4);
 
     index_random_cache = QRandomGenerator::global()->bounded(0, 3);
@@ -802,6 +763,10 @@ void mainpage::on_generateQuesBtt_clicked()
     ui->choice2Btt->setText(ans_2);
     ui->choice3Btt->setText(ans_3);
     ui->choice4Btt->setText(ans_4);
+
+
+
+    unlockChoice();
 }
 
 void mainpage::on_favFuncBtt_clicked()
@@ -809,12 +774,10 @@ void mainpage::on_favFuncBtt_clicked()
     if (ui->favFuncBtt->text()=="❤")
     {
         database.get().action_on_favorite_file(ui->word->text(), true);
-        ui->favFuncBtt->setText("♡");
     }
     else
     {
         database.get().action_on_favorite_file(ui->word->text(), false);
-        ui->favFuncBtt->setText("❤");
     }
 }
 
@@ -846,12 +809,6 @@ void mainpage::on_randomWord_clicked()
     ui->stackedWidget->setCurrentWidget(ui->page);
     ui->word->setText(random.get_word());
     ui->def->setText(random.get_definition());
-
-    if (isInFavList(random.get_word()))
-        ui->favFuncBtt->setText("❤");
-    else ui->favFuncBtt->setText("♡");
-
-    ui->favFuncBtt->setText(isInFavList(random.get_word()) ? "❤" : "♡");
 }
 
 void mainpage::on_deleteWordBtt_clicked()
@@ -888,19 +845,16 @@ void mainpage::revealAnswer()
             ui->choice4Btt->setStyleSheet("background-color: rgb(70, 204, 0)");
         }
     }
-    else {
-        if (anschoice != "") {
-            if (anschoice == ui->choice1Btt->text()) {
-                ui->choice1Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
-            } else if (anschoice == ui->choice2Btt->text()) {
-                ui->choice2Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
-            } else if (anschoice == ui->choice3Btt->text()) {
-                ui->choice3Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
-            } else {
-                ui->choice4Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
-            }
+    else if (anschoice != ""){
+        if (anschoice == ui->choice1Btt->text()) {
+            ui->choice1Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else if (anschoice == ui->choice2Btt->text()) {
+            ui->choice2Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else if (anschoice == ui->choice3Btt->text()) {
+            ui->choice3Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else {
+            ui->choice4Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
         }
-
         if (isTrue(ui->choice1Btt->text())) {
             ui->choice1Btt->setStyleSheet("background-color: rgb(70, 204, 0)");
         } else if (isTrue(ui->choice2Btt->text())) {
@@ -911,6 +865,18 @@ void mainpage::revealAnswer()
             ui->choice4Btt->setStyleSheet("background-color: rgb(70, 204, 0)");
         }
     }
+    else {
+        if (isTrue(ui->choice1Btt->text())) {
+            ui->choice1Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else if (isTrue(ui->choice2Btt->text())) {
+            ui->choice2Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else if (isTrue(ui->choice3Btt->text())) {
+            ui->choice3Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        } else {
+            ui->choice4Btt->setStyleSheet("background-color: rgb(255, 116, 105)");
+        }
+    }
+    anschoice = "";
 }
 
 void mainpage::lockChoice()
@@ -936,7 +902,7 @@ void mainpage::unlockChoice()
 
 
     QPropertyAnimation *animationx = new QPropertyAnimation(ui->progressBar, "value");
-    animationx->setDuration(5000);
+    animationx->setDuration(ui->questionTable->toPlainText().toStdString().length() * 75);
     animationx->setStartValue(0);
     animationx->setEndValue(100);
     animationx->start();
@@ -1025,7 +991,9 @@ void mainpage::on_pushButton_3_clicked()
 {
     QString str = ui->comboBox->currentText();
 
-    if (!load_thread.isFinished() || str == database.get().get_dataset_name() || !ui->checkBox->isChecked() ) return;
+    if (str == database.get().get_dataset_name()
+            || !ui->checkBox->isChecked()
+            || !load_thread.isFinished()) return;
 
     ui->dataDetectBtt->setText(QString("Currently using: ")
                                + QString("<span style=' font-weight: bold; color:#aa0000;'>")
