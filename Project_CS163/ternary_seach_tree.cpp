@@ -1,362 +1,299 @@
-#include "ternary_seach_tree.h"
+#include "hash_table.h"
 
 #include "util.h"
 
-#include <iostream>
-
-Word& Word::operator=(const Word& word)
+Hash_Table_Bucket::Hash_Table_Bucket(std::string keyword_, size_t hash_, Word word_)
+	: keyword(keyword_), hash(hash_), word(word_)
 {
-	eow = word.eow;
+	len = keyword_.size();
+}
+
+bool Hash_Table_Bucket::operator==(const Hash_Table_Bucket& other)
+{
+	if (hash != other.hash)
+		return false;
+
+	if (len != other.len)
+		return false;
+
+	if (keyword != other.keyword)
+		return false;
+
+	if (other_hash != other.hash)
+		return false;
+
+	return word == other.word;
+}
+
+bool Hash_Table_Bucket::operator<(const Hash_Table_Bucket& other)
+{
+	if (hash != other.hash)
+		return hash < other.hash;
+
+	if (len != other.len)
+		return len < other.len;
+
+	if (keyword != other.keyword)
+		return keyword < other.keyword;
+
+	if (other_hash != other.hash)
+		return other_hash < other.other_hash;
+
+	return word < other.word;
+}
+
+bool Hash_Table_Bucket::operator>(const Hash_Table_Bucket& other)
+{
+	if (hash != other.hash)
+		return hash > other.hash;
+
+	if (len != other.len)
+		return len > other.len;
+
+	if (keyword != other.keyword)
+		return keyword > other.keyword;
+
+	if (other_hash != other.hash)
+		return other_hash > other.other_hash;
+
+	return word > other.word;
+}
+
+Hash_Table& Hash_Table::operator=(const Hash_Table& other)
+{
+	if (this != &other) for (size_t i = 0; i < h1_val; i++) table[i] = other.table[i];
+
 	return *this;
 }
 
-std::string Word::get_definition() const
+size_t Hash_Table::hashing_1(std::string s)
 {
-	return eow ? eow->def : "";
+	size_t t = 1;
+
+	for (const unsigned char& ch : s) t = (t * 311 + (size_t)ch + 1) % h1_val;
+
+	return t;
 }
 
-std::string Word::get_word() const
+long long Hash_Table::hashing_2(std::string s)
 {
-	if (!eow) return "";
+	long long t = 1;
 
-	std::string ans = "";
-	ans += eow->data;
+	for (const unsigned char& ch : s) t = (t * 769 + (long long)(ch)+1) % h2_val;
 
-	TST_Node* temp = eow;
+	return t;
+}
 
-	while (temp)
+Hash_Table::Hash_Table()
+{
+	sorted.resize(h1_val, 0);
+}
+
+Hash_Table::Hash_Table(const Hash_Table& other)
+{
+	for (size_t i = 0; i < h1_val; i++) table[i] = other.table[i];
+}
+
+size_t Hash_Table::bucket_binary_search(std::vector<Hash_Table_Bucket>& v,
+	Hash_Table_Bucket& b, size_t begin, size_t end)
+{
+	size_t left = begin, right = end;
+
+	size_t mid = left + (right - left) / 2;
+
+	while (left < right)
 	{
-		if (temp->parent && temp->parent->mid == temp)
-			ans += temp->parent->data;
-		temp = temp->parent;
-	}
-	return std::string(ans.rbegin(), ans.rend());
-}
+		if (b == v[mid]) return mid;
 
-bool Word::operator==(const Word& other)
-{
-	return get_word() == other.get_word();
-}
+		if (b < v[mid]) right = mid;
+		else left = mid + 1;
 
-bool Word::operator!=(const Word& other)
-{
-	return get_word() != other.get_word();
-}
-
-bool Word::operator<(const Word& other)
-{
-	return get_word() < other.get_word();
-}
-
-bool Word::operator>(const Word& other)
-{
-	return get_word() > other.get_word();
-}
-
-Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree& other)
-{
-	if (this != &other)
-	{
-		Ternary_Search_Tree copy = other;
-		util::algo::swap(copy.root, root);
-	}
-	return *this;
-}
-
-TST_Node* Ternary_Search_Tree::clone(TST_Node* other)
-{
-	if (!other)
-		return nullptr;
-
-	TST_Node* new_node = new TST_Node;
-
-	new_node->data = other->data;
-	new_node->def = other->def;
-	new_node->weight = other->weight;
-
-	new_node->left = clone(other->left);
-	new_node->right = clone(other->right);
-	new_node->mid = clone(other->mid);
-
-	return new_node;
-}
-
-void Ternary_Search_Tree::destroy(TST_Node*& current)
-{
-	if (current)
-	{
-		destroy(current->left);
-		destroy(current->right);
-		destroy(current->mid);
-
-		delete current;
-		current = nullptr;
-	}
-}
-
-Ternary_Search_Tree::~Ternary_Search_Tree()
-{
-	destroy(root);
-}
-
-Ternary_Search_Tree::Ternary_Search_Tree(const Ternary_Search_Tree& other)
-{
-	root = clone(other.root);
-}
-
-TST_Node* Ternary_Search_Tree::rotate_left(TST_Node* root)
-{
-	TST_Node* parent = root->parent, * child = root->right;
-
-	root->right = child->left;
-	if (root->right) root->right->parent = root;
-
-	child->left = root;
-	root->parent = child;
-	child->parent = parent;
-
-	if (parent)
-	{
-		if (parent->left == root) parent->left = child;
-		if (parent->mid == root) parent->mid = child;
-		if (parent->right == root) parent->right = child;
+		mid = left + (right - left) / 2;
 	}
 
-	return child;
+	return left;
 }
 
-TST_Node* Ternary_Search_Tree::rotate_right(TST_Node* root)
+void Hash_Table::insertion_sort(std::vector<Hash_Table_Bucket>& v, size_t left, size_t right)
 {
-	TST_Node* parent = root->parent, * child = root->left;
-
-	root->left = child->right;
-	if (root->left) root->left->parent = root;
-
-	child->right = root;
-	root->parent = child;
-	child->parent = parent;
-
-	if (parent)
+	for (size_t i = left + 1; i <= right; i++)
 	{
-		if (parent->left == root) parent->left = child;
-		if (parent->mid == root) parent->mid = child;
-		if (parent->right == root) parent->right = child;
-	}
+		Hash_Table_Bucket key = v[i];
+		size_t j = i - 1;
 
-	return child;
-}
-
-unsigned int Ternary_Search_Tree::get_weight(TST_Node* root)
-{
-	return root ? root->weight : 0;
-}
-
-void Ternary_Search_Tree::set_weight(TST_Node* root)
-{
-	root->weight = get_weight(root->mid) + !root->def.empty();
-}
-
-TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& word,
-	const std::string& def, size_t index, TST_Node* parent, bool& valid, Word& eow)
-{
-	if (index == word.size()) return nullptr;
-
-	if (!root)
-	{
-		valid = true;
-
-		root = new TST_Node(word[index], index + 1 == word.size() ? def : "");
-		root->parent = parent;
-		if (!root->def.empty()) eow = Word(root);
-		root->mid = insert_helper(root->mid, word, def, index + 1, root, valid, eow);
-
-		return root;
-	}
-
-	if ( word[index] == root->data )
-	{
-		if (index + 1 == word.size())
+		while (j > 0 && j >= left && v[j] > key)
 		{
-			valid = root->def.empty();
-			if (valid)
-			{
-				root->def = def;
-				eow = Word(root);
-			}
+			v[j + 1] = std::move(v[j]);
+			j--;
 		}
+
+		if (j == 0 && v[0] > key)
+			v[1] = std::move(v[0]), j = 0;
+		else j++;
+
+		v[j] = std::move(key);
+	}
+}
+
+void Hash_Table::heapify(std::vector<Hash_Table_Bucket>& v, size_t index, size_t right)
+{
+	size_t l = index * 2 + 1, r = index * 2 + 2;
+	size_t temp = index;
+
+	if (l <= right && v[l] < v[temp])
+		temp = l;
+
+	if (r <= right && v[r] < v[temp])
+		temp = r;
+
+	if (temp != index)
+	{
+		util::algo::swap(v[temp], v[index]);
+		heapify(v, temp, right);
+	}
+}
+
+void Hash_Table::heap_sort(std::vector<Hash_Table_Bucket>& v, size_t left, size_t right)
+{
+	size_t size = right - left + 1;
+
+	for (size_t i = left + (size - 1) / 2; i > 0 && i >= left; i--)
+		heapify(v, i, right);
+
+	if (left == 0)
+		heapify(v, 0, right);
+
+	for (size_t i = right; i > left; i--)
+	{
+		util::algo::swap(v[left], v[i]);
+		heapify(v, left, i);
+	}
+}
+
+size_t Hash_Table::partition(std::vector<Hash_Table_Bucket>& v, size_t left, size_t right)
+{
+	size_t mid = (right - left + 1) / 2 + left;
+
+	size_t median;
+
+	if ((v[left] < v[mid] && v[mid] < v[right]) || (v[right] < v[mid] && v[mid] < v[left])) median = mid;
+	else if ((v[left] < v[right] && v[right] < v[mid]) || (v[mid] < v[right] && v[right] < v[left])) median = right;
+	else median = left;
+
+	util::algo::swap(v[median], v[right]);
+
+	size_t pivot = left;
+
+	while (left < right)
+	{
+		if (v[left] < v[right])
+			util::algo::swap(v[pivot++], v[left]);
+
+		++left;
+	}
+
+	util::algo::swap(v[right], v[pivot]);
+	return pivot;
+}
+
+void Hash_Table::introsort(std::vector<Hash_Table_Bucket>& v, size_t left, size_t right, size_t depth)
+{
+	if (left >= right) return;
+
+	if (depth == 0)
+	{
+		heap_sort(v, left, right);
+	}
+	else if (right - left + 1 < 16)
+	{
+		insertion_sort(v, left, right);
+	}
+	else
+	{
+		size_t pivot = partition(v, left, right);
+
+		introsort(v, left, pivot - 1, depth - 1);
+		introsort(v, pivot + 1, right, depth - 1);
+	}
+}
+
+void Hash_Table::sort(std::vector<Hash_Table_Bucket>& v)
+{
+	size_t depth = size_t(2 * log2(v.size()));
+	introsort(v, 0, v.size() - 1, depth);
+}
+
+void Hash_Table::add_to_table_helper(std::string keyword, Word word, bool load)
+{
+	size_t h1 = hashing_1(keyword);
+
+	Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), word);
+	b.other_hash = hashing_2(b.word.get_word());
+
+	if (load)
+	{
+		table[h1].push_back(b);
+	}
+	else
+	{
+		if (table[h1].empty()) table[h1].push_back(b);
 		else
 		{
-			root->mid = insert_helper(root->mid, word, def, index + 1, root, valid, eow);
-		}
+			if (!sorted[h1]) sort(table[h1]);
 
-		set_weight(root);
-	}
-	else if (word[index] < root->data)
-	{
-		root->left = insert_helper(root->left, word, def, index, root, valid, eow);
-		if (get_weight(root->left) > get_weight(root)) root = rotate_right(root);
-	}
-	else if( word[index] > root->data ) 
-	{
-		root->right = insert_helper(root->right, word, def, index, root, valid, eow);
-		if (get_weight(root->right) > get_weight(root)) root = rotate_left(root);
-	}
+			size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
-	return root;
-}
+			if (table[h1][i] == b) return;
 
-TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, const std::string& word, size_t index)
-{
-	if (!root)
-		return root;
+			table[h1].push_back(b);
 
-	if (index == word.size() - 1)
-	{
-		if (root->data == word[index])
-		{
-			if (!root->def.empty()) return root;
-			else return nullptr;
-		}
-	}
+			if (table[h1][i] < b) i++;
 
-	if (word[index] < root->data)
-		return search_helper(root->left, word, index);
-	if (word[index] == root->data)
-		return search_helper(root->mid, word, index + 1);
-	return search_helper(root->right, word, index);
-}
+			size_t j = table[h1].size() - 2;
 
-void Ternary_Search_Tree::update_def_helper(TST_Node* root, std::string new_def)
-{
-	root->def = new_def;
-}
-
-
-bool Ternary_Search_Tree::remove_helper(TST_Node* root, const std::string& word, size_t index)
-{
-	if (!root) return 0;
-
-	if (index == word.size() - 1) // at the end of the string
-	{
-		// if the string is in the tst
-		if (root->data != word[index])
-		{
-			while (root->data != word[index])
+			while (j > 0 && j >= i)
 			{
-				if (root->data > word[index])
-					root = root->left;
-				else
-					root = root->right;
+				table[h1][j + 1] = std::move(table[h1][j]);
+				j--;
 			}
-		}
-		if (!root->def.empty())
-		{
-			root->def.clear();
-			set_weight(root);
 
-			return !(root->left || root->right || root->mid);
-		}
-		return 0;
-	}
-	else // still in the string
-	{
-		if (word[index] < root->data)
-			remove_helper(root->left, word, index);
-		else if (word[index] > root->data)
-			remove_helper(root->right, word, index);
-		else if (word[index] == root->data)
-		{
-			if (remove_helper(root->mid, word, index + 1)) // this string is not the prefix of any others
+			if (j == 0 && table[h1][0] > table[h1][1])
 			{
-				delete root->mid;
-				root->mid = nullptr;
-				// delete root if root doesnt have children
-				return root->def.empty() && !(root->left || root->right || root->mid);
+				table[h1][1] = std::move(table[h1][0]);
+				j = 0;
 			}
-			else
-			{
-				set_weight(root);
+			else ++j;
 
-				bool left = get_weight(root->left) > get_weight(root);
-				bool right = get_weight(root->right) > get_weight(root);
-
-				if (left && right)
-				{
-					if (get_weight(root->left) >= get_weight(root->right))
-					{
-						root = rotate_right(root);
-						root->right = rotate_left(root->right);
-					}
-					else
-					{
-						root = rotate_left(root);
-						root->left = rotate_right(root->left);
-					}
-				}
-				else if (left)
-				{
-					root = rotate_right(root);
-				}
-				else if (right)
-				{
-					root = rotate_left(root);
-				}
-			}
+			table[h1][j] == std::move(b);
 		}
+
+		sorted[h1] = 1;
 	}
-	return false;
 }
 
-TST_Node* Ternary_Search_Tree::search_helper(TST_Node* root, std::string& prefix, size_t index)
+void Hash_Table::remove_from_table_helper(std::string keyword, Word word)
 {
-	if (!root) return nullptr;
-	if (index == prefix.size() - 1 && prefix[index] == root->data)
-		return root;
-	if (root->data == prefix[index])
-		return search_helper(root->mid, prefix, index + 1);
-	if (root->data < prefix[index])
-		return search_helper(root->right, prefix, index);
-	return search_helper(root->left, prefix, index);
-}
+	size_t h1 = hashing_1(keyword);
 
-void Ternary_Search_Tree::get_leaf_helper(TST_Node* root, std::vector<std::string>& result, size_t& count)
-{
-	if (root == nullptr || count == 0)
-		return;
-	if (!root->def.empty())
+	if (!sorted[h1])
 	{
-		result.push_back(Word(root).get_word());
-		--count;
+		sort(table[h1]);
+		sorted[h1] = 1;
 	}
-	get_leaf_helper(root->left, result, count);
-	get_leaf_helper(root->mid, result, count);
-	get_leaf_helper(root->right, result, count);
+
+	Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), word);
+	b.other_hash = hashing_2(b.word.get_word());
+
+	size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
+
+	if (table[h1][i] == b) table[h1].erase(table[h1].begin() + i);
 }
 
-void Ternary_Search_Tree::print_helper(TST_Node* current, const char& separator, std::ostream& os) // DONE
+std::vector<Word> Hash_Table::find_by_keyword(std::string keyword)
 {
-	if (current)
-	{
-		print_helper(current->left, separator, os);
+	std::vector<Word> words;
 
-		if (!current->def.empty())
-			os << Word(current).get_word() << separator << current->def << '\n';
+	size_t h1 = hashing_1(keyword);
 
-		print_helper(current->mid, separator, os);
-		print_helper(current->right, separator, os);
-	}
-}
-
-std::vector<std::string> Ternary_Search_Tree::get_prediction_helper(std::string prefix)
-{
-	std::vector<std::string> result;
-	size_t count_max = 15;
-	TST_Node* current = search_helper(root, prefix, 0);
-	if (!current->def.empty())
-	{
-		result.push_back(Word(current).get_word());
-		--count_max;
-	}
-	get_leaf_helper(current->mid, result, count_max);
-	return result;
+	return {};
 }
