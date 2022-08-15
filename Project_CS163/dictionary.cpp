@@ -116,7 +116,7 @@ void Dictionary::reset()
 	word_tree.~Ternary_Search_Tree();
 
 	keyword_table.~Hash_Table();
-	
+
 	// reset history.txt and fav.txt
 	if (std::filesystem::exists(main_folder + "HIS_" + dataset_name + ".txt"))
 		std::filesystem::remove(main_folder + "HIS_" + dataset_name + ".txt");
@@ -277,7 +277,7 @@ void Dictionary::remove(std::string word)
 
 void Dictionary::edit_definition(std::string word, std::string def)
 {
-	TST_Node *node = word_tree.search_helper(word_tree.root, word, 0);
+	TST_Node* node = word_tree.search_helper(word_tree.root, word, 0);
 
 	Word w = Word(node);
 
@@ -319,25 +319,24 @@ std::vector<Word> Dictionary::get_favorite_list()
 	return fav_list;
 }
 
+std::vector<std::string> Dictionary::get_history_list()
+{
+	std::ifstream in;
+	in.open(main_folder + "HIS_" + dataset_name + ".txt");
+	std::string t;
+	std::vector <std::string> history;
+	while (std::getline(in, t))
+	{
+		history.insert(history.begin(), t);
+	}
+	in.close();
+	return history;
+}
+
 void Dictionary::clear_history()
 {
 	if (std::filesystem::exists(main_folder + "HIS_" + dataset_name + ".txt"))
 		std::filesystem::remove(main_folder + "HIS_" + dataset_name + ".txt");
-}
-
-std::vector<std::string> Dictionary::get_history_list()
-{
-	std::ifstream in;
-
-	in.open(main_folder + "HIS_" + dataset_name + ".txt");
-
-	std::string t;
-	std::vector <std::string> history;
-	while (std::getline(in, t)) history.insert(history.begin(), t);
-
-	in.close();
-
-	return history;
 }
 
 std::vector<Word> Dictionary::random_words(size_t n)
@@ -354,16 +353,29 @@ std::vector<Word> Dictionary::random_words(size_t n)
 		existed[i] = 0;
 
 	std::vector<Word> randomWords;
-	for (int i = 0; i < n; ++i)
+
+	std::mt19937 md(std::random_device{}());
+
+	std::uniform_int_distribution<size_t> dis(0, words.size() - 1);
+
+	size_t count = 0;
+
+	while (count < n)
 	{
-		srand(time(NULL));
-		randomWords.push_back(Word(rand() % n));
+		size_t i = dis(md);
+
+		if (existed[i] == 0)
+		{
+			existed[i] = 1;
+			randomWords.push_back(words[i]);
+			count++;
+		}
 	}
 
 	return randomWords;
 }
 
-std::vector<std::string> Dictionary::get_prediction(std::string prefix) 
+std::vector<std::string> Dictionary::get_prediction(std::string prefix)
 {
 	return word_tree.get_prediction_helper(prefix);
 }
