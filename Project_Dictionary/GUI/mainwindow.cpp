@@ -771,14 +771,12 @@ void mainpage::on_generateQuesBtt_clicked()
 
 void mainpage::on_favFuncBtt_clicked()
 {
-    if (ui->favFuncBtt->text()=="❤")
-    {
+    if (isInFavList(ui->word->text()))
         database.get().action_on_favorite_file(ui->word->text(), true);
-    }
     else
-    {
         database.get().action_on_favorite_file(ui->word->text(), false);
-    }
+
+    updateUIWord(ui->word->text());
 }
 
 void mainpage::on_editWordBtt_clicked()
@@ -991,7 +989,9 @@ void mainpage::on_pushButton_3_clicked()
 {
     QString str = ui->comboBox->currentText();
 
-    if ( !load_thread.isFinished() || str == database.get().get_dataset_name() || !ui->checkBox->isChecked() ) return;
+    if (str == database.get().get_dataset_name()
+            || !ui->checkBox->isChecked()
+            || !load_thread.isFinished()) return;
 
     ui->dataDetectBtt->setText(QString("Currently using: ")
                                + QString("<span style=' font-weight: bold; color:#aa0000;'>")
@@ -1008,4 +1008,3 @@ void mainpage::on_pushButton_3_clicked()
         ui->checkBox->setCheckState(Qt::CheckState::Unchecked);
     });
 }
-
