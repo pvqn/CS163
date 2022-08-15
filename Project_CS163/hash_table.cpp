@@ -63,8 +63,7 @@ size_t Hash_Table::hashing_1(std::string s)
 {
 	size_t t = 1;
 
-	for (const unsigned char& ch : s)
-		t = (t * 311 + (size_t)ch + 1) % h1_val;
+	for (const unsigned char& ch : s) t = (t * 311 + (size_t)ch + 1) % h1_val;
 
 	return t;
 }
@@ -73,8 +72,7 @@ long long Hash_Table::hashing_2(std::string s)
 {
 	long long t = 1;
 
-	for (const unsigned char& ch : s)
-		t = (t * 769 + (long long)(ch)+1) % h2_val;
+	for (const unsigned char& ch : s) t = (t * 769 + (long long)(ch)+1) % h2_val;
 
 	return t;
 }
@@ -86,17 +84,12 @@ Hash_Table::Hash_Table()
 
 Hash_Table::Hash_Table(const Hash_Table& other) 
 {
-	for (size_t i = 0; i < h1_val; i++)
-		table[i] = other.table[i];
+	for (size_t i = 0; i < h1_val; i++) table[i] = other.table[i];
 }
 
 Hash_Table& Hash_Table::operator=(const Hash_Table& other)
 {
-	if (this != &other)
-	{
-		for (size_t i = 0; i < h1_val; i++)
-			table[i] = other.table[i];
-	}
+	if (this != &other) for (size_t i = 0; i < h1_val; i++) table[i] = other.table[i];
 
 	return *this;
 }
@@ -110,12 +103,10 @@ size_t Hash_Table::bucket_binary_search(std::vector<Hash_Table_Bucket>& v,
 
 	while (left < right)
 	{
-		if (b == v[mid])
-			return mid;
-		else if (b < v[mid])
-			right = mid;
-		else
-			left = mid + 1;
+		if (b == v[mid]) return mid;
+
+		if (b < v[mid]) right = mid;
+		else left = mid + 1;
 
 		mid = left + (right - left) / 2;
 	}
@@ -138,8 +129,7 @@ void Hash_Table::insertion_sort(std::vector<Hash_Table_Bucket>& v, size_t left, 
 
 		if (j == 0 && v[0] > key)
 			v[1] = std::move(v[0]), j = 0;
-		else
-			j++;
+		else j++;
 
 		v[j] = std::move(key);
 	}
@@ -186,14 +176,9 @@ size_t Hash_Table::partition(std::vector<Hash_Table_Bucket>& v, size_t left, siz
 
 	size_t median;
 
-	if ((v[left] < v[mid] && v[mid] < v[right])
-		|| (v[right] < v[mid] && v[mid] < v[left]))
-		median = mid;
-	else if ((v[left] < v[right] && v[right] < v[mid])
-		|| (v[mid] < v[right] && v[right] < v[left]))
-		median = right;
-	else
-		median = left;
+	if ((v[left] < v[mid] && v[mid] < v[right]) || (v[right] < v[mid] && v[mid] < v[left])) median = mid;
+	else if ((v[left] < v[right] && v[right] < v[mid]) || (v[mid] < v[right] && v[right] < v[left])) median = right;
+	else median = left;
 
 	util::algo::swap(v[median], v[right]);
 
@@ -251,12 +236,10 @@ void Hash_Table::add_to_table_helper(std::string keyword, Word word, bool load)
 	}
 	else
 	{
-		if (table[h1].empty())
-			table[h1].push_back(b);
+		if (table[h1].empty()) table[h1].push_back(b);
 		else
 		{
-			if (!sorted[h1])
-				sort(table[h1]);
+			if (!sorted[h1]) sort(table[h1]);
 
 			size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
@@ -279,10 +262,7 @@ void Hash_Table::add_to_table_helper(std::string keyword, Word word, bool load)
 				table[h1][1] = std::move(table[h1][0]);
 				j = 0;
 			}
-			else
-			{
-				j = j + 1;
-			}
+			else ++j;
 
 			table[h1][j] == std::move(b);
 		}
@@ -306,8 +286,7 @@ void Hash_Table::remove_from_table_helper(std::string keyword, Word word)
 
 	size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
-	if (table[h1][i] == b)
-		table[h1].erase(table[h1].begin() + i);
+	if (table[h1][i] == b) table[h1].erase(table[h1].begin() + i);
 }
 
 std::vector<Word> Hash_Table::find_by_keyword(std::string keyword)
@@ -315,8 +294,6 @@ std::vector<Word> Hash_Table::find_by_keyword(std::string keyword)
 	std::vector<Word> words;
 
 	size_t h1 = hashing_1(keyword);
-
-
 
 	return {};
 }
