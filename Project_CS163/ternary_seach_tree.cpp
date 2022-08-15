@@ -53,6 +53,16 @@ bool Word::operator>(const Word& other)
 	return get_word() > other.get_word();
 }
 
+Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree& other)
+{
+	if (this != &other)
+	{
+		Ternary_Search_Tree copy = other;
+		util::algo::swap(copy.root, root);
+	}
+	return *this;
+}
+
 TST_Node* Ternary_Search_Tree::clone(TST_Node* other)
 {
 	if (!other)
@@ -92,16 +102,6 @@ Ternary_Search_Tree::~Ternary_Search_Tree()
 Ternary_Search_Tree::Ternary_Search_Tree(const Ternary_Search_Tree& other)
 {
 	root = clone(other.root);
-}
-
-Ternary_Search_Tree& Ternary_Search_Tree::operator=(const Ternary_Search_Tree& other)
-{
-	if (this != &other)
-	{
-		Ternary_Search_Tree copy = other;
-		util::algo::swap(copy.root, root);
-	}
-	return *this;
 }
 
 TST_Node* Ternary_Search_Tree::rotate_left(TST_Node* root)
@@ -173,7 +173,7 @@ TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& 
 		return root;
 	}
 
-	if (root->data == word[index])
+	if ( word[index] == root->data )
 	{
 		if (index + 1 == word.size())
 		{
@@ -196,7 +196,7 @@ TST_Node* Ternary_Search_Tree::insert_helper(TST_Node* root, const std::string& 
 		root->left = insert_helper(root->left, word, def, index, root, valid, eow);
 		if (get_weight(root->left) > get_weight(root)) root = rotate_right(root);
 	}
-	else
+	else if( word[index] > root->data ) 
 	{
 		root->right = insert_helper(root->right, word, def, index, root, valid, eow);
 		if (get_weight(root->right) > get_weight(root)) root = rotate_left(root);
