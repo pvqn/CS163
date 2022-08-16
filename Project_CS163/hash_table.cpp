@@ -27,34 +27,26 @@ bool Hash_Table_Bucket::operator==(const Hash_Table_Bucket& other)
 
 bool Hash_Table_Bucket::operator<(const Hash_Table_Bucket& other)
 {
-	if (hash != other.hash)
-		return hash < other.hash;
+	if (hash != other.hash) return hash < other.hash;
 
-	if (len != other.len)
-		return len < other.len;
+	if (len != other.len) return len < other.len;
 
-	if (keyword != other.keyword)
-		return keyword < other.keyword;
+	if (keyword != other.keyword) return keyword < other.keyword;
 
-	if (other_hash != other.hash)
-		return other_hash < other.other_hash;
+	if (other_hash != other.hash) return other_hash < other.other_hash;
 
 	return word < other.word;
 }
 
 bool Hash_Table_Bucket::operator>(const Hash_Table_Bucket& other)
 {
-	if (hash != other.hash)
-		return hash > other.hash;
+	if (hash != other.hash) return hash > other.hash;
 
-	if (len != other.len)
-		return len > other.len;
+	if (len != other.len) return len > other.len;
 
-	if (keyword != other.keyword)
-		return keyword > other.keyword;
+	if (keyword != other.keyword) return keyword > other.keyword;
 
-	if (other_hash != other.hash)
-		return other_hash > other.other_hash;
+	if (other_hash != other.hash) return other_hash > other.other_hash;
 
 	return word > other.word;
 }
