@@ -310,6 +310,8 @@ void Hash_Table::remove_from_table_helper(QString keyword, Word word)
         sorted[h1] = 1;
     }
 
+    if (table[h1].size() == 0) return;
+
     size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
     if (table[h1][i] == b)

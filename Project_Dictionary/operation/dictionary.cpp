@@ -6,7 +6,6 @@
 #include <QTextStream>
 #include <QtGlobal>
 #include <QRandomGenerator>
-
 #include <vector>
 
 #include "util.h"
@@ -55,10 +54,11 @@ void Dictionary::load()
                 ch = ch.toUpper();
             }
 
-            Word eow; bool valid;
+            Word eow;
+            bool valid;
 
-            stopwords_tree.insert_helper(stopwords_tree.root, line, " ",
-                                         0, nullptr, valid, eow);
+            stopwords_tree.root = stopwords_tree.insert_helper(stopwords_tree.root, line, " ",
+                                            0, nullptr, valid, eow);
         }
 
         while (!in.atEnd())
@@ -89,6 +89,8 @@ void Dictionary::load()
 
                 for (const QString& str : util::str::split(def))
                 {
+                    if (stopwords_tree.search_helper(stopwords_tree.root, str, 0)) continue;
+
                     size_t h = (7 + 31 * str.front().unicode()
                                 + 31 * 31 + str.back().unicode()) % hashing.size();
 
@@ -207,7 +209,7 @@ void Dictionary::insert(QString word, QString def)
 
     if (is_valid)
     {
-        QString find;
+        Ternary_Search_Tree stopwords_tree;
 
         word_tree.words_cache.push_back(w);
 
@@ -219,20 +221,29 @@ void Dictionary::insert(QString word, QString def)
 
             QString temp;
 
-            while (true)
+            while (!sw.atEnd())
             {
                 temp = sw.readLine();
 
-                if (temp.isNull()) break;
+                for (QChar& ch: temp)
+                {
+                    ch = ch.toUpper();
+                }
 
-                find += find.isEmpty() ? "" : " " + temp.toUpper();
+                Word eow;
+                bool valid;
+
+                stopwords_tree.root = stopwords_tree.insert_helper(stopwords_tree.root, temp, " ",
+                                                0, nullptr, valid, eow);
             }
         }
 
         for (const QString& keyword : util::str::split(def))
         {
-            if (!find.contains(keyword))
+            if (!stopwords_tree.search_helper(stopwords_tree.root, keyword, 0))
                 keyword_table.add_to_table_helper(keyword, w);
+            else
+                qDebug() << "Stop word!!!";
         }
     }
 }
@@ -276,8 +287,40 @@ void Dictionary::edit_definition(QString word, QString def)
     for (const QString& keyword_old : util::str::split(w.get_definition()))
         keyword_table.remove_from_table_helper(keyword_old, w);
 
+    Ternary_Search_Tree stopwords_tree;
+
+    word_tree.words_cache.push_back(w);
+
+    QFile sw_f(main_folder + "stopwords.txt");
+
+    if (sw_f.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream sw(&sw_f);
+
+        QString temp;
+
+        while (!sw.atEnd())
+        {
+            temp = sw.readLine();
+
+            for (QChar& ch: temp)
+            {
+                ch = ch.toUpper();
+            }
+
+            Word eow;
+            bool valid;
+
+            stopwords_tree.root = stopwords_tree.insert_helper(stopwords_tree.root, temp, " ",
+                                            0, nullptr, valid, eow);
+        }
+    }
+
     for (const QString& keyword_new : util::str::split(def))
-        keyword_table.add_to_table_helper(keyword_new, w);
+    {
+        if (!stopwords_tree.search_helper(stopwords_tree.root, keyword_new, 0))
+            keyword_table.add_to_table_helper(keyword_new, w);
+    }
 
     word_tree.update_def_helper(node, def);
 }

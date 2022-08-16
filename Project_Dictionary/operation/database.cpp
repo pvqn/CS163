@@ -21,7 +21,7 @@ std::vector<QString> Database::get_databse_list()
 
     QString condition = "ORG_";
 
-    QDirIterator it(QString(main_folder), QDirIterator::NoIteratorFlags);
+    QDirIterator it(main_folder, QDirIterator::NoIteratorFlags);
 
     while (it.hasNext())
     {
