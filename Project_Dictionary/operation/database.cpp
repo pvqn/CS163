@@ -58,3 +58,12 @@ void Database::reset()
 
     current = new Dictionary(name);
 }
+
+void Database::dump()
+{
+    QString name = get().get_dataset_name();
+
+    delete current;
+
+    current = new Dictionary(name);
+}

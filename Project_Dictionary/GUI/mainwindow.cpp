@@ -791,6 +791,7 @@ void mainpage::on_editWordBtt_clicked()
             database.get().edit_definition(word, def);
         else
             database.get().insert(word, def);
+        database.dump();
         updateUIWord(word);
     });
 }
@@ -813,6 +814,7 @@ void mainpage::on_deleteWordBtt_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->page_6);
     database.get().remove(ui->word->text());
+    database.dump();
     getPrediction(ui->searchBar->text());
 }
 
@@ -940,6 +942,7 @@ void mainpage::on_addWordBtt_clicked()
             database.get().edit_definition(word, def);
         else
             database.get().insert(word, def);
+        database.dump();
         updateUIWord(word);
     });
 }
