@@ -267,7 +267,7 @@ void Hash_Table::add_to_table_helper(QString keyword, Word word, bool load)
 
             if (table[h1][i] == b) return;
 
-            table[h1].insert(table[h1].begin() + i + (b > table[h1][i]), b);
+            table[h1].insert(table[h1].begin() + i + (table[h1][i] < b), b);
         }
 	}
 }
@@ -295,9 +295,7 @@ void Hash_Table::remove_from_table_helper(QString keyword, Word word)
 
 std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
 {
-    const size_t THRESHOLD = 100;
-
-	std::vector<Word> words;
+    std::vector<Word> words;
 
     Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), 0, Word());
 
@@ -316,8 +314,6 @@ std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
 
     while (index < table[h1].size() && table[h1][index].keyword == keyword)
     {
-        if (words.size() == THRESHOLD) break;
-
         words.push_back(table[h1][index++].word);
     }
 

@@ -282,7 +282,13 @@ bool mainpage::eventFilter(QObject *obj, QEvent *event)
                         this->animationEnded = false;
                     }
 
-                    getPrediction(temptext);
+                    if (!this->s_status)
+                    {
+                        if (events->key() == Qt::Key_Space)
+                            getPrediction(temptext.left(temptext.lastIndexOf(' ')));
+                    }
+                    else
+                        getPrediction(temptext);
                 }
             }
         }
