@@ -142,11 +142,9 @@ void Hash_Table::heap_sort(std::vector<Hash_Table_Bucket>& v, size_t left, size_
 {
 	size_t size = right - left + 1;
 
-	for (size_t i = left + (size - 1) / 2; i > 0 && i >= left; i--)
-		heapify(v, i, right);
+	for (size_t i = left + (size - 1) / 2; i > 0 && i >= left; i--) heapify(v, i, right);
 
-	if (left == 0)
-		heapify(v, 0, right);
+	if (left == 0) heapify(v, 0, right);
 
 	for (size_t i = right; i > left; i--)
 	{
