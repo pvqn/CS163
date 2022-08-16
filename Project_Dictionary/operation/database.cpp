@@ -50,6 +50,11 @@ void Database::reset()
     delete current;
 
     QFile::remove(main_folder + name + ".txt");  
+    if (QFile::exists(main_folder + "FAV_" + name + ".txt"))
+        QFile::remove(main_folder + "FAV_" + name + ".txt");
+
+    if (QFile::exists(main_folder + "HIS_" + name + ".txt"))
+        QFile::remove(main_folder + "HIS_" + name + ".txt");
 
     current = new Dictionary(name);
 }

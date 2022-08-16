@@ -900,7 +900,7 @@ void mainpage::unlockChoice()
 
 
     QPropertyAnimation *animationx = new QPropertyAnimation(ui->progressBar, "value");
-    animationx->setDuration(ui->questionTable->toPlainText().toStdString().length() * 75);
+    animationx->setDuration((int)ui->questionTable->toPlainText().toStdString().length() * 75);
     animationx->setStartValue(0);
     animationx->setEndValue(100);
     animationx->start();
