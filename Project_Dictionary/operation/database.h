@@ -38,8 +38,6 @@ public:
 	Dictionary& get();
 
     void reset();
-
-    void dump();
 };
 
 #endif

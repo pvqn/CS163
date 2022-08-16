@@ -34,22 +34,22 @@ QString Word::get_word() const
 
 bool Word::operator==(const Word& other)
 {
-	return get_word() == other.get_word();
+    return get_word().compare(other.get_word(), Qt::CaseSensitive) == 0;
 }
 
 bool Word::operator!=(const Word& other)
 {
-	return get_word() != other.get_word();
+    return get_word().compare(other.get_word(), Qt::CaseSensitive) != 0;
 }
 
 bool Word::operator<(const Word& other)
 {
-	return get_word() < other.get_word();
+    return get_word().compare(other.get_word(), Qt::CaseSensitive) < 0;
 }
 
 bool Word::operator>(const Word& other)
 {
-	return get_word() > other.get_word();
+    return get_word().compare(other.get_word(), Qt::CaseSensitive) > 0;
 }
 
 TST_Node* Ternary_Search_Tree::clone(TST_Node* other)

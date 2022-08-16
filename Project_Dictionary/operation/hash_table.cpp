@@ -4,6 +4,8 @@
 
 #include "util.h"
 
+#include <QDebug>
+
 constexpr long long h2_val = 1000000097;
 
 Hash_Table_Bucket::Hash_Table_Bucket(QString keyword_, size_t hash_, size_t other_hash_, Word word_)
@@ -14,19 +16,11 @@ Hash_Table_Bucket::Hash_Table_Bucket(QString keyword_, size_t hash_, size_t othe
 
 bool Hash_Table_Bucket::operator==(const Hash_Table_Bucket& other)
 {
-	if (hash != other.hash)
-		return false;
-
-	if (len != other.len)
-		return false;
-
-	if (keyword != other.keyword)
-		return false;
-
-	if (other_hash != other.hash)
-		return false;
-
-	return word == other.word;
+    return (hash == other.hash)
+            && (len == other.len)
+            && (keyword.compare(other.keyword, Qt::CaseSensitive) == 0)
+            && (other_hash == other.other_hash)
+            && (word == other.word);
 }
 
 bool Hash_Table_Bucket::operator<(const Hash_Table_Bucket& other)
@@ -37,10 +31,10 @@ bool Hash_Table_Bucket::operator<(const Hash_Table_Bucket& other)
 	if (len != other.len)
 		return len < other.len;
 
-	if (keyword != other.keyword)
-		return keyword < other.keyword;
+    if (keyword.compare(other.keyword, Qt::CaseSensitive) < 0)
+        return true;
 
-	if (other_hash != other.hash)
+    if (other_hash != other.other_hash)
 		return other_hash < other.other_hash;
 
 	return word < other.word;
@@ -54,10 +48,10 @@ bool Hash_Table_Bucket::operator>(const Hash_Table_Bucket& other)
 	if (len != other.len)
 		return len > other.len;
 
-	if (keyword != other.keyword)
-		return keyword > other.keyword;
+    if (keyword.compare(other.keyword, Qt::CaseSensitive) > 0)
+        return true;
 
-	if (other_hash != other.hash)
+    if (other_hash != other.other_hash)
 		return other_hash > other.other_hash;
 
 	return word > other.word;
@@ -106,7 +100,7 @@ Hash_Table& Hash_Table::operator=(const Hash_Table& other)
 
 size_t Hash_Table::bucket_binary_search(std::vector<Hash_Table_Bucket>& v,
 	Hash_Table_Bucket& b, size_t begin, size_t end)
-{
+{       
 	size_t left = begin, right = end;
 
 	size_t mid = left + (right - left) / 2;
@@ -256,50 +250,31 @@ void Hash_Table::add_to_table_helper(QString keyword, Word word, bool load)
 	}
 	else
 	{
+        table[h1].push_back(b);
+        sort(table[h1]);
+
         if (sorted[h1] == 0)
         {
             sort(table[h1]);
             sorted[h1] = 1;
         }
 
-		if (table[h1].empty())
-			table[h1].push_back(b);
-		else
-		{
-			size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
+        if (table[h1].size() == 0)
+            table[h1].push_back(b);
+        else
+        {
+            size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
-			if (table[h1][i] == b) return;
+            if (table[h1][i] == b) return;
 
-			table[h1].push_back(b);
-
-			if (table[h1][i] < b) i++;
-
-			size_t j = table[h1].size() - 2;
-
-			while (j > 0 && j >= i)
-			{
-				table[h1][j + 1] = std::move(table[h1][j]);
-				j--;
-			}
-
-			if (j == 0 && table[h1][0] > table[h1][1])
-			{
-				table[h1][1] = std::move(table[h1][0]);
-				j = 0;
-			}
-			else
-			{
-				j = j + 1;
-			}
-
-            table[h1][j] = std::move(b);
-		}
+            table[h1].insert(table[h1].begin() + i + (b > table[h1][i]), b);
+        }
 	}
 }
 
 void Hash_Table::remove_from_table_helper(QString keyword, Word word)
 {
-	size_t h1 = hashing_1(keyword);
+    size_t h1 = hashing_1(keyword);
 
     Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword),
                                             hashing_2(word.get_word()), word);
@@ -310,7 +285,7 @@ void Hash_Table::remove_from_table_helper(QString keyword, Word word)
         sorted[h1] = 1;
     }
 
-    if (table[h1].size() == 0) return;
+    if (!table[h1].size()) return;
 
     size_t i = bucket_binary_search(table[h1], b, 0, table[h1].size() - 1);
 
@@ -320,6 +295,8 @@ void Hash_Table::remove_from_table_helper(QString keyword, Word word)
 
 std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
 {
+    const size_t THRESHOLD = 100;
+
 	std::vector<Word> words;
 
     Hash_Table_Bucket b = Hash_Table_Bucket(keyword, hashing_2(keyword), 0, Word());
@@ -339,6 +316,8 @@ std::vector<Word> Hash_Table::find_by_keyword(QString keyword)
 
     while (index < table[h1].size() && table[h1][index].keyword == keyword)
     {
+        if (words.size() == THRESHOLD) break;
+
         words.push_back(table[h1][index++].word);
     }
 
