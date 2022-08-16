@@ -437,5 +437,5 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
     if (result.size() > 15)
         result.resize(15);
 
-    //return result;
+    return result;
 }
