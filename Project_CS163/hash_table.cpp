@@ -10,17 +10,13 @@ Hash_Table_Bucket::Hash_Table_Bucket(std::string keyword_, size_t hash_, Word wo
 
 bool Hash_Table_Bucket::operator==(const Hash_Table_Bucket& other)
 {
-	if (hash != other.hash)
-		return false;
+	if (hash != other.hash) return false;
 
-	if (len != other.len)
-		return false;
+	if (len != other.len) return false;
 
-	if (keyword != other.keyword)
-		return false;
+	if (keyword != other.keyword) return false;
 
-	if (other_hash != other.hash)
-		return false;
+	if (other_hash != other.hash) return false;
 
 	return word == other.word;
 }
@@ -97,8 +93,7 @@ size_t Hash_Table::bucket_binary_search(std::vector<Hash_Table_Bucket>& v,
 	{
 		if (b == v[mid]) return mid;
 
-		if (b < v[mid]) right = mid;
-		else left = mid + 1;
+		if (b < v[mid]) right = mid; else left = mid + 1;
 
 		mid = left + (right - left) / 2;
 	}
@@ -132,11 +127,9 @@ void Hash_Table::heapify(std::vector<Hash_Table_Bucket>& v, size_t index, size_t
 	size_t l = index * 2 + 1, r = index * 2 + 2;
 	size_t temp = index;
 
-	if (l <= right && v[l] < v[temp])
-		temp = l;
+	if (l <= right && v[l] < v[temp]) temp = l;
 
-	if (r <= right && v[r] < v[temp])
-		temp = r;
+	if (r <= right && v[r] < v[temp]) temp = r;
 
 	if (temp != index)
 	{
