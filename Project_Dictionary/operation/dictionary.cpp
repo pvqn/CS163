@@ -7,6 +7,7 @@
 #include <QtGlobal>
 #include <QRandomGenerator>
 #include <vector>
+#include <algorithm>
 
 #include "util.h"
 
@@ -411,14 +412,14 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
     QString hashing_check[10000];
     size_t freq_check[10000] = {0};
 
+    size_t max = 0;
+
     std::vector<QString> spl = util::str::split(prefix);
 
     for (const QString& str : spl)
     {
-        if (result.size() == 15) break;
         for (const Word& w : keyword_table.find_by_keyword(str))
         {
-            if (result.size() == 15) break;
             QString s = w.get_word();
 
             size_t hashing = (1 + 31 * s.front().unicode()
@@ -431,7 +432,7 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
                     if (hashing_check[(i + hashing) % 10000] == s)
                     {
                         freq_check[(i + hashing) % 10000]++;
-
+                        max = std::max(max, freq_check[(i + hashing) % 10000]);
                         break;
                     }
                 }
@@ -439,6 +440,7 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
                 {
                     hashing_check[(i + hashing) % 10000] = s;
                     freq_check[(i + hashing) % 10000] = 1;
+                    max = std::max(max, freq_check[(i + hashing) % 10000]);
                     break;
                 }
             }
@@ -447,7 +449,7 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
 
     for (size_t i = 0; i < 10000 && result.size() <= 15; i++)
     {
-        if (freq_check[i] == spl.size())
+        if (freq_check[i] == max)
             result.push_back(hashing_check[i]);
     }
 
