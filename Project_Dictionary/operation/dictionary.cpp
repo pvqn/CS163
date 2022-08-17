@@ -32,6 +32,7 @@ void Dictionary::load()
             main_folder + dataset_name + ".txt");
 
     QFile file_fin(main_folder + dataset_name + ".txt");
+    QFile stopword_fin(main_folder + "stopwords.txt");
 
     if (file_fin.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -39,6 +40,22 @@ void Dictionary::load()
 
         QString line = in.readLine();
         delim = line[0];
+
+        Ternary_Search_Tree swt;
+
+        if (stopword_fin.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream s_in(&stopword_fin);
+
+            while (!s_in.atEnd())
+            {
+                line = s_in.readLine();
+
+                bool valid; Word eow;
+
+                swt.root = swt.insert_helper(swt.root, line.toUpper(), " ", 0, nullptr, valid, eow);
+            }
+        }
 
         while (!in.atEnd())
         {
@@ -68,6 +85,8 @@ void Dictionary::load()
 
                 for (const QString& str : util::str::split(def))
                 {
+                    if (swt.search_helper(swt.root, str, 0)) continue;
+
                     size_t h = (7 + 31 * str.front().unicode()
                                 + 31 * 31 + str.back().unicode()) % hashing.size();
 
@@ -184,12 +203,33 @@ void Dictionary::insert(QString word, QString def)
 
     word_tree.root = word_tree.insert_helper(word_tree.root, word, def, 0, nullptr, is_valid, w);
 
+    QFile stopword_fin(main_folder + "stopwords.txt");
+    QString line;
+
+    Ternary_Search_Tree swt;
+
+    if (stopword_fin.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream s_in(&stopword_fin);
+
+        while (!s_in.atEnd())
+        {
+            line = s_in.readLine();
+
+            bool valid; Word eow;
+
+            swt.root = swt.insert_helper(swt.root, line.toUpper(), " ", 0, nullptr, valid, eow);
+        }
+    }
+
     if (is_valid)
     {
         word_tree.words_cache.push_back(w);
 
         for (const QString& keyword : util::str::split(def))
         {
+            if (swt.search_helper(swt.root, keyword, 0)) continue;
+
             keyword_table.add_to_table_helper(keyword, w);
         }
     }
@@ -234,14 +274,32 @@ void Dictionary::edit_definition(QString word, QString def)
     for (const QString& keyword_old : util::str::split(w.get_definition()))
         keyword_table.remove_from_table_helper(keyword_old, w);
 
-    Ternary_Search_Tree stopwords_tree;
+    QFile stopword_fin(main_folder + "stopwords.txt");
+    QString line;
+
+    Ternary_Search_Tree swt;
+
+    if (stopword_fin.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream s_in(&stopword_fin);
+
+        while (!s_in.atEnd())
+        {
+            line = s_in.readLine();
+
+            bool valid; Word eow;
+
+            swt.root = swt.insert_helper(swt.root, line.toUpper(), " ", 0, nullptr, valid, eow);
+        }
+    }
 
     word_tree.words_cache.push_back(w);
 
     for (const QString& keyword_new : util::str::split(def))
     {
-        if (!stopwords_tree.search_helper(stopwords_tree.root, keyword_new, 0))
-            keyword_table.add_to_table_helper(keyword_new, w);
+        if (swt.search_helper(swt.root, keyword_new, 0)) continue;
+
+        keyword_table.add_to_table_helper(keyword_new, w);
     }
 
     word_tree.update_def_helper(node, def);
@@ -374,12 +432,6 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
                     {
                         freq_check[(i + hashing) % 10000]++;
 
-                        if (freq_check[i] == spl.size())
-                        {
-                            if (result.size() < 15)
-                                result.push_back(hashing_check[i]);
-                        }
-
                         break;
                     }
                 }
@@ -393,14 +445,11 @@ std::vector<QString> Dictionary::get_keyword_prediction(QString prefix)
         }
     }
 
-    for (size_t i = 0; i < 10000; i++)
+    for (size_t i = 0; i < 10000 && result.size() <= 15; i++)
     {
         if (freq_check[i] == spl.size())
             result.push_back(hashing_check[i]);
     }
-
-    if (result.size() > 15)
-        result.resize(15);
 
     return result;
 }
